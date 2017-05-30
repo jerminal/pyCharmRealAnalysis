@@ -11,8 +11,8 @@ import DBMSAccess
 import XmlConfigReader
 import NewPropertyDetailPageScrapper as PropScrap
 
-def writeToCSV(ary):
 
+def writeToCSV(ary):
     dictColumns = {"MLSNum": "ML#: ", "Status": "Status: ", "ListPrice": "List Price: ", "Address": "Address: ",
                    "Area": "Area: ", "LPperSqft": "LP/SF: ", "TaxID": "Tax Acc #: ", "DaysOnMarket": "DOM: ",
                    "City": "City: ", "State": "State: ", "County": "County: ", "MasterPlanned": "Master Planned: ",
@@ -30,21 +30,24 @@ def writeToCSV(ary):
                    "PrvtPool": "Prvt Pool:",
                    "WaterfrontFeat": "Waterfront Feat: ", "ListDate": "List Date: ", "MaintFee": "Maint. Fee: ",
                    "TaxRate": "Tax Rate: ", "Zip": "Zip Code: ", "AgentEmail": "Agent Email:",
-                   "AgentPhone": "Agent Phone: ", "Connections": "Connect: ", "Interior": "Interior: ", "MasterBath": "Master Bath: ",
-                    "ExteriorCons": "Exterior Constr", "Range": "Range: ", "LotDesc": "Lot Description: ", "Heating": "Heat: ",
-                    "Cooling": "Cool: ", "BedroomsDesc": "Bedrooms: ",
+                   "AgentPhone": "Agent Phone: ", "Connections": "Connect: ", "Interior": "Interior: ",
+                   "MasterBath": "Master Bath: ",
+                   "ExteriorCons": "Exterior Constr", "Range": "Range: ", "LotDesc": "Lot Description: ",
+                   "Heating": "Heat: ",
+                   "Cooling": "Cool: ", "BedroomsDesc": "Bedrooms: ",
                    "SellAgentTRECId": "TREC #: ", "SalePrice": "Sale Price: ", "CloseDate": "Close Date: ",
                    "SalePricePerSqft": "SP$/SF: ", "DaysToClose": "Days to Close: ", "FinTerms": "Terms:",
                    "AmortizeYears": "Amortize Years: ",
-                   "NewLoan": "New Loan: ", "PendingDate": "Pending Date: ", "EstCloseDate": "Est Close Dt: ", "CoOp":"CoOp: "
-    }
+                   "NewLoan": "New Loan: ", "PendingDate": "Pending Date: ", "EstCloseDate": "Est Close Dt: ",
+                   "CoOp": "CoOp: "
+                   }
     header = []
     aryValues = []
     for key in dictColumns:
         header.append(key)
     aryValues.append(header)
     for row in ary:
-        newRow =[]
+        newRow = []
         for col in header:
             print(col)
             try:
@@ -59,20 +62,21 @@ def writeToCSV(ary):
         wr.writerows(aryValues)
     print('done')
 
+
 if __name__ == "__main__":
-    cfg = XmlConfigReader.Config("NewListingScrapper","DEV")
+    cfg = XmlConfigReader.Config("NewListingScrapper", "DEV")
     strUserName = cfg.getConfigValue("UserName")
     strPwd = cfg.getConfigValue("Password")
-    #strUrl = str(cfg.getConfigValue("EntryUrl"))
+    # strUrl = str(cfg.getConfigValue("EntryUrl"))
 
     executable_path = r'C:\Python35\selenium\webdriver\firefox\x86\geckodriver.exe'
     binary = FirefoxBinary('C:/Program Files (x86)/Mozilla Firefox/firefox.exe')
     driver = webdriver.Firefox(executable_path=executable_path)
-    #driver = webdriver.Firefox(firefox_binary=binary)
+    # driver = webdriver.Firefox(firefox_binary=binary)
     print(cfg.getConfigValue("EntryUrl"))
     driver.get(cfg.getConfigValue("EntryUrl"))  # load the web page
 
-    #look for user name log in:
+    # look for user name log in:
 
     elemUsr = driver.find_element_by_id("member_email")
     elemUsr.send_keys(strUserName)
@@ -81,40 +85,41 @@ if __name__ == "__main__":
     elemPwd.send_keys(Keys.RETURN)
 
     WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.LINK_TEXT, "Enter Matrix MLS")))
-    #now will click Matrix MLS
+    # now will click Matrix MLS
     window_before = driver.window_handles[0]
     xpath = "/html[@class='wf-effra-n4-active wf-effra-n7-active wf-effra-n3-active wf-effra-n5-active wf-effra-n9-active wf-active']/body/div[@class='content overlay']/div[@class='container']/div[@class='rightPane']/div[@class='box_simple gray agentbox newhar']/div[@class='box_content grid_view']/a[1]"
     elemNextLnk = driver.find_element_by_xpath(xpath)
     elemNextLnk.click()
-    #switch to the new window, and click on "new listing"
+    # switch to the new window, and click on "new listing"
     time.sleep(10)
     window_after = driver.window_handles[1]
     driver.switch_to.window(window_after)
     strPartialText = "New Listing ("
-    elemNextLnk = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.PARTIAL_LINK_TEXT, strPartialText)))
-    #get full link text to know the number of properties
+    elemNextLnk = WebDriverWait(driver, 30).until(
+        EC.presence_of_element_located((By.PARTIAL_LINK_TEXT, strPartialText)))
+    # get full link text to know the number of properties
     strNextLnkText = elemNextLnk.text
-    nRecCnt = int( strNextLnkText[13:].strip(')') )
-    #elemNextLnk = driver.find_element_by_partial_link_text(strPartialText)
+    nRecCnt = int(strNextLnkText[13:].strip(')'))
+    # elemNextLnk = driver.find_element_by_partial_link_text(strPartialText)
     elemNextLnk.click()
     time.sleep(3)
-    #now the new listing page is being loaded
-    pageSizeDdl_id = "m_DisplayCore_dpy2" #the Next link
+    # now the new listing page is being loaded
+    pageSizeDdl_id = "m_DisplayCore_dpy2"  # the Next link
     elemNextLnk = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.ID, pageSizeDdl_id)))
-    #now click the first listing in the list
+    # now click the first listing in the list
     xpathFirstMLS = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[3]/div[@id='m_upDisplay']/div[@id='m_pnlDisplayTab']/div[@id='m_divContent']/div[@id='m_pnlDisplay']/table[@class='displayGrid nonresponsive ajax_display d58m_show']/tbody/tr[@id='wrapperTable'][1]/td[@class='d58m6']/span[@class='d58m1']/a"
     elemFirstMLS = driver.find_element_by_xpath(xpathFirstMLS)
     sMLS = elemFirstMLS.text
     elemFirstMLS.click()
 
-    #wait for the details page to load
-    #xPathMLS = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[3]/div[@id='m_upDisplay']/div[@id='m_pnlDisplayTab']/div[@id='m_divContent']/div[@id='m_pnlDisplay']/div[@class='multiLineDisplay ajax_display d3m_show nonresponsive']/table/tbody/tr/td/table[@id='wrapperTable']/tbody/tr/td[@class='d3m1']/span[@class='display']/table[@class='d3m2']/tbody/tr[2]/td[@class='d3m3']/span[@class='formula']/div[@class='multiLineDisplay ajax_display d48m_show nonresponsive']/table[@id='wrapperTable']/tbody/tr/td[@class='d48m1']/span[@class='display']/table[@class='d48m2']/tbody/tr[3]/td[@class='d48m5']/table[@class='d48m7']/tbody/tr[@class='d48m8']/td[@class='d48m16']/table[@class='d48m17']/tbody/tr[3]/td[@class='d48m19']/span[@class='wrapped-field']"
+    # wait for the details page to load
+    # xPathMLS = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[3]/div[@id='m_upDisplay']/div[@id='m_pnlDisplayTab']/div[@id='m_divContent']/div[@id='m_pnlDisplay']/div[@class='multiLineDisplay ajax_display d3m_show nonresponsive']/table/tbody/tr/td/table[@id='wrapperTable']/tbody/tr/td[@class='d3m1']/span[@class='display']/table[@class='d3m2']/tbody/tr[2]/td[@class='d3m3']/span[@class='formula']/div[@class='multiLineDisplay ajax_display d48m_show nonresponsive']/table[@id='wrapperTable']/tbody/tr/td[@class='d48m1']/span[@class='display']/table[@class='d48m2']/tbody/tr[3]/td[@class='d48m5']/table[@class='d48m7']/tbody/tr[@class='d48m8']/td[@class='d48m16']/table[@class='d48m17']/tbody/tr[3]/td[@class='d48m19']/span[@class='wrapped-field']"
     xPathNext = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSubHeader']/div[@id='m_pnlSubHeader']/div/table/tbody/tr/td[@class='css_innerLeft hideOnMap hideOnSearch hideNoResults']/span[@id='m_lblPagingSummary']/span[@class='pagingLinks']/a[@id='m_DisplayCore_dpy3']"
     NextLinkId = 'm_DisplayCore_dpy3'
     nExceptionCount = 0
     lstScrapResults = []
     nTotalCount = 0
-    while nTotalCount < nRecCnt-1:
+    while nTotalCount < nRecCnt - 1:
         try:
             elemNextLnk = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.ID, NextLinkId)))
             pageSource = driver.page_source
@@ -123,14 +128,14 @@ if __name__ == "__main__":
             time.sleep(1)
             nTotalCount += 1
         except:
-            print ('the next link is not found, it will try again')
+            print('the next link is not found, it will try again')
             time.sleep(2)
 
-    #now will write the results to database
+    # now will write the results to database
     writeToCSV(lstScrapResults)
     db = DBMSAccess.MSAccess(r"c:\temp\NewListings.accdb")
     for item in lstScrapResults:
         db.InsertDictionary("NewListings", item)
         db.Committ()
-    
+
 
