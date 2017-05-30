@@ -32,7 +32,11 @@ def writeToCSV(ary):
                    "TaxRate": "Tax Rate: ", "Zip": "Zip Code: ", "AgentEmail": "Agent Email:",
                    "AgentPhone": "Agent Phone: ", "Connections": "Connect: ", "Interior": "Interior: ", "MasterBath": "Master Bath: ",
                     "ExteriorCons": "Exterior Constr", "Range": "Range: ", "LotDesc": "Lot Description: ", "Heating": "Heat: ",
-                    "Cooling": "Cool: ", "BedroomsDesc": "Bedrooms: "
+                    "Cooling": "Cool: ", "BedroomsDesc": "Bedrooms: ",
+                   "SellAgentTRECId": "TREC #: ", "SalePrice": "Sale Price: ", "CloseDate": "Close Date: ",
+                   "SalePricePerSqft": "SP$/SF: ", "DaysToClose": "Days to Close: ", "FinTerms": "Terms:",
+                   "AmortizeYears": "Amortize Years: ",
+                   "NewLoan": "New Loan: ", "PendingDate": "Pending Date: ", "EstCloseDate": "Est Close Dt: "
     }
     header = []
     aryValues = []

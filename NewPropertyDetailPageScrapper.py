@@ -29,7 +29,9 @@ def parsePropertyDetails(sHtml):
                    "WaterfrontFeat":"Waterfront Feat: ", "ListDate":"List Date: ", "MaintFee":"Maint. Fee: ", "TaxRate":"Tax Rate: ", "Zip": "Zip Code: ", "AgentEmail":"Agent Email:", "AgentPhone":"Agent Phone: ",
                     "Connections": "Connect: ", "Interior": "Interior: ", "MasterBath": "Master Bath:",
                     "ExteriorCons": "Exterior Constr: ", "Range": "Range:", "LotDesc": "Lot Description: ", "Heating": "Heat: ",
-                    "Cooling": "Cool: ", "BedroomsDesc": "Bedrooms: ", "ListAgentId":"ListAgentId: ", "ListAgentName":"ListAgentName:", "ListBrokerId":"ListBrokderId:", "ListBrokerName":"ListBrokerName:"
+                    "Cooling": "Cool: ", "BedroomsDesc": "Bedrooms: ", "ListAgentId":"ListAgentId: ", "ListAgentName":"ListAgentName:", "ListBrokerId":"ListBrokderId:", "ListBrokerName":"ListBrokerName:",
+                   "SellAgentTRECId": "TREC #: ", "SalePrice":"Sale Price: ", "CloseDate": "Close Date: ", "SalePricePerSqft": "SP$/SF: ", "DaysToClose": "Days to Close: ", "FinTerms": "Terms:", "AmortizeYears": "Amortize Years: ",
+                    "NewLoan": "New Loan: ", "PendingDate": "Pending Date: ", "EstCloseDate": "Est Close Dt: "
     }
     dictResults = {}
     for key in dictColumns:
@@ -108,7 +110,7 @@ def parsePropertyDetails(sHtml):
 
 #this is unit test code for the module
 if __name__ == "__main__":
-    fileName = r'c:/temp/test.html'
+    fileName = r'c:/temp/SFH_Sold Record0.html'
     s = open(fileName, 'r').read()
     result = parsePropertyDetails(s)
     print(result)
