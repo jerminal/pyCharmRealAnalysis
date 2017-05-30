@@ -35,3 +35,9 @@ class MSAccess:
         lstColumns = list(dict.keys())
         lstValues = list(dict.values())
         self.InsertOne(strTableName, lstColumns, lstValues)
+
+    '''
+    here keys is a list of keys used in where statement 
+    '''
+    def UpdateDictionary(self, strTableName, dict, keys):
+        #first pop the elements from the keys
