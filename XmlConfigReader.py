@@ -12,14 +12,17 @@ class Config:
         self._Inst = Inst
     def getConfigValue(self, partialPath):
         xpath = "//data/Application[@name='{0}']/{1}/{2}/text()".format(self._App, self._Inst, partialPath)
-        #print(xpath)
+        print(xpath)
         #val = self._doc.xpath("//data/Application[@name='{0}']/{1}/{2}/text()".format(self._App, self._Inst, partialPath))
         #print(val)
         #xpath = "//Application[@name='{0}']/{1}/{2}/text()".format(self._App, self._Inst, partialPath)
         #print(xpath)
         val = self._doc.xpath(xpath)
-        #print(val)
-        return str(val[0])
+        try:
+            #retVal = str(val[0]).replace(r'\\', r"\")
+            return str(val[0])
+        except:
+            return ""
 
 if __name__ == "__main__":
     cfg = Config("NewListingScrapper","DEV")

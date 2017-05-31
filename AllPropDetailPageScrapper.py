@@ -3,36 +3,76 @@ This code scrapps property details using beautiful soup
 '''
 
 from bs4 import BeautifulSoup
+import ast
+import XmlConfigReader
 
 def parseDetails(sHtml):
-    dictGeneralSection = {"MLSNum":"ML#: ", "Status":"Status: ", "ListPrice":"List Price: ", "Address":"Address: ", "Area":"Area: ", "LPperSqft":"LP/SF: ", "TaxID":"Tax Acc #: ", "DaysOnMarket":"DOM: ",
-                   "City":"City: ",  "State":"State: ", "County":"County: ", "MasterPlanned":"Master Planned: ", "Location" : "Location:", "MarketArea" : "Market Area:", "Subdivision" : "Subdivision: ",
-                   "SectionNum" : "Secction #:", "LotSize" : "Lot Size: ", "BldgSqft" : "SqFt: ", "LotValue" : "Lot Value:", "LeaseAlso" : "Lease Also:", "YearBuilt" : "Year Built: ", "LegalDesc" : "Legal Desc: ", "OrigPrice":"Orig\xa0Price: "}
-    #'Listing Office\xa0Information '
-    dictListOfficeSection ={"ListBroker" : "List Broker: ", "ListAgent" : "List Agent: ", "BrokerAddress" : "Address: ", "LicensedSupervisor" : "Licensed Supervisor:",
-                            "ListAgentId":"ListAgentId: ", "ListAgentName":"ListAgentName:", "ListBrokerId":"ListBrokderId:", "ListBrokerName":"ListBrokerName:"}
-    #'School\xa0Information '
-    dictSchoolSection = {"SchoolDistrict" : "School District: ", "ElemSchool" : "Elem: ", "MiddleSchool" : "Middle: ", "HighSchool" : "High: "}
-    #'Description\xa0Information '
-    dictDescSection={"Style" : "Style: ", "Stories" : "# Stories: ", "Type" : "Type: ", "Access":"Access: ", "Acres":"Acres: ", "Bedrooms":"Bedrooms: ", "Baths":"Baths F/H: ","Builder":"Builder Nm: "}
-    #'Rooms Information '
-    dictRoomsSection = {"Oven":"Oven:", "Roof":"Roof: ", "Flooring":"Flooring: ", "Foundation":"Foundation: ", "Countertops":"Countertops: ", "PrvtPool":"Prvt Pool:",
-                   "WaterfrontFeat":"Waterfront Feat: ", "ListDate":"List Date: ", "MaintFee":"Maint. Fee: ", "TaxRate":"Tax Rate: ", "Zip": "Zip Code: ", "AgentEmail":"Agent Email:", "AgentPhone":"Agent Phone: ",
-                    "Connections": "Connect: ", "Interior": "Interior: ", "MasterBath": "Master Bath:",
-                    "ExteriorCons": "Exterior Constr: ", "Range": "Range:", "LotDesc": "Lot Description: ", "Heating": "Heat: ",
-                    "Cooling": "Cool: ", "BedroomsDesc": "Bedrooms: ", }
-    #'Interior, Exterior, Utilities and Additional Information '
-    dictAddtlSection = {"Oven":"Oven:", "Roof":"Roof: ", "Flooring":"Flooring: ", "Foundation":"Foundation: ", "Countertops":"Countertops: ", "PrvtPool":"Prvt Pool:",
-                        "WaterfrontFeat":"Waterfront Feat: ", "ListDate":"List Date: ", "MaintFee":"Maint. Fee: ", "TaxRate":"Tax Rate: ", "Zip": "Zip Code: ", "AgentEmail":"Agent Email:", "AgentPhone":"Agent Phone: ",
-                        "Connections": "Connect: ", "Interior": "Interior: ", "MasterBath": "Master Bath:", "ExteriorCons": "Exterior Constr: ", "Range": "Range:", "LotDesc": "Lot Description: ", "Heating": "Heat: ",
-                        "Cooling": "Cool: ", "BedroomsDesc": "Bedrooms: ", "PrivatePool":"Prvt Pool: ",  "Heat":"Heat: ", "Restrictions":"Restrictions: ", "TDate":"T/Date: ", "CompSubAgent":"Comp: SubAgt: ",
-                        "CompBuyerAgent":"Buyer Agent: ", "Bonus":"Bonus: " }
-    #'Financial\xa0Information '
-    dictFincSection = {}
-    #'Pending\xa0Information '
-    dictPendingSection = {"PendingDate":"Pending Date: ","EstCloseDate":"Est Close Dt: ","CloseAgtTRECId":"TREC #: ","CloseAgent":"Sell Agent: ","CloseBroker":"Sell Broker: ","CloseAgentName":"CloseAgentName: ","CloseAgentId":"CloseAgentId: ","CloseBrokerName":"CloseBrokerName: ","CloseBrokerId":"CloseBrokerId:"}
-    #'Sold\xa0Information '
-    dictSoldSection = {"SalePrice":"Sale Price: ","CloseDate":"Close Date: ","TtlDiscountPts":"Ttl Discount Pts: ","SalePricePerSqft":"SP$/SF: ","DaysToClose":"Days to Close: ","Terms":"Terms: ","NewLoan":"New Loan: ", "InterestRate":"Interest Rate: ", "AmortizeYears":"Amortize Years: "}
+    cfg = XmlConfigReader.Config("AllPropScrapper","DEV")
+    #now start retrieve the page section names and column dictionary
+    lstSectKeys = []
+    lstSectDict = []
+    #general section
+    strGeneral = cfg.getConfigValue("PageSections/Section[@name='{0}']/SectionString".format("General"))
+    strTemp = cfg.getConfigValue("PageSections/Section[@name='{0}']/ColumnDictionary".format("General"))
+    dictGeneral = ast.literal_eval(strTemp.strip())
+    lstSectKeys.append(strGeneral)
+    lstSectDict.append(dictGeneral)
+
+    #ListingOffice section
+    strListingOffice = cfg.getConfigValue("PageSections/Section[@name='{0}']/SectionString".format("ListingOffice"))
+    strTemp = cfg.getConfigValue("PageSections/Section[@name='{0}']/ColumnDictionary".format("ListingOffice"))
+    dictListingOffice = ast.literal_eval(strTemp.strip())
+    lstSectKeys.append(strListingOffice)
+    lstSectDict.append(dictListingOffice)
+    #SchoolSection
+    strSchool = cfg.getConfigValue("PageSections/Section[@name='{0}']/SectionString".format("School"))
+    strTemp = cfg.getConfigValue("PageSections/Section[@name='{0}']/ColumnDictionary".format("School"))
+    dictSchool = ast.literal_eval(strTemp.strip())
+    lstSectKeys.append(strSchool)
+    lstSectDict.append(dictSchool)
+
+    #Description section
+    strDescription = cfg.getConfigValue("PageSections/Section[@name='{0}']/SectionString".format("Description"))
+    strTemp = cfg.getConfigValue("PageSections/Section[@name='{0}']/ColumnDictionary".format("Description"))
+    dictDescription = ast.literal_eval(strTemp.strip())
+    lstSectKeys.append(strDescription)
+    lstSectDict.append(dictDescription)
+    #Rooms section
+    '''
+    strRooms = cfg.getConfigValue("PageSections/Section[@name='{0}']/SectionString".format("Rooms"))
+    strTemp = cfg.getConfigValue("PageSections/Section[@name='{0}']/ColumnDictionary".format("Rooms"))
+    dictRooms = ast.literal_eval(strTemp.strip())
+    lstSectKeys.append(strRooms)
+    lstSectDict.append(dictRooms)
+    '''
+    #Additional section
+    strAdditional = cfg.getConfigValue("PageSections/Section[@name='{0}']/SectionString".format("Additional"))
+    strTemp = cfg.getConfigValue("PageSections/Section[@name='{0}']/ColumnDictionary".format("Additional"))
+    dictAdditional = ast.literal_eval(strTemp.strip())
+    lstSectKeys.append(strAdditional)
+    lstSectDict.append(dictAdditional)
+
+    #Financial section
+    strFinancial = cfg.getConfigValue("PageSections/Section[@name='{0}']/SectionString".format("Financial"))
+    strTemp = cfg.getConfigValue("PageSections/Section[@name='{0}']/ColumnDictionary".format("Financial"))
+    dictFinancial = ast.literal_eval(strTemp.strip())
+    lstSectKeys.append(strFinancial)
+    lstSectDict.append(dictFinancial)
+    # Pending section
+    strPending = cfg.getConfigValue("PageSections/Section[@name='{0}']/SectionString".format("Pending"))
+    strTemp = cfg.getConfigValue("PageSections/Section[@name='{0}']/ColumnDictionary".format("Pending"))
+    dictPending = ast.literal_eval(strTemp.strip())
+    lstSectKeys.append(strPending)
+    lstSectDict.append(dictPending)
+    # Sold section
+    strSold = cfg.getConfigValue("PageSections/Section[@name='{0}']/SectionString".format("Sold"))
+    strTemp = cfg.getConfigValue("PageSections/Section[@name='{0}']/ColumnDictionary".format("Sold"))
+    dictSold = ast.literal_eval(strTemp.strip())
+    lstSectKeys.append(strSold)
+    lstSectDict.append(dictSold )
+
+    print(lstSectKeys)
+    print(lstSectDict)
 
     soup = BeautifulSoup(sHtml, 'lxml')
     #extract section 1 details- basic property info
@@ -40,18 +80,31 @@ def parseDetails(sHtml):
     table = soup.find_all("table", {"class":"d48m17"})
     for tr in table[0].findAll("tr"):
         for td in tr.findAll("td"):
-            dataCollect.append(td.find(text=True))
+            temp = td.find(text=True)
+            if temp is None:
+                dataCollect.append(None)
+            else:
+                dataCollect.append(temp.replace(u'\xa0', u' '))
     #extract section 2 details - listing agent information
-
     tables = soup.find_all("table", {"class": "d48m7"})
     for table in tables:
         for tr in table.findAll("tr"):
             for td in tr.findAll("td"):
-                dataCollect.append(td.find(text=True))
+                temp = td.find(text=True)
+                if temp is None:
+                    dataCollect.append(None)
+                else:
+                    dataCollect.append(temp.replace(u'\xa0', u' '))
     print(dataCollect)
-
-
-
+    #now, separate the long string into sections extracted above
+    sections = []
+    idxStart = 0
+    for n, item in enumerate(lstSectKeys):
+        if n>0:
+            idxEnd = dataCollect.index(item)
+            sections.append(dataCollect[idxStart:idxEnd])
+            idxStart = idxEnd
+    print(sections)
 '''
 def parsePropertyDetails(sHtml):
     soup = BeautifulSoup(sHtml, 'lxml')
@@ -79,8 +132,7 @@ def parsePropertyDetails(sHtml):
                     "Connections": "Connect: ", "Interior": "Interior: ", "MasterBath": "Master Bath:",
                     "ExteriorCons": "Exterior Constr: ", "Range": "Range:", "LotDesc": "Lot Description: ", "Heating": "Heat: ",
                     "Cooling": "Cool: ", "BedroomsDesc": "Bedrooms: ", "ListAgentId":"ListAgentId: ", "ListAgentName":"ListAgentName:", "ListBrokerId":"ListBrokderId:", "ListBrokerName":"ListBrokerName:",
-                   "SellAgentTRECId": "TREC #: ", "SalePrice":"Sale Price: ", "CloseDate": "Close Date: ", "SalePricePerSqft": "SP$/SF: ", "DaysToClose": "Days to Close: ", "FinTerms": "Terms:", "AmortizeYears": "Amortize Years: ",
-                    "NewLoan": "New Loan: ", "PendingDate": "Pending Date: ", "EstCloseDate": "Est Close Dt: ", "CoOp":"CoOp: "
+                   
     }
     dictResults = {}
     for key in dictColumns:
