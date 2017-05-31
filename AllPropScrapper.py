@@ -64,9 +64,10 @@ def writeToCSV(ary):
 
 
 if __name__ == "__main__":
-    cfg = XmlConfigReader.Config("NewListingScrapper", "DEV")
-    strUserName = cfg.getConfigValue("UserName")
-    strPwd = cfg.getConfigValue("Password")
+    cfg = XmlConfigReader.Config("AllPropScrapper", "DEV")
+    strUserName = cfg.getConfigValue("HARUserName")
+    strPwd = cfg.getConfigValue("HARPassword")
+    strEntryUrl = cfg.getConfigValue("EntryUrl")
     # strUrl = str(cfg.getConfigValue("EntryUrl"))
 
     executable_path = r'C:\Python35\selenium\webdriver\firefox\x86\geckodriver.exe'
@@ -74,7 +75,7 @@ if __name__ == "__main__":
     driver = webdriver.Firefox(executable_path=executable_path)
     # driver = webdriver.Firefox(firefox_binary=binary)
     print(cfg.getConfigValue("EntryUrl"))
-    driver.get(cfg.getConfigValue("EntryUrl"))  # load the web page
+    driver.get(cfg.getConfigValue("StartingUrl"))  # load the web page
 
     # look for user name log in:
 
@@ -85,7 +86,6 @@ if __name__ == "__main__":
     elemPwd.send_keys(Keys.RETURN)
 
     WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.LINK_TEXT, "Enter Matrix MLS")))
-    # now will click Matrix MLS
     window_before = driver.window_handles[0]
     xpath = "/html[@class='wf-effra-n4-active wf-effra-n7-active wf-effra-n3-active wf-effra-n5-active wf-effra-n9-active wf-active']/body/div[@class='content overlay']/div[@class='container']/div[@class='rightPane']/div[@class='box_simple gray agentbox newhar']/div[@class='box_content grid_view']/a[1]"
     elemNextLnk = driver.find_element_by_xpath(xpath)
@@ -95,8 +95,11 @@ if __name__ == "__main__":
     window_after = driver.window_handles[1]
     driver.switch_to.window(window_after)
     strPartialText = "New Listing ("
-    elemNextLnk = WebDriverWait(driver, 30).until(
-        EC.presence_of_element_located((By.PARTIAL_LINK_TEXT, strPartialText)))
+    elemNextLnk = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.PARTIAL_LINK_TEXT, strPartialText)))
+    driver.get(strEntryUrl)
+    '''
+    # now will click Matrix MLS
+        
     # get full link text to know the number of properties
     strNextLnkText = elemNextLnk.text
     nRecCnt = int(strNextLnkText[13:].strip(')'))
@@ -131,11 +134,6 @@ if __name__ == "__main__":
             print('the next link is not found, it will try again')
             time.sleep(2)
 
-    # now will write the results to database
-    writeToCSV(lstScrapResults)
-    db = DBMSAccess.MSAccess(r"c:\temp\NewListings.accdb")
-    for item in lstScrapResults:
-        db.InsertDictionary("NewListings", item)
-        db.Committ()
 
 
+    '''
