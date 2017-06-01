@@ -10,7 +10,8 @@ import csv
 import DBMSAccess
 import XmlConfigReader
 import NewPropertyDetailPageScrapper as PropScrap
-
+import datetime
+import sys
 def writeToCSV(ary):
 
     dictColumns = {"MLSNum": "ML#: ", "Status": "Status: ", "ListPrice": "List Price: ", "Address": "Address: ",
@@ -114,23 +115,40 @@ if __name__ == "__main__":
     nExceptionCount = 0
     lstScrapResults = []
     nTotalCount = 0
+    db = DBMSAccess.MSAccess(r"c:\temp\NewListings.accdb")
     while nTotalCount < nRecCnt-1:
         try:
             elemNextLnk = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.ID, NextLinkId)))
             pageSource = driver.page_source
-            lstScrapResults.append(PropScrap.parsePropertyDetails(pageSource))
+            #lstScrapResults.append(PropScrap.parsePropertyDetails(pageSource))
+            rslt = PropScrap.parsePropertyDetails(pageSource)
+            db.InsertDictionary("NewListings", rslt)
+            db.Committ()
             elemNextLnk.click()
             time.sleep(1)
             nTotalCount += 1
+            strFailedAttempts = ""
         except:
             print ('the next link is not found, it will try again')
+            strFailedAttempts += "1"
+            if len(strFailedAttempts) == 5:
+                #if consecutive failed attempts reaches 5, will use an alternative method
+                nLvl2TryCount = 0
+                try:
+                    elemNextLnk = WebDriverWait(driver, 5).until(EC.presence_of_element_located(By.LINK_TEXT, "Next"))
+                    pageSource = driver.page_source
+                    rslt = PropScrap.parsePropertyDetails(pageSource)
+                    db.InsertDictionary("NewListings", rslt)
+                    db.Committ()
+                    elemNextLnk.click()
+                except:
+                    print("second level 2 error trapping failed, will try a few more times")
+                    nLvl2TryCount +=1
+                    if nLvl2TryCount == 5:
+                        sys.exit()
             time.sleep(2)
 
     #now will write the results to database
     writeToCSV(lstScrapResults)
-    db = DBMSAccess.MSAccess(r"c:\temp\NewListings.accdb")
-    for item in lstScrapResults:
-        db.InsertDictionary("NewListings", item)
-        db.Committ()
-    
+
 

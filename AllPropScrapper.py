@@ -97,6 +97,7 @@ if __name__ == "__main__":
     strPartialText = "New Listing ("
     elemNextLnk = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.PARTIAL_LINK_TEXT, strPartialText)))
     driver.get(strEntryUrl)
+
     '''
     # now will click Matrix MLS
         
