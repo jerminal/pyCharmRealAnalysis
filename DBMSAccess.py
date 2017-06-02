@@ -2,6 +2,8 @@
 
 
 import pyodbc
+import datetime
+
 class MSAccess:
     def __init__(self, strPath):
         self._db_file = strPath
@@ -31,14 +33,33 @@ class MSAccess:
         sql = "INSERT INTO {0} ({1}) VALUES ({2})".format(strTable, ",".join(lstColumns),",".join(['?'] * len(lstColumns)))
         return sql
 
+    '''
+        set the insertion time or last update time
+        strTable: TableName
+        TimeColumnName: Name of the time stamp column
+        ts: time stamp
+        key: key column name, usually it's the mls number
+        keyValue: Value of the key
+    '''
+    def SetTimeStamp(self, strTable, TimeColumnName, ts, key, keyValue, AutoCommit = False ):
+        sql = "UPDATE {0} SET {1} = '{2}' WHERE {3}={4}".format(strTable, TimeColumnName, ts, key, keyValue)
+        self._cursor.execute(sql)
+        if AutoCommit:
+            self._conn.commit()
+
     def InsertDictionary(self, strTableName, dict):
         lstColumns = list(dict.keys())
         lstValues = list(dict.values())
         self.InsertOne(strTableName, lstColumns, lstValues)
+        keyColumnName = 'MLSNum'
+        keyValue = dict[keyColumnName]
+        self.SetTimeStamp(strTableName, 'OrigDateTime', datetime.datetime.now(), keyColumnName, keyValue, False)
+
 
     '''
     here keys is a list of keys used in where statement 
     '''
     def UpdateDictionary(self, strTableName, dict, keys):
         #first pop the elements from the keys
+
         return
