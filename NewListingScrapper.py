@@ -12,6 +12,8 @@ import XmlConfigReader
 import NewPropertyDetailPageScrapper as PropScrap
 import datetime
 import sys
+import traceback
+
 def writeToCSV(ary):
 
     dictColumns = {"MLSNum": "ML#: ", "Status": "Status: ", "ListPrice": "List Price: ", "Address": "Address: ",
@@ -49,7 +51,7 @@ def writeToCSV(ary):
         for col in header:
             print(col)
             try:
-                print(row[col])
+                #print(row[col])
                 newRow.append(row[col])
             except:
                 print('key {0} not found in result'.format(col))
@@ -118,6 +120,7 @@ if __name__ == "__main__":
     db = DBMSAccess.MSAccess(r"c:\temp\NewListings.accdb")
     while nTotalCount < nRecCnt-1:
         try:
+            rslt = None
             elemNextLnk = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.ID, NextLinkId)))
             pageSource = driver.page_source
             #lstScrapResults.append(PropScrap.parsePropertyDetails(pageSource))
@@ -128,7 +131,8 @@ if __name__ == "__main__":
             time.sleep(1)
             nTotalCount += 1
             strFailedAttempts = ""
-        except:
+        except Exception as e:
+            traceback.print_exc()
             print ('the next link is not found, it will try again')
             strFailedAttempts += "1"
             if len(strFailedAttempts) == 5:

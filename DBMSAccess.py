@@ -1,6 +1,6 @@
 #class library for MS Access related functions
 
-
+import traceback
 import pyodbc
 class MSAccess:
     def __init__(self, strPath):
@@ -31,7 +31,7 @@ class MSAccess:
         sql = "INSERT INTO {0} ({1}) VALUES ({2})".format(strTable, ",".join(lstColumns),",".join(['?'] * len(lstColumns)))
         return sql
 
-    def InsertDictionary(self, strTableName, dict):
+    def InsertDictionary(self, strTableName, dict, ):
         lstColumns = list(dict.keys())
         lstValues = list(dict.values())
         self.InsertOne(strTableName, lstColumns, lstValues)
@@ -39,6 +39,23 @@ class MSAccess:
     '''
     here keys is a list of keys used in where statement 
     '''
-    def UpdateDictionary(self, strTableName, dict, keys):
+    def UpdateDictionary(self, strTableName, dict, keys, bAutoCommit = True):
         #first pop the elements from the keys
+        dictKeyColumns = {}
+        for key in keys:
+            dictKeyColumns[key] = dict.pop(key)
+        lstColumnsToUpdate = list(dict.keys())
+        lstValuesToUpdate = list(dict.values())
+        lstKeys = list(dictKeyColumns.keys())
+        lstKeyValues = list(dictKeyColumns.values())
+        a = '=?,'.join(lstColumnsToUpdate) + '=?'
+        b =  '=? and '.join(lstKeys) + '=?'
+        sql = "UPDATE {0} SET {1} WHERE {2}".format(strTableName, a, b)
+        print (sql)
+        try:
+            self._cursor.execute(sql, lstValuesToUpdate + lstKeyValues)
+            if bAutoCommit:
+                self._conn.commit()
+        except:
+            print(traceback.print_exc())
         return
