@@ -86,7 +86,7 @@ def parseDetails(sHtml):
     soup = BeautifulSoup(sHtml, 'lxml')
     #extract section 1 details- basic property info
     dataCollect = []
-    table = soup.find_all("table", {"class":"d48m17"})
+    table = soup.find_all("table", {"class":"d82m7"})
     for tr in table[0].findAll("tr"):
         for td in tr.findAll("td"):
             temp = td.find(text=True)

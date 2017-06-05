@@ -10,8 +10,8 @@ import datetime
 import csv
 import DBMSAccess
 import XmlConfigReader
-import NewPropertyDetailPageScrapper as PropScrap
-
+import AllPropDetailPageScrapper as PropScrap
+import traceback
 
 def writeToCSV(ary):
     dictColumns = {"MLSNum": "ML#: ", "Status": "Status: ", "ListPrice": "List Price: ", "Address": "Address: ",
@@ -134,34 +134,29 @@ if __name__ == "__main__":
         elemSold.click()
     #now set date range
     datEnd= datetime.date.today()
-    datStart=datEnd + datetime.timedelta(days = -10)
+    datStart=datEnd + datetime.timedelta(days = -5)
     strDateRange = datStart.strftime("%m/%d/%Y") + "-" + datEnd.strftime("%m/%d/%Y")
     xpSoldDateRange = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content']/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[6]/td[2]/input[@id='FmFm1_Ctrl16_20916_Ctrl16_TB']"
     elemSoldDateRange = driver.find_element_by_xpath(xpSoldDateRange)
     elemSoldDateRange.clear()
     elemSoldDateRange.send_keys(strDateRange)
-
+    #now click to load the result pages
     elemResults.click()
-
-
-    '''
-    # now will click Matrix MLS
-        
-    # get full link text to know the number of properties
-    strNextLnkText = elemNextLnk.text
-    nRecCnt = int(strNextLnkText[13:].strip(')'))
-    # elemNextLnk = driver.find_element_by_partial_link_text(strPartialText)
-    elemNextLnk.click()
-    time.sleep(3)
     # now the new listing page is being loaded
-    pageSizeDdl_id = "m_DisplayCore_dpy2"  # the Next link
-    elemNextLnk = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.ID, pageSizeDdl_id)))
+    #below is the xpath to the total # of records
+    xpTotalRecCount = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSubHeader']/div[@id='m_pnlSubHeader']/div/table/tbody/tr/td[@class='css_innerLeft hideOnMap hideOnSearch hideNoResults']/span[@id='m_lblPagingSummary']/b[3]"
+    elemRecCnt = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, xpTotalRecCount)))
+    try:
+        nRecCnt = int(elemRecCnt.text)
+    except:
+        #TODO: some work to do when the number of records returned >5000
+        print('exception!')
+
     # now click the first listing in the list
-    xpathFirstMLS = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[3]/div[@id='m_upDisplay']/div[@id='m_pnlDisplayTab']/div[@id='m_divContent']/div[@id='m_pnlDisplay']/table[@class='displayGrid nonresponsive ajax_display d58m_show']/tbody/tr[@id='wrapperTable'][1]/td[@class='d58m6']/span[@class='d58m1']/a"
+    xpathFirstMLS = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[3]/div[@id='m_upDisplay']/div[@id='m_pnlDisplayTab']/div[@id='m_divContent']/div[@id='m_pnlDisplay']/table[@class='displayGrid nonresponsive ajax_display d1m_show']/tbody/tr[@id='wrapperTable'][1]/td[@class='d1m5']/span[@class='d1m1']/a"
     elemFirstMLS = driver.find_element_by_xpath(xpathFirstMLS)
     sMLS = elemFirstMLS.text
     elemFirstMLS.click()
-
     # wait for the details page to load
     # xPathMLS = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[3]/div[@id='m_upDisplay']/div[@id='m_pnlDisplayTab']/div[@id='m_divContent']/div[@id='m_pnlDisplay']/div[@class='multiLineDisplay ajax_display d3m_show nonresponsive']/table/tbody/tr/td/table[@id='wrapperTable']/tbody/tr/td[@class='d3m1']/span[@class='display']/table[@class='d3m2']/tbody/tr[2]/td[@class='d3m3']/span[@class='formula']/div[@class='multiLineDisplay ajax_display d48m_show nonresponsive']/table[@id='wrapperTable']/tbody/tr/td[@class='d48m1']/span[@class='display']/table[@class='d48m2']/tbody/tr[3]/td[@class='d48m5']/table[@class='d48m7']/tbody/tr[@class='d48m8']/td[@class='d48m16']/table[@class='d48m17']/tbody/tr[3]/td[@class='d48m19']/span[@class='wrapped-field']"
     xPathNext = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSubHeader']/div[@id='m_pnlSubHeader']/div/table/tbody/tr/td[@class='css_innerLeft hideOnMap hideOnSearch hideNoResults']/span[@id='m_lblPagingSummary']/span[@class='pagingLinks']/a[@id='m_DisplayCore_dpy3']"
@@ -169,18 +164,20 @@ if __name__ == "__main__":
     nExceptionCount = 0
     lstScrapResults = []
     nTotalCount = 0
+    #now iterate through all the deails pages
     while nTotalCount < nRecCnt - 1:
         try:
             elemNextLnk = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.ID, NextLinkId)))
+            #get the transaction type (rental, residental, etc)
+            xpTransType = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[3]/div[@id='m_upDisplay']/div[@id='m_pnlDisplayTab']/div[@id='m_divContent']/div[@id='m_pnlDisplay']/div[@class='multiLineDisplay ajax_display d3m_show nonresponsive']/table/tbody/tr/td/table[@id='wrapperTable']/tbody/tr/td[@class='d3m1']/span[@class='display']/table[@class='d3m2']/tbody/tr[2]/td[@class='d3m3']/span[@class='formula']/div[@class='multiLineDisplay ajax_display d82m_show nonresponsive']/table/tbody/tr/td/table[@id='wrapperTable']/tbody/tr/td[@class='d82m1']/span[@class='display']/table[@class='d82m2']/tbody/tr[3]/td[@class='d82m5']/table[@class='d82m7']/tbody/tr[@class='d82m8']/td[@class='d82m15']/table[@class='d82m16']/tbody/tr[@class='d82m24'][1]/td[@class='d82m25']/span[@class='field d82m26']"
+            elemTransType = driver.find_element_by_xpath(xpTransType)
+            strTransType = elemTransType.text
             pageSource = driver.page_source
-            lstScrapResults.append(PropScrap.parsePropertyDetails(pageSource))
+            dictPageResult = PropScrap.parseDetails(pageSource)
+            lstScrapResults.append(dictPageResult)
             elemNextLnk.click()
-            time.sleep(1)
-            nTotalCount += 1
+            nTotalCount +=1
         except:
+            traceback.print_exc()
             print('the next link is not found, it will try again')
             time.sleep(2)
-
-
-
-    '''
