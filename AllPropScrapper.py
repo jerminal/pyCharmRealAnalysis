@@ -173,6 +173,7 @@ if __name__ == "__main__":
             elemTransType = driver.find_element_by_xpath(xpTransType)
             strTransType = elemTransType.text
             pageSource = driver.page_source
+
             dictPageResult = PropScrap.parseDetails(pageSource)
             lstScrapResults.append(dictPageResult)
             elemNextLnk.click()

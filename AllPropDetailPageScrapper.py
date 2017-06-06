@@ -21,6 +21,7 @@ def parseSection(sectionContent, dictColumns):
 def parseDetails(sHtml):
     cfg = XmlConfigReader.Config("AllPropScrapper","DEV")
     #now start retrieve the page section names and column dictionary
+    dictSectionLookup = {}
     lstSectKeys = []
     lstSectDict = []
     #general section
@@ -29,6 +30,7 @@ def parseDetails(sHtml):
     dictGeneral = ast.literal_eval(strTemp.strip())
     lstSectKeys.append(strGeneral)
     lstSectDict.append(dictGeneral)
+    dictSectionLookup[strGeneral] = dictGeneral
 
     #ListingOffice section
     strListingOffice = cfg.getConfigValue("PageSections/Section[@name='{0}']/SectionString".format("ListingOffice"))
@@ -36,12 +38,15 @@ def parseDetails(sHtml):
     dictListingOffice = ast.literal_eval(strTemp.strip())
     lstSectKeys.append(strListingOffice)
     lstSectDict.append(dictListingOffice)
+    dictSectionLookup[strListingOffice] = dictListingOffice
+
     #SchoolSection
     strSchool = cfg.getConfigValue("PageSections/Section[@name='{0}']/SectionString".format("School"))
     strTemp = cfg.getConfigValue("PageSections/Section[@name='{0}']/ColumnDictionary".format("School"))
     dictSchool = ast.literal_eval(strTemp.strip())
     lstSectKeys.append(strSchool)
     lstSectDict.append(dictSchool)
+    dictSectionLookup[strSchool] = dictSchool
 
     #Description section
     strDescription = cfg.getConfigValue("PageSections/Section[@name='{0}']/SectionString".format("Description"))
@@ -49,6 +54,7 @@ def parseDetails(sHtml):
     dictDescription = ast.literal_eval(strTemp.strip())
     lstSectKeys.append(strDescription)
     lstSectDict.append(dictDescription)
+    dictSectionLookup[strDescription] = dictDescription
     #Rooms section
     '''
     strRooms = cfg.getConfigValue("PageSections/Section[@name='{0}']/SectionString".format("Rooms"))
@@ -63,6 +69,7 @@ def parseDetails(sHtml):
     dictAdditional = ast.literal_eval(strTemp.strip())
     lstSectKeys.append(strAdditional)
     lstSectDict.append(dictAdditional)
+    dictSectionLookup[strAdditional] = dictAdditional
 
     #Financial section
     strFinancial = cfg.getConfigValue("PageSections/Section[@name='{0}']/SectionString".format("Financial"))
@@ -70,22 +77,65 @@ def parseDetails(sHtml):
     dictFinancial = ast.literal_eval(strTemp.strip())
     lstSectKeys.append(strFinancial)
     lstSectDict.append(dictFinancial)
+    dictSectionLookup[strFinancial] = dictFinancial
+
     # Pending section
     strPending = cfg.getConfigValue("PageSections/Section[@name='{0}']/SectionString".format("Pending"))
     strTemp = cfg.getConfigValue("PageSections/Section[@name='{0}']/ColumnDictionary".format("Pending"))
     dictPending = ast.literal_eval(strTemp.strip())
     lstSectKeys.append(strPending)
     lstSectDict.append(dictPending)
+    dictSectionLookup[strPending] = dictPending
+
     # Sold section
     strSold = cfg.getConfigValue("PageSections/Section[@name='{0}']/SectionString".format("Sold"))
     strTemp = cfg.getConfigValue("PageSections/Section[@name='{0}']/ColumnDictionary".format("Sold"))
     dictSold = ast.literal_eval(strTemp.strip())
     lstSectKeys.append(strSold)
     lstSectDict.append(dictSold )
+    dictSectionLookup[strSold] = dictSold
 
     soup = BeautifulSoup(sHtml, 'lxml')
     #extract section 1 details- basic property info
     dataCollect = []
+    tables = soup.find_all("table")
+    for table in tables:
+        for tr in table.findAll('tr'):
+            for td in tr.findAll("td"):
+                temp = td.find(text=True)
+                if temp is None:
+                    dataCollect.append(None)
+                else:
+                    dataCollect.append(temp.replace(u'\xa0', u' '))
+    print (dataCollect)
+    # now, separate the long string into sections extracted above
+    dictSectionContents = {}
+    idxStart = 0
+    for n, item in enumerate(dictSectionLookup.keys()):
+        if n > 0:
+            try:
+                idxEnd = dataCollect.index(item)
+                dictSectionContents[prevItem] = dataCollect[idxStart:idxEnd]
+                idxStart = idxEnd
+                previtem = item
+            except:
+                # item not found, just move on
+                print("section {0} not found".format(item))
+        else:
+            prevItem = item
+    #now start extract details section by section
+    for sectionKey in dictSectionLookup.keys():
+        dictLookup = dictSectionLookup[sectionKey]
+        valueList = dictSectionContents[sectionKey]
+        for columnKey in dictLookup.keys():
+            try:
+                idx = valueList.index(columnKey)
+                columnVal = valueList[idx+1]
+                print("{0}'s value is {1}".format(columnKey, columnVal))
+            except:
+                print("not found")
+    dictResults = {}
+'''
     table = soup.find_all("table", {"class":"d82m7"})
     for tr in table[0].findAll("tr"):
         for td in tr.findAll("td"):
@@ -105,19 +155,13 @@ def parseDetails(sHtml):
                 else:
                     dataCollect.append(temp.replace(u'\xa0', u' '))
     print(dataCollect)
-    #now, separate the long string into sections extracted above
-    sections = []
-    idxStart = 0
-    for n, item in enumerate(lstSectKeys):
-        if n>0:
-            idxEnd = dataCollect.index(item)
-            sections.append(dataCollect[idxStart:idxEnd])
-            idxStart = idxEnd
-    print(sections)
-    dictResults = {}
+    
     for n, section in enumerate(sections):
         dictResults.update(parseSection(section, lstSectDict[n]))
 
+
+    
+    dictResutls = {}
     print(dictResults)
     # now do some clean up
     # BldgSqft: example: 2,705 / Appr Dist, needs to get rid of the part after /
@@ -184,10 +228,10 @@ def parseDetails(sHtml):
         dictResults['ListBrokerId'] = entry
         dictResults['ListBrokerName'] = entry
     return dictResults
-
+'''
 #this is unit test code for the module
 if __name__ == "__main__":
-    fileName = r'c:/temp/AllPropSold_0.html'
+    fileName = r'testData/sfh.html'
     s = open(fileName, 'r').read()
     result = parseDetails(s)
     print(result)

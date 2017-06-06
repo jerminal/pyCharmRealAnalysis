@@ -12,7 +12,7 @@ class Config:
         self._Inst = Inst
     def getConfigValue(self, partialPath):
         xpath = "//data/Application[@name='{0}']/{1}/{2}/text()".format(self._App, self._Inst, partialPath)
-        print(xpath)
+        #print(xpath)
         #val = self._doc.xpath("//data/Application[@name='{0}']/{1}/{2}/text()".format(self._App, self._Inst, partialPath))
         #print(val)
         #xpath = "//Application[@name='{0}']/{1}/{2}/text()".format(self._App, self._Inst, partialPath)
