@@ -1,0 +1,2551 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head><title>
+	Matrix
+</title><link href="/Matrix/css/matrix?v=BSWXsNvx8HLuNCGANpcfmHT6gZZIa7MFgIeUHkWpub41" rel="stylesheet"/>
+<link href="/Matrix/autocss/!/results_css?v=6Aj0OF5ygX9PJjR14Ct5KMPtG9OQGgj22foBFMXbPok1" rel="stylesheet"/>
+<link href="/Matrix/css/custom?v=r7P4znzOqyepIsqbMoN3SF8X0nk6HaeadgUz7cphqLY1" rel="stylesheet"/>
+
+	<script type="text/javascript" src='/Matrix/Results.min.js?V=7FGC'></script>
+	<script type="text/javascript" src='/Matrix/buttonbar.min.js?V=7FGD'></script>   
+</head>
+<body>
+	<form method="post" action="/Matrix/Results.aspx?c=AAEAAAD*****AQAAAAAAAAARAQAAAFUAAAAGAgAAAAQ3ODgwBgMAAAABNgYEAAAAATkKBgUAAAABMwYGAAAAATMNAgYHAAAAATENDQYIAAAAAzEwMAYJAAAAATAKBgoAAAABMA0uBgsAAAABMQ0JBgwAAAAFLVPCug8NAgs)" id="Form1" class="stickyform">
+<div class="aspNetHidden">
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="" />
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="" />
+<input type="hidden" name="__QA" id="__QA" value="" />
+<input type="hidden" name="hfCheckAllChangedTo" id="hfCheckAllChangedTo" value="" />
+<input type="hidden" name="hfChangedCheckboxes" id="hfChangedCheckboxes" value="" />
+<input type="hidden" name="hfCheckedListingsNotOnDisplay" id="hfCheckedListingsNotOnDisplay" value="" />
+<input type="hidden" name="__LASTFOCUS" id="__LASTFOCUS" value="" />
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="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" />
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['Form1'];
+if (!theForm) {
+    theForm = document.Form1;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="/Matrix/WebResource.axd?d=1dI2WAiIGyEDTv817IzwgJKOuIek81_xHb4CAxmHwY1N3d8cucHA3Mtsy-M1&amp;t=636064933291802409" type="text/javascript"></script>
+
+<script type="text/javascript" src="/Matrix/Scripts/jquery-1.11.3.min.js?V=7FGC"></script>
+<script type="text/javascript" src="/Matrix/Scripts/bootstrap.min.js?V=7FGC"></script>
+<script type="text/javascript" src="/Matrix/Scripts/jquery.touchSwipe.min.js?V=7FGC"></script>
+
+<script src="/Matrix/3rdparty/jquery.Cookie.min.js?V=7FGD" type="text/javascript"></script>
+<script src="/Matrix/Controls/GeocodeAddress.min.js?V=7FGD" type="text/javascript"></script>
+<script src="/Matrix/Functions.min.js?V=7FGE" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+ResultsJs.asyncPostUpdate('');
+//]]>
+</script>
+
+<script src="/Matrix/Controls/DisplayCore.min.js?V=7FGD" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+Dpy.addStyleSheet('\/Matrix\/Public\/Template\/Css.ashx?t=3&v=25');
+Dpy.addStyleSheet('\/Matrix\/Public\/Template\/Css.ashx?t=82&v=57');
+//]]>
+</script>
+
+<script src="/Matrix/Components/MatrixExpression/ImageViewer.min.js?V=7FGD" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+var ImageViewerML = {th:'Thumbnails',closeth:'Close Thumbnails',lb:'Larger View',play:'Slideshow',pause:'Stop',print:'Open All'};
+Dpy.addStyleSheet('\/Matrix\/Public\/Template\/Css.ashx?t=49&v=15');
+//]]>
+</script>
+
+<script src="/Matrix/3rdparty/jquery.Cookie.min.js?V=7FGD" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+Dpy.addStyleSheet('\/Matrix\/Public\/Template\/Css.ashx?t=98&v=17');
+var displayButtons;
+Dpy.setWhyCantSort('m_DisplayCore',function(  ){ return "Sort limit exceeded. Your search finds more than 5000 records, too many to sort."; });
+var DpyCB = (new DisplayCheckBoxSetClass({ HFPrefix:'',CBPrefix:'CHB_',SingleSelect:false}).initialise(5000,0,1,0));
+DpyCB.addListener(ResultsJs.updateSubHeadCheckControls);
+DpyCB.addListener(ResultsJs.updateButtonBarCheckedCount);
+DpyCB.addListener(DpyHelp.updateCheckAll('m_cbxBottomCheckAll'));
+//]]>
+</script>
+
+<script src="/Matrix/Controls/Header/header.min.js?V=7FGD" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+var SpeedBarJsVars={ m_strSpeedBar:'ctl01_m_ucSpeedBar' };
+//]]>
+</script>
+
+<script src="/Matrix/Controls/GridSaveLinks.min.js?V=7FGD" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+ResultsPageTabs.initialize('m_ucResultsPageTabs_m_hfState');
+//]]>
+</script>
+
+<script src="/Matrix/MLClientControls.min.js?V=7FGE" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+MLClientLabel.registerOptions('m_lblMapSummary',{Default:function( extra ){ return "<b>" + ( extra.visiblecount != null ? extra.visiblecount : '' ) + "</b> of <b>" + ( extra.count != null ? extra.count : '' ) + "</b>"; }},'Default');
+MLClientLabel.registerOptions('m_lblCheckedCount',{Default:function( extra ){ return "Checked <strong>" + ( extra.checkeditems != null ? extra.checkeditems : '' ) + "</strong>"; }},'Default');
+//]]>
+</script>
+
+<script src="/Matrix/DragDropTable.min.js?V=7FGD" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+window.ContactSelector = window.ContactSelector || {}; window.ContactSelector["m_ucContacts"] = {active:false, isSelf:false, isReverseProspectable:false, selectionChanged:true, ddlClientID: 'm_ucContacts_m_ddlContacts'};var CartObj= new CartClass('m_ucCartControl','m_ucCartControl_m_ddlCarts',250,0,null,false,0,{'G9':'0','C1758396':'115','C1753291':'0'},{'G9':'Cross Property','C1758396':'Yunjia Chen','C1753291':'Ayi Xu'},{AlreadyViewingThisCart:function(  ){ return "Already viewing this cart."; },CheckAtLeast1:function(  ){ return "You must check at least 1 item."; },TooManyCheckedCart:function( extra ){ return "You have too many items checked for this action (max = " + ( extra.maxitemschecked != null ? extra.maxitemschecked : '' ) + ", remaining = " + ( extra.availablecartsize != null ? extra.availablecartsize : '' ) + ")."; }} );
+//]]>
+</script>
+
+<script src="/Matrix/checkboxset.min.js?V=7FGD" type="text/javascript"></script>
+<script src="/Matrix/3rdparty/jqModal.min.js?V=7FGD" type="text/javascript"></script>
+<script src="/Matrix/buttonbar.min.js?V=7FGD" type="text/javascript"></script>
+<script src="/Matrix/Controls/addeditcontact.min.js?V=7FGD" type="text/javascript"></script>
+<script src="/Matrix/MatrixExpression.min.js?V=7FGD" type="text/javascript"></script>
+<script src="/Matrix/Controls/SalutationPicker.min.js?V=7FGD" type="text/javascript"></script><style>.stickywrapper, FORM.stickyform{margin-bottom:-62px;} .stickypush{height:62px;}</style>
+<script src="/Matrix/ScriptResource.axd?d=MK_CNFB8AfP8fja50jn_YmKD_m_--bwYMedKpHBB2Lkpcyk4TTa8Fp0ClIxcbhzZwq8zUN9vLlKD7jUZ-hqv2qQtAH3W7Y68ZzOK8Jie3gabR3jpdd3l1oDm1ZudayMVdCK18xt4ne9f_3qP0&amp;t=4794f07b" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax client-side framework failed to load.');
+//]]>
+</script>
+
+<script src="/Matrix/ScriptResource.axd?d=Qk720A2ECgT01LSrENp555q2HfSPQbnE1tLfNfDZUZVqzWWSrUDhrHZ_Qjbl9NxglEjhVU3unYaaob1VIESr5rhXeUCPGTHUByKUbs3StTkxrc8UONTs3Wh0nnQ1WjUj_aGsAYeZOURPcB-4h_7EEUMspXE1&amp;t=4794f07b" type="text/javascript"></script>
+<div class="aspNetHidden">
+
+	<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="FC82AFCD" />
+	<input type="hidden" name="__VIEWSTATEENCRYPTED" id="__VIEWSTATEENCRYPTED" value="" />
+</div><script type="text/javascript">
+//<![CDATA[
+Sys.WebForms.PageRequestManager._initialize('ScriptManager', 'Form1', ['fctl01$m_ucSpeedBar$m_upSB','','tctl01$m_ucSpeedBar$m_upSBextra','','tctl01$m_ucSpeedBar$m_ucrs$m_upMain','','fm_upDivPopups','','fm_upHeader','','tm_ucTitle$m_ucMarketWatch$m_upContent','','fm_upSubHeader','','fm_upSearch','','fm_upDisplayCore','','fm_upDisplay','','tm_ucDragDropTable$m_upAddColumn','','fm_upMap','','fm_upDisplayButtons','','tm_upPaging','','tm_ucContacts$m_upMain','','fm_ucCartControl$m_upCarts','','tm_ucCartControl$m_ucAddEditContact$ctl00','','tm_ucCartControl$m_ucAddEditContact$m_upCustomCategories','','tm_ucCartControl$m_ucAddEditContact$m_upContactFields','','fm_upResultsInfo',''], ['ctl01$m_ucSpeedBar$m_lnkGo','','m_ucDragDropTable$m_lbAddColumn','','m_ucCartControl$m_ddlCarts','','m_ucCartControl$m_lbAddTo','','m_ucCartControl$m_lbRemove','','m_ucCartControl$m_ucAddEditContact$m_ucPostBackTarget',''], ['m_lbEmail','','m_lbPrint','','m_lbCMA','','m_lbExport','','m_lbDrivingDirections','','m_btnStats','','m_lbOldStats','','m_lbNewStats','','m_lbSaveAsSavedSearch','','m_lbSaveAsAutoEmail','','m_lbSaveAsSpeedbarMacro','','m_cbbActionMenu','','m_cbbRefineMenu','','m_cbbSaveAsMenu',''], 90, '');
+//]]>
+</script>
+<div class="stickywrapper">
+<div class="topHtmlContainer"><style>
+.nav li {display:inline;}
+</style>
+<head>
+<style>
+a:link {
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline; color: red;
+}
+
+</style>
+
+</head>
+<div id="annexMenu" style="position: absolute ; left: 560px; color:#fff;">
+<div class="nav">
+        <ul>
+                <li><b><a href="http://members.har.com/mopx/" target="_BLANK"><font color="white">HAR Homepage</font></a> | </b></li>
+                <li><b><a href="http://www.har.com/edu" target="_BLANK"><font color="white">Education</font></a> | </b></li>
+                <li><b><a href="http://www.harconnect.com" target="_BLANK"><font color="white">HAR Connect</font></a> | </b></li>
+                <li><b><a href="https://mavtec.typeform.com/to/qSwW3t" target="_BLANK"><font color="white">Report Bug</font></a> | </b></li>
+               <li><b><a href="http://matrix.harmls.com/Matrix/special/thirdpartyformpost.aspx?n=LiveChat" target="_BLANK"><font color="white">CoreLogic Live Chat</font></a></b></li>
+        </ul>
+</div>
+</div></div>
+
+
+<div id="ctl01_m_pnlTopMenu" class="TopMenuDiv">
+	
+	<div class="TopMenuInner">
+	<div class="TopMenuInnermost">
+		<table class="TopMenuTable" cellspacing="0" cellpadding="0" border="0">
+			<tr>
+				<td class="TopMenuLeft" style="width: 1px"><div style="width:125px;">
+     <div style="margin-left:42px; width:72px;"><a href="http://members.har.com/mopx/?source=beta" target="_blank"><div style="width:72px; height: 66px;"></div></a></div>
+</div>
+</td>
+				<td id="ctl01_m_tdMenu" valign="bottom" align="left">
+					<ul class="sf-menu">
+						<li class=''>
+								<a href="/Matrix/Home"><span>Home</span></a>
+								
+				              </li><li class=''>
+								<a href="/Matrix/MyMatrix"><span>My Matrix</span></a>
+								<ul>
+										<li class="">
+											<a href="/Matrix/MyMatrix/Summary">
+												<img src="/Matrix/images/icons/page.png" class="icon" alt=""><img class="sep" src="images/header/divider_h.png" />
+												<span>Summary</span>
+											</a>
+											
+										</li>
+									
+										<li class="">
+											<a href="/Matrix/MyMatrix/Contacts">
+												<img src="/Matrix/images/icons/contact.png" class="icon" alt=""><img class="sep" src="images/header/divider_h.png" />
+												<span>Contacts</span>
+											</a>
+											
+										</li>
+									
+										<li class="">
+											<a href="/Matrix/MyMatrix/MyListings">
+												<img src="/Matrix/images/icons/MyListings.png" class="icon" alt=""><img class="sep" src="images/header/divider_h.png" />
+												<span>My Listings</span>
+											</a>
+											
+										</li>
+									
+										<li class="">
+											<a href="/Matrix/MyMatrix/MyInformation">
+												<img src="/Matrix/images/icons/details.png" class="icon" alt=""><img class="sep" src="images/header/divider_h.png" />
+												<span>My Information</span>
+											</a>
+											
+										</li>
+									
+										<li class="">
+											<a href="/Matrix/MyMatrix/MyMatrixCMAs">
+												<img src="/Matrix/images/icons/cma.png" class="icon" alt=""><img class="sep" src="images/header/divider_h.png" />
+												<span>My Matrix CMAs</span>
+											</a>
+											
+										</li>
+									
+										<li class="noicon">
+											<a href="http://matrix.harmls.com/Matrix/special/thirdpartyformpost.aspx?n=CloudCMAHomePage" target="_blank">
+												<img src="/Matrix/images/c.gif" class="icon" alt=""><img class="sep" src="images/header/divider_h.png" />
+												<span>Cloud CMA</span>
+											</a>
+											
+										</li>
+									
+										<li class="">
+											<a href="/Matrix/MyMatrix/SentEmail">
+												<img src="/Matrix/images/icons/email.png" class="icon" alt=""><img class="sep" src="images/header/divider_h.png" />
+												<span>Sent Email</span>
+											</a>
+											
+										</li>
+									
+										<li class="">
+											<a href="/Matrix/MyMatrix/Settings">
+												<img src="/Matrix/images/icons/Settings.png" class="icon" alt=""><img class="sep" src="images/header/divider_h.png" />
+												<span>Settings</span>
+											</a>
+											
+										</li>
+									
+										<li class="">
+											<a href="/Matrix/MyMatrix/AutoEmails">
+												<img src="/Matrix/images/icons/autoemail.png" class="icon" alt=""><img class="sep" src="images/header/divider_h.png" />
+												<span>Auto-Emails</span>
+											</a>
+											
+										</li>
+									
+										<li class="">
+											<a href="/Matrix/MyMatrix/SavedSearches">
+												<img src="/Matrix/images/icons/savedsearch.png" class="icon" alt=""><img class="sep" src="images/header/divider_h.png" />
+												<span>Saved Searches</span>
+											</a>
+											
+										</li>
+									
+										<li class="noicon">
+											<a href="http://matrix.harmls.com/Matrix/special/thirdpartyformpost.aspx?n=TDeskForm" target="_blank">
+												<img src="/Matrix/images/c.gif" class="icon" alt=""><img class="sep" src="images/header/divider_h.png" />
+												<span>Transaction Desk</span>
+											</a>
+											
+										</li>
+									</ul>
+				              </li><li class=''>
+								<a href="http://matrix.harmls.com/Matrix/special/thirdpartyformpost.aspx?n=TDeskForm" target="_blank"><span class="icon extLink"></span><span>Transactions</span></a>
+								<ul>
+										<li class="noicon">
+											<a href="http://matrix.harmls.com/Matrix/special/thirdpartyformpost.aspx?n=TDeskForm" target="_blank">
+												<img src="/Matrix/images/c.gif" class="icon" alt=""><img class="sep" src="images/header/divider_h.png" />
+												<span>Transaction Desk</span>
+											</a>
+											
+										</li>
+									
+										<li class="noicon">
+											<a href="http://www.dotloop.com/har" target="_blank">
+												<img src="/Matrix/images/c.gif" class="icon" alt=""><img class="sep" src="images/header/divider_h.png" />
+												<span>DotLoop</span>
+											</a>
+											
+										</li>
+									</ul>
+				              </li><li class=''>
+								<a href="/Matrix/AddEdit"><span>Add/Edit</span></a>
+								<ul>
+										<li class="noicon">
+											<a href="/Matrix/AddEdit/MatrixAddEdit">
+												<img src="/Matrix/images/c.gif" class="icon" alt=""><img class="sep" src="images/header/divider_h.png" />
+												<span>Matrix Add/Edit</span>
+											</a>
+											
+										</li>
+									
+										<li class="noicon">
+											<a href="http://matrix.harmls.com/Matrix/special/thirdpartyformpost.aspx?n=HARTempo4" target="_blank">
+												<img src="/Matrix/images/c.gif" class="icon" alt=""><img class="sep" src="images/header/divider_h.png" />
+												<span>Add/Edit</span>
+											</a>
+											
+										</li>
+									
+										<li class="noicon">
+											<a href="http://matrix.harmls.com/Matrix/special/thirdpartyformpost.aspx?n=HARTempo4_EditMedia" target="_blank">
+												<img src="/Matrix/images/c.gif" class="icon" alt=""><img class="sep" src="images/header/divider_h.png" />
+												<span>Add/Edit Media</span>
+											</a>
+											
+										</li>
+									
+										<li class="noicon">
+											<a href="http://matrix.harmls.com/Matrix/special/thirdpartyformpost.aspx?n=HARTempo4_OH" target="_blank">
+												<img src="/Matrix/images/c.gif" class="icon" alt=""><img class="sep" src="images/header/divider_h.png" />
+												<span>Add/Edit Open House</span>
+											</a>
+											
+										</li>
+									</ul>
+				              </li><li class='selected'>
+								<a href="/Matrix/Search"><span>Search</span></a>
+								<ul>
+										<li class="">
+											<a >
+												<img src="/Matrix/Images/TableIcons/listing_residential.gif" class="icon" alt=""><img class="sep" src="images/header/divider_h.png" />
+												<span>Single-Family</span>
+											</a>
+											<ul>
+													<li>
+														<a href="/Matrix/Search/SingleFamily/Quick">
+															<span style="display:inline-block;width:10px;"></span>
+															<span>Quick</span>
+														</a>
+													</li>
+												
+													<li>
+														<a href="/Matrix/Search/SingleFamily/Classic">
+															<span style="display:inline-block;width:10px;"></span>
+															<span>Classic</span>
+														</a>
+													</li>
+												</ul>
+										</li>
+									
+										<li class="noicon">
+											<a href="/Matrix/Search/SingleFamily/Classic">
+												<img src="/Matrix/images/c.gif" class="icon" alt=""><img class="sep" src="images/header/divider_h.png" />
+												<span>Classic</span>
+											</a>
+											
+										</li>
+									
+										<li class="">
+											<a >
+												<img src="/Matrix/Images/TableIcons/listing_condoCoopVilla.gif" class="icon" alt=""><img class="sep" src="images/header/divider_h.png" />
+												<span>Townhouse/Condo</span>
+											</a>
+											<ul>
+													<li>
+														<a href="/Matrix/Search/TownhouseCondo/Quick">
+															<span style="display:inline-block;width:10px;"></span>
+															<span>Quick</span>
+														</a>
+													</li>
+												
+													<li>
+														<a href="/Matrix/Search/TownhouseCondo/Classic">
+															<span style="display:inline-block;width:10px;"></span>
+															<span>Classic</span>
+														</a>
+													</li>
+												</ul>
+										</li>
+									
+										<li class="">
+											<a >
+												<img src="/Matrix/Images/TableIcons/listing_lotLand.gif" class="icon" alt=""><img class="sep" src="images/header/divider_h.png" />
+												<span>Lots</span>
+											</a>
+											<ul>
+													<li>
+														<a href="/Matrix/Search/Lots/Quick">
+															<span style="display:inline-block;width:10px;"></span>
+															<span>Quick</span>
+														</a>
+													</li>
+												
+													<li>
+														<a href="/Matrix/Search/Lots/Classic">
+															<span style="display:inline-block;width:10px;"></span>
+															<span>Classic</span>
+														</a>
+													</li>
+												</ul>
+										</li>
+									
+										<li class="noicon">
+											<a href="/Matrix/Search/Lots/Classic">
+												<img src="/Matrix/images/c.gif" class="icon" alt=""><img class="sep" src="images/header/divider_h.png" />
+												<span>Classic</span>
+											</a>
+											
+										</li>
+									
+										<li class="">
+											<a >
+												<img src="/Matrix/Images/TableIcons/listing_multifamily.gif" class="icon" alt=""><img class="sep" src="images/header/divider_h.png" />
+												<span>Multi-Family</span>
+											</a>
+											<ul>
+													<li>
+														<a href="/Matrix/Search/MultiFamily/Quick">
+															<span style="display:inline-block;width:10px;"></span>
+															<span>Quick</span>
+														</a>
+													</li>
+												
+													<li>
+														<a href="/Matrix/Search/MultiFamily/Classic">
+															<span style="display:inline-block;width:10px;"></span>
+															<span>Classic</span>
+														</a>
+													</li>
+												</ul>
+										</li>
+									
+										<li class="">
+											<a >
+												<img src="/Matrix/Images/TableIcons/listing_acreageFarms.gif" class="icon" alt=""><img class="sep" src="images/header/divider_h.png" />
+												<span>Country Homes/Acreage</span>
+											</a>
+											<ul>
+													<li>
+														<a href="/Matrix/Search/CountryHomesAcreage/Quick">
+															<span style="display:inline-block;width:10px;"></span>
+															<span>Quick</span>
+														</a>
+													</li>
+												
+													<li>
+														<a href="/Matrix/Search/CountryHomesAcreage/Classic">
+															<span style="display:inline-block;width:10px;"></span>
+															<span>Classic</span>
+														</a>
+													</li>
+												</ul>
+										</li>
+									
+										<li class="">
+											<a >
+												<img src="/Matrix/Images/TableIcons/listing_condoCoopVilla.gif" class="icon" alt=""><img class="sep" src="images/header/divider_h.png" />
+												<span>Mid/Hi-Rise Condo</span>
+											</a>
+											<ul>
+													<li>
+														<a href="/Matrix/Search/MidHiRiseCondo/Quick">
+															<span style="display:inline-block;width:10px;"></span>
+															<span>Quick</span>
+														</a>
+													</li>
+												
+													<li>
+														<a href="/Matrix/Search/MidHiRiseCondo/Classic">
+															<span style="display:inline-block;width:10px;"></span>
+															<span>Classic</span>
+														</a>
+													</li>
+												</ul>
+										</li>
+									
+										<li class="">
+											<a >
+												<img src="/Matrix/Images/TableIcons/listing_residentialLease.gif" class="icon" alt=""><img class="sep" src="images/header/divider_h.png" />
+												<span>Rental</span>
+											</a>
+											<ul>
+													<li>
+														<a href="/Matrix/Search/Rental/Quick">
+															<span style="display:inline-block;width:10px;"></span>
+															<span>Quick</span>
+														</a>
+													</li>
+												
+													<li>
+														<a href="/Matrix/Search/Rental/Classic">
+															<span style="display:inline-block;width:10px;"></span>
+															<span>Classic</span>
+														</a>
+													</li>
+												</ul>
+										</li>
+									
+										<li class="noicon">
+											<a href="/Matrix/Search/Rental/Classic">
+												<img src="/Matrix/images/c.gif" class="icon" alt=""><img class="sep" src="images/header/divider_h.png" />
+												<span>Classic</span>
+											</a>
+											
+										</li>
+									
+										<li class="">
+											<a >
+												<img src="/Matrix/Images/TableIcons/listing_crossProperty.gif" class="icon" alt=""><img class="sep" src="images/header/divider_h.png" />
+												<span>All Properties</span>
+											</a>
+											<ul>
+													<li>
+														<a href="/Matrix/Search/AllProperties/Quick">
+															<span style="display:inline-block;width:10px;"></span>
+															<span>Quick</span>
+														</a>
+													</li>
+												
+													<li>
+														<a href="/Matrix/Search/AllProperties/Classic">
+															<span style="display:inline-block;width:10px;"></span>
+															<span>Classic</span>
+														</a>
+													</li>
+												
+													<li>
+														<a href="/Matrix/Search/AllProperties/CreateYourOwn">
+															<span style="display:inline-block;width:10px;"></span>
+															<span>Create Your Own</span>
+														</a>
+													</li>
+												</ul>
+										</li>
+									
+										<li class="noicon">
+											<a href="/Matrix/Search/AllProperties/Classic">
+												<img src="/Matrix/images/c.gif" class="icon" alt=""><img class="sep" src="images/header/divider_h.png" />
+												<span>Classic</span>
+											</a>
+											
+										</li>
+									
+										<li class="">
+											<a href="/Matrix/Search/Agent">
+												<img src="/Matrix/Images/TableIcons/roster_agent.gif" class="icon" alt=""><img class="sep" src="images/header/divider_h.png" />
+												<span>Agent</span>
+											</a>
+											
+										</li>
+									
+										<li class="">
+											<a href="/Matrix/Search/Office">
+												<img src="/Matrix/Images/TableIcons/roster_office.gif" class="icon" alt=""><img class="sep" src="images/header/divider_h.png" />
+												<span>Office</span>
+											</a>
+											
+										</li>
+									
+										<li class="noicon">
+											<a href="/Matrix/Search/More">
+												<img src="/Matrix/images/c.gif" class="icon" alt=""><img class="sep" src="images/header/divider_h.png" />
+												<span>More...</span>
+											</a>
+											
+										</li>
+									</ul>
+				              </li><li class=''>
+								<a href="/Matrix/special/thirdpartyformpost.aspx?n=REALISTA" target="_blank"><span class="icon extLink"></span><span>Public Records</span></a>
+								<ul>
+										<li class="noicon">
+											<a href="/Matrix/special/thirdpartyformpost.aspx?n=REALISTA" target="_blank">
+												<img src="/Matrix/images/c.gif" class="icon" alt=""><img class="sep" src="images/header/divider_h.png" />
+												<span>Realist Tax</span>
+											</a>
+											
+										</li>
+									
+										<li class="noicon">
+											<a href="http://content.har.com/mls/pdf/MUD%20Bond%20Information.pdf" target="_blank">
+												<img src="/Matrix/images/c.gif" class="icon" alt=""><img class="sep" src="images/header/divider_h.png" />
+												<span>MUD Bond Information</span>
+											</a>
+											
+										</li>
+									</ul>
+				              </li><li class=''>
+								<a href="/Matrix/Stats"><span>Stats</span></a>
+								
+				              </li><li class=''>
+								<a href="/Matrix/MarketReports"><span>Market Reports</span></a>
+								
+				              </li><li class=''>
+								<a href="/Matrix/Finance"><span>Finance</span></a>
+								<ul>
+										<li class="noicon">
+											<a href="/Matrix/Finance/Summary">
+												<img src="/Matrix/images/c.gif" class="icon" alt=""><img class="sep" src="images/header/divider_h.png" />
+												<span>Summary</span>
+											</a>
+											
+										</li>
+									
+										<li class="noicon">
+											<a href="/Matrix/Finance/Calculators">
+												<img src="/Matrix/images/c.gif" class="icon" alt=""><img class="sep" src="images/header/divider_h.png" />
+												<span>Calculators</span>
+											</a>
+											
+										</li>
+									
+										<li class="noicon">
+											<a href="/Matrix/Finance/SellersEstimatedNetProceeds">
+												<img src="/Matrix/images/c.gif" class="icon" alt=""><img class="sep" src="images/header/divider_h.png" />
+												<span>Seller's Estimated Net Proceeds</span>
+											</a>
+											
+										</li>
+									
+										<li class="noicon">
+											<a href="/Matrix/Finance/BuyersClosingCosts">
+												<img src="/Matrix/images/c.gif" class="icon" alt=""><img class="sep" src="images/header/divider_h.png" />
+												<span>Buyer's Closing Costs</span>
+											</a>
+											
+										</li>
+									</ul>
+				              </li><li class=''>
+								<a href="/Matrix/Links"><span>Links</span></a>
+								
+				              </li><li class=''>
+								<a href="/Matrix/Help"><span>Help</span></a>
+								
+				              </li>
+					</ul>
+				</td>
+	
+				<td valign="bottom" align="right" style="padding-bottom:3px;">
+					<table border="0" cellpadding="0" cellspacing="0">
+						<tr>
+							<td style="padding-left:10px;"></td>
+							<td></td>
+							<td>
+<span class="topMenuInfoText" style="white-space:nowrap;">
+	<span id="ctl01_ctl01_m_lblHeadingNoTeam">Hello, Xiaowei</span>
+	
+	<span id="ctl01_ctl01_m_lblLogout">
+		&middot;
+		<a href="/Matrix/Logout.aspx" class="topMenuInfoText">
+			Logout
+		</a>
+	</span>
+</span>
+
+</td>
+							<td></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	</div>
+	</div>
+
+</div>
+<div id="ctl01_ctl00_m_divConf" class="confirmationMessage"><span id="ctl01_ctl00_m_lblConf"></span></div>
+
+<div id="ctl01_m_ucSpeedBar_m_divSpeedBar" class="SB_outerDiv">
+	<div style="width:990px;">
+	<table style="border-collapse:collapse;height:28px;" border="0" cellpadding="0" cellspacing="0">
+	  <tr>
+		<td width="350px;"><div id="ctl01_m_ucSpeedBar_ctl00_m_div" class="alertContainer tier4">
+    
+    
+</div>
+</td>
+		<td style="width:300px;">
+			<div id="ctl01_m_ucSpeedBar_m_upSB">
+	
+					<table id="ctl01_m_ucSpeedBar_m_tblSpeedBox" align="center" border="0" cellpadding="0" cellspacing="0">
+		<tr>
+			<td class="SB_speedbox"><div class="left" style="display: block;"></div></td>
+			<td class="SB_speedbox"><div class="borders">
+							<a title="Click for Speed Bar search samples" id="ctl01_m_ucSpeedBar_m_lnkHelp" href="javascript:SpeedBarJs.showHelp(1952)" style="position:absolute; top:3px; right:0px;"><span class="linkIcon icon_help"></span></a>
+							</div>
+						</td>
+			<td class="SB_speedbox">
+							<div class="tier4">
+								<input name="ctl01$m_ucSpeedBar$m_tbSpeedBar" type="text" value="CP" id="ctl01_m_ucSpeedBar_m_tbSpeedBar" onkeydown="return SpeedBarJs.onKeyDown(event);" onfocus="SpeedBarJs.onFocus();" />
+								
+							</div>
+						</td>
+			<td class="SB_speedbox"><div class="borders">
+							<a title="Speed Bar Search" onclick="return SpeedBarJs.checkGo();" id="ctl01_m_ucSpeedBar_m_lnkGo" href="javascript:__doPostBack(&#39;ctl01$m_ucSpeedBar$m_lnkGo&#39;,&#39;&#39;)" style="position:absolute; top:3px; left:4px;"><span class="linkIcon icon_speedbar_search"></span></a>
+							</div>
+						</td>
+			<td class="SB_speedbox"><div class="right" style="display: block;"></div></td>
+		</tr>
+	</table>
+	
+				
+</div>
+		</td>
+		<td style="white-space:nowrap;width:250px;">
+			<div id="ctl01_m_ucSpeedBar_m_upSBextra">
+	
+					<table id="ctl01_m_ucSpeedBar_m_tblExtras" border="0" cellpadding="0" cellspacing="0" width="100%">
+		<tr>
+			<td>
+							<div id="ctl01_m_ucSpeedBar_m_pnlXtraCriteria" onmouseover="SpeedBarJs.showToolTip(true);" onmouseout="SpeedBarJs.showToolTip(false);">
+				
+								<div style="position:relative;top:14px;left:20px;display:none;">
+									<div class="ToolTip" style="position:absolute;"><div class="clause"><span class="fieldName"><span class="fieldName">Status</span></span> is 'Sold'</div><div class="clause"><span class="fieldName">Status Contractual Search Date</span> is 06/05/2017 to 12/07/2016</div><div class="clause"><span class="fieldName"><span class="fieldName">Property Type</span></span> is 'Rental'</div></div>
+								</div><label style="white-space:nowrap;float:left;">&nbsp;+&nbsp;<input id="ctl01_m_ucSpeedBar_m_cbXtraCriteria" type="checkbox" name="ctl01$m_ucSpeedBar$m_cbXtraCriteria" checked="checked" />&nbsp;other criteria</label>
+							
+			</div>
+						</td>
+			<td style="padding:2px;"></td>
+			<td>&nbsp;</td>
+		</tr>
+	</table>
+	
+				
+</div>
+		</td>
+		<td style="width:100px;">
+			<div id="ctl01_m_ucSpeedBar_m_ucrs_m_upMain">
+	
+		<table cellspacing="0" cellpadding="0">
+			<tr><td>
+				<div class="recentSearchesControl">
+					<a onclick="$(&#39;#ctl01_m_ucSpeedBar_m_ucrs_m_lbOpenDropDown SPAN.recentSearchesBox&#39;).addClass(&#39;ajaxLoading&#39;); return true;" id="ctl01_m_ucSpeedBar_m_ucrs_m_lbOpenDropDown" class="recentSearchesLink" href="javascript:__doPostBack(&#39;ctl01$m_ucSpeedBar$m_ucrs$m_lbOpenDropDown&#39;,&#39;&#39;)">
+						<span class="recentSearchesBox">
+							<span>Recent Searches</span>
+						</span>
+					</a>
+				</div>
+			</td></tr>
+			<tr><td>
+				<div class="recentSearchesPlaceholder">
+					
+				</div>
+			</td></tr>
+		</table>
+	
+</div>
+
+		</td>
+	  </tr>
+	</table>
+	</div>
+</div>
+
+
+
+<div class="tier3">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<div id="m_upDivPopups">
+	
+				<div id="m_divGridOptions" class="buttonPopup" style="display: none; z-index: 5001; font-size: 11px; width: 245px; padding: 0 0.5em;">
+					<div id="m_ucGridSaveLinks_m_phDisplayName" style="margin-top:0.2em;">
+		
+	<span id="m_ucGridSaveLinks_m_lbDisplayName">Display Name:</span>
+	<div style="padding: 2px 7px 2px 0px;">
+		<input name="m_ucGridSaveLinks$m_tbNewDisplayName" type="text" value="Agent Full" id="m_ucGridSaveLinks_m_tbNewDisplayName" style="width:100%;" />		
+	</div>
+
+	</div>
+<ul>
+	<li></li>
+	<li><a id="m_ucGridSaveLinks_m_lbSaveAs" href="javascript:__doPostBack(&#39;m_ucGridSaveLinks$m_lbSaveAs&#39;,&#39;&#39;)">Save As a Copy</a></li>
+	<li><a onclick="Dpy.removeMinorStyleSheets(&#39;3&#39;);" id="m_ucGridSaveLinks_m_lbRevert" href="javascript:__doPostBack(&#39;m_ucGridSaveLinks$m_lbRevert&#39;,&#39;&#39;)">Revert unsaved changes</a></li>
+	<li></li>
+</ul>
+
+
+
+				</div>
+				<div id="m_divSetDefaultOptions" class="buttonPopup resultsActive" style="display: none; z-index: 5001; font-size: 11px; width: 320px;">
+					<ul>
+						<li class="hideOnResults hideOnMap">
+							<a id="m_lbSetSearchDefaultCriteria" href="javascript:__doPostBack(&#39;m_lbSetSearchDefaultCriteria&#39;,&#39;&#39;)">Set currently selected search criteria as my starting default</a></li>
+						<li class="hideOnResults hideOnMap">
+							<a id="m_lbSetSearchResetCriteria" href="javascript:__doPostBack(&#39;m_lbSetSearchResetCriteria&#39;,&#39;&#39;)">Reset to the system Search defaults</a></li>
+						
+<li class='hideOnMap hideOnSearch'>
+	<a id="m_ucDisplayDefaultsLinks_m_lbSetDisplayDefaults" href="javascript:__doPostBack(&#39;m_ucDisplayDefaultsLinks$m_lbSetDisplayDefaults&#39;,&#39;&#39;)">Set current display, sort order and count per page as my Search starting default</a>
+</li>
+<li class='hideOnMap hideOnSearch'>
+	<a id="m_ucDisplayDefaultsLinks_m_lbClearDisplayDefaults" href="javascript:__doPostBack(&#39;m_ucDisplayDefaultsLinks$m_lbClearDisplayDefaults&#39;,&#39;&#39;)">Reset to the system Search defaults</a>
+</li>
+
+						<li class="hideOnSearch hideOnResults">
+							<a id="m_aSetDefaultLocation" onclick="javascript:ResultsJs.setDefaultLocation();" href="javascript:void(0);">Set this map view as my starting default</a></li>
+						<li class="hideOnSearch hideOnResults">
+							<a id="m_aClearDefaultLocation" onclick="javascript:ResultsJs.clearDefaultLocation();" href="javascript:void(0);">Restore system default map view</a></li>
+					</ul>
+				</div>
+			
+</div>
+		<table cellpadding="0" cellspacing="0" border="0" width="980">
+			<tr>
+				<td>
+					<div id="m_upHeader">
+	
+							<div style="width: 100%; max-width: 980px;">
+								<table cellspacing="0" cellpadding="0" border="0"  style="width: 100%; table-layout: fixed;">
+									<tr><td valign="top"><div id="m_pnlPageTitle" class="css_containerTitle" style="position: absolute; overflow: hidden; text-overflow: ellipsis; width: 700px;">
+		
+										
+
+<div id="m_ucTitle_m_pnlMarketWatchWidget">
+			
+	<div id="divMarketWatch" style="border: 1px solid #999; background-color: white; padding: 10px; width: 400px; position: relative; top:-20px; z-index: 600;margin-top:4px; display: none;">
+		<div id="m_ucTitle_m_ucMarketWatch_m_upContent">
+				
+		<div id="m_ucTitle_m_ucMarketWatch_m_ucHeader_m_pnlHeader" class="wgt_heading CursorMove">
+					
+	<table cellpadding="0" cellspacing="0" border="0" width="100%">
+		<tr valign="middle">
+			<td id="m_ucTitle_m_ucMarketWatch_m_ucHeader_m_tdTitle" class="css_innerLeft" onmousedown="return WidgetJs.beginDrag(event);" ontouchstart="return WidgetJs.beginDrag(event);">
+				<span id="m_ucTitle_m_ucMarketWatch_m_ucHeader_m_icon" class="icon icon_marketwatch">&nbsp;</span><span id="m_ucTitle_m_ucMarketWatch_m_ucHeader_m_title" class="title">Market Watch</span>
+			</td>
+					
+			<td align="right" width="1" style="padding-left:4px;">
+				<div id="m_ucTitle_m_ucMarketWatch_m_ucHeader_m_spnUpdateSpinner" style="display:none;">
+						
+						<span class="icon icon_spinner" >&nbsp;</span>
+					
+					</div> 
+			</td>
+			<td align="right" width="1" class="wgt_hdr_icon">
+				<a onclick="return WidgetJs.toggle(this);" id="m_ucTitle_m_ucMarketWatch_m_ucHeader_m_lnkToggle" class="wgt_collapse" href="javascript:__doPostBack(&#39;m_ucTitle$m_ucMarketWatch$m_ucHeader$m_lnkToggle&#39;,&#39;&#39;)"></a>
+			</td>
+			<td align="right" width="1" class="wgt_hdr_icon">
+				<a onclick="return WidgetJs.hide(this);" id="m_ucTitle_m_ucMarketWatch_m_ucHeader_m_lnkHide" class="wgt_hide" href="javascript:__doPostBack(&#39;m_ucTitle$m_ucMarketWatch$m_ucHeader$m_lnkHide&#39;,&#39;&#39;)"></a>
+			</td>
+		</tr>
+	</table>
+
+				</div>
+
+		<div id="m_ucTitle_m_ucMarketWatch_m_pnlContent" class="css_content wgt_content">
+					
+			
+					<table cellspacing="0" width="100%">
+						
+					<tr>
+						<td><a id="m_ucTitle_m_ucMarketWatch_m_lv_ctrl0_m_lnkWatch" href="javascript:__doPostBack(&#39;m_ucTitle$m_ucMarketWatch$m_lv$ctrl0$m_lnkWatch&#39;,&#39;&#39;)" style="white-space:nowrap; font-size:11px;">New Listing (404)</a></td>
+						<td width="50%"><div style="background-color:#008770;width:100%;height:12px;border:solid 1px #C0C0C0;"></div></td>
+					</tr>
+				
+					<tr>
+						<td><a id="m_ucTitle_m_ucMarketWatch_m_lv_ctrl1_m_lnkWatch" href="javascript:__doPostBack(&#39;m_ucTitle$m_ucMarketWatch$m_lv$ctrl1$m_lnkWatch&#39;,&#39;&#39;)" style="white-space:nowrap; font-size:11px;">Back On Market (85)</a></td>
+						<td width="50%"><div style="background-color:#AA0000;width:21%;height:12px;border:solid 1px #C0C0C0;"></div></td>
+					</tr>
+				
+					<tr>
+						<td><a id="m_ucTitle_m_ucMarketWatch_m_lv_ctrl2_m_lnkWatch" href="javascript:__doPostBack(&#39;m_ucTitle$m_ucMarketWatch$m_lv$ctrl2$m_lnkWatch&#39;,&#39;&#39;)" style="white-space:nowrap; font-size:11px;">Price Decrease (396)</a></td>
+						<td width="50%"><div style="background-color:#b36b6b;width:98%;height:12px;border:solid 1px #C0C0C0;"></div></td>
+					</tr>
+				
+					<tr>
+						<td><a id="m_ucTitle_m_ucMarketWatch_m_lv_ctrl3_m_lnkWatch" href="javascript:__doPostBack(&#39;m_ucTitle$m_ucMarketWatch$m_lv$ctrl3$m_lnkWatch&#39;,&#39;&#39;)" style="white-space:nowrap; font-size:11px;">Price Increase (58)</a></td>
+						<td width="50%"><div style="background-color:#71b36b;width:14%;height:12px;border:solid 1px #C0C0C0;"></div></td>
+					</tr>
+				
+					<tr>
+						<td><a id="m_ucTitle_m_ucMarketWatch_m_lv_ctrl4_m_lnkWatch" href="javascript:__doPostBack(&#39;m_ucTitle$m_ucMarketWatch$m_lv$ctrl4$m_lnkWatch&#39;,&#39;&#39;)" style="white-space:nowrap; font-size:11px;">Option Pending (288)</a></td>
+						<td width="50%"><div style="background-color:#EF811F;width:71%;height:12px;border:solid 1px #C0C0C0;"></div></td>
+					</tr>
+				
+					<tr>
+						<td><a id="m_ucTitle_m_ucMarketWatch_m_lv_ctrl5_m_lnkWatch" href="javascript:__doPostBack(&#39;m_ucTitle$m_ucMarketWatch$m_lv$ctrl5$m_lnkWatch&#39;,&#39;&#39;)" style="white-space:nowrap; font-size:11px;">Pending Continue to Show (74)</a></td>
+						<td width="50%"><div style="background-color:#EF811F;width:18%;height:12px;border:solid 1px #C0C0C0;"></div></td>
+					</tr>
+				
+					<tr>
+						<td><a id="m_ucTitle_m_ucMarketWatch_m_lv_ctrl6_m_lnkWatch" href="javascript:__doPostBack(&#39;m_ucTitle$m_ucMarketWatch$m_lv$ctrl6$m_lnkWatch&#39;,&#39;&#39;)" style="white-space:nowrap; font-size:11px;">Pending (331)</a></td>
+						<td width="50%"><div style="background-color:#EF811F;width:81%;height:12px;border:solid 1px #C0C0C0;"></div></td>
+					</tr>
+				
+					<tr>
+						<td><a id="m_ucTitle_m_ucMarketWatch_m_lv_ctrl7_m_lnkWatch" href="javascript:__doPostBack(&#39;m_ucTitle$m_ucMarketWatch$m_lv$ctrl7$m_lnkWatch&#39;,&#39;&#39;)" style="white-space:nowrap; font-size:11px;">Sold (317)</a></td>
+						<td width="50%"><div style="background-color:#73a4e5;width:78%;height:12px;border:solid 1px #C0C0C0;"></div></td>
+					</tr>
+				
+					<tr>
+						<td><a id="m_ucTitle_m_ucMarketWatch_m_lv_ctrl8_m_lnkWatch" href="javascript:__doPostBack(&#39;m_ucTitle$m_ucMarketWatch$m_lv$ctrl8$m_lnkWatch&#39;,&#39;&#39;)" style="white-space:nowrap; font-size:11px;">Withdrawn (48)</a></td>
+						<td width="50%"><div style="background-color:#36393D;width:11%;height:12px;border:solid 1px #C0C0C0;"></div></td>
+					</tr>
+				
+					<tr>
+						<td><a id="m_ucTitle_m_ucMarketWatch_m_lv_ctrl9_m_lnkWatch" href="javascript:__doPostBack(&#39;m_ucTitle$m_ucMarketWatch$m_lv$ctrl9$m_lnkWatch&#39;,&#39;&#39;)" style="white-space:nowrap; font-size:11px;">Expired (12)</a></td>
+						<td width="50%"><div style="background-color:#36393D;width:2%;height:12px;border:solid 1px #C0C0C0;"></div></td>
+					</tr>
+				
+					<tr>
+						<td><a id="m_ucTitle_m_ucMarketWatch_m_lv_ctrl10_m_lnkWatch" href="javascript:__doPostBack(&#39;m_ucTitle$m_ucMarketWatch$m_lv$ctrl10$m_lnkWatch&#39;,&#39;&#39;)" style="white-space:nowrap; font-size:11px;">Terminated (110)</a></td>
+						<td width="50%"><div style="background-color:#36393D;width:27%;height:12px;border:solid 1px #C0C0C0;"></div></td>
+					</tr>
+				
+					</table>
+				
+			
+			<hr style="border-top:dotted 1px #808080;"/>
+			<div id="m_ucTitle_m_ucMarketWatch_Panel1">
+						
+				<table width="100%" cellspacing="0">
+
+					<tr valign="top">
+						<td width="70%">
+							<div>
+							<select name="m_ucTitle$m_ucMarketWatch$m_ddlHotSheet" onchange="javascript:setTimeout(&#39;__doPostBack(\&#39;m_ucTitle$m_ucMarketWatch$m_ddlHotSheet\&#39;,\&#39;\&#39;)&#39;, 0)" id="m_ucTitle_m_ucMarketWatch_m_ddlHotSheet">
+							<option selected="selected" value="12">Single-Family</option>
+							<option value="13">Townhouse/Condo</option>
+							<option value="14">Lots</option>
+							<option value="15">Multi-Family</option>
+							<option value="16">Country Homes/Acreage</option>
+							<option value="17">Mid/Hi-Rise Condo</option>
+							<option value="18">Rental</option>
+							<option value="2">All Properties</option>
+
+						</select>
+							</div>
+						</td>
+						<td align="right" valign="top">
+							<select name="m_ucTitle$m_ucMarketWatch$m_ddlPeriod" onchange="javascript:setTimeout(&#39;__doPostBack(\&#39;m_ucTitle$m_ucMarketWatch$m_ddlPeriod\&#39;,\&#39;\&#39;)&#39;, 0)" id="m_ucTitle_m_ucMarketWatch_m_ddlPeriod">
+							<option selected="selected" value="1">24 Hour</option>
+							<option value="0">Today</option>
+							<option value="3+">3 Day</option>
+							<option value="7+">7 Day</option>
+
+						</select>
+						</td>
+					</tr>
+				</table>
+				<div style="white-space:nowrap;vertical-align:top;">
+					<table cellpadding="0" cellspacing="0" width="100%">
+						<tr align="right">
+							<td style="padding-top:5px;">
+								<a id="m_ucTitle_m_ucMarketWatch_m_lbtnCustomize" href="javascript:__doPostBack(&#39;m_ucTitle$m_ucMarketWatch$m_lbtnCustomize&#39;,&#39;&#39;)">Customize</a>
+								
+								
+							</td>
+						</tr>
+					</table>
+				</div>
+			
+					</div>
+		
+				</div>
+	
+			</div>
+
+
+
+	</div>
+	<script type="text/javascript">
+		(function () {
+			
+			$('body').on('click', '#m_ucTitle_btnMarketWatch', function () {
+				$("#divMarketWatch").show();
+			});
+			$('body').on('mouseleave', '#divMarketWatch', function (e) {
+				if ($(this).find("select").is(":focus")) return
+				$("#divMarketWatch").hide();
+			});
+			$('body').on('blur', "#divMarketWatch select", function () {
+				if ($("#divMarketWatch").is(":hover")) return;
+				$("#divMarketWatch").hide();
+			});
+			$('body').on('click', "#divMarketWatch select", function () {
+				setTimeout(function () {
+					if ($("#divMarketWatch").is(":hover") || $("#divMarketWatch select").is(":focus")) return;
+					$("#divMarketWatch").hide();
+				}, 2000);
+			});
+		}());
+	</script>
+
+		</div>
+
+
+
+	</div></td>
+										<td><div class="tabBar">
+		
+	<div id="m_ucResultsPageTabs_m_pnlResultsTab" class="tabSelected" style="float:right;">
+			
+		<a onclick="return ResultsPageTabs.onTabClick(this,&#39;Results&#39;);" id="m_ucResultsPageTabs_m_lbResultsTab" href="javascript:__doPostBack(&#39;m_ucResultsPageTabs$m_lbResultsTab&#39;,&#39;&#39;)"><span class="linkIcon tabIcon icon_default">Results</span></a>
+	
+		</div>
+	<div class="tabSpacer" style="float:right;"></div>
+	<div id="m_ucResultsPageTabs_m_pnlMapTab" class="tabNonSelected" style="float:right;">
+			
+		<a onclick="return ResultsPageTabs.onTabClick(this,&#39;Map&#39;);" id="m_ucResultsPageTabs_m_lbMapTab" href="javascript:__doPostBack(&#39;m_ucResultsPageTabs$m_lbMapTab&#39;,&#39;&#39;)"><span class="linkIcon tabIcon icon_map">Map</span></a>
+		
+	
+		</div>
+	<div class="tabSpacer" style="float:right;"></div>
+	<div id="m_ucResultsPageTabs_m_pnlSearchTab" class="tabNonSelected" style="float:right;">
+			
+		<a onclick="return ResultsPageTabs.onTabClick(this,&#39;Search&#39;);" id="m_ucResultsPageTabs_m_lbSearchTab" href="javascript:__doPostBack(&#39;m_ucResultsPageTabs$m_lbSearchTab&#39;,&#39;&#39;)"><span class="linkIcon tabIcon icon_search">Criteria</span></a>
+		
+	
+		</div>
+	<input type="hidden" name="m_ucResultsPageTabs$m_hfState" id="m_ucResultsPageTabs_m_hfState" value="Results" />
+
+	</div>
+</td>
+									</tr>
+								</table>
+							</div>
+						
+</div>
+					<div class="css_container" style="margin-bottom: 0px;">
+						<div id="m_upSubHeader">
+	
+								<div id="m_pnlSubHeader" class="resultsSubHeader css_heading  resultsActive">
+		
+									<div style="width: 968px; z-index: 99; position: relative">
+										<table cellspacing="0" cellpadding="0" border="0" style="width: 100%; table-layout: fixed;">
+											<tr align="left">
+												<td class="css_innerLeft hideOnMap hideOnResults" style="padding-right: 5px;">
+													<img id="m_imgTableIcon" src="/Matrix/Images/TableIcons/listing_crossProperty.gif" style="height:16px;width:16px;" />
+													<span id="m_lblSearchName" style="vertical-align: 3px;">Classic</span>
+												</td>
+												<td class="css_innerLeft hideOnMap hideOnSearch hideNoResults" style="width: 228px;">
+													<span id="m_lblPagingSummary"><span class="pagingLinks">
+<a  disabled="disabled">Previous</a>&nbsp;&middot;
+<a id='m_DisplayCore_dpy3' href="javascript:__doPostBack('m_DisplayCore','Redisplay|,,1')" >Next</a></span>
+&middot;&nbsp;<b>1</b> of <b>5000+</b></span>
+												</td>
+												<td class="css_innerLeft hideOnResults hideOnSearch hideNoResults" style="width: 95px;">
+													<span id="m_lblMapSummary"><b></b> of <b></b></span>
+												</td>
+												<td class="css_innerLeft hideOnSearch hideNoResults" style="width: 95px;">
+													<span id="m_lblCheckedCount">Checked <strong>0</strong></span>
+												</td>
+												<td class="css_innerLeft hideOnSearch hideNoResults checkLinks" style="width: 120px;">
+													<a id="m_lnkCheckAllLink" onclick="if (!this.hasAttribute(&#39;disabled&#39;)) { javascript:DpyCB.onAllSetCheck(true); }" href="javascript:void(0)">All</a>
+													&middot;
+										<a title="Un-check All" id="m_lnkCheckNoneLink" onclick="if (!this.hasAttribute(&#39;disabled&#39;)) { DpyCB.onAllSetCheck(false); }" href="javascript:void(0)">None</a>
+													&middot;
+										<a title="Check/Uncheck All on Page" id="m_lnkCheckPageLink" class="hideOnMap" onclick="DpyCB.onPageCheck(!DpyCB.isPageChecked())" href="javascript:void(0);">Page</a>
+													<a title="Check/Uncheck visible pins" id="m_lnkCheckVisibleLink" class="hideOnResults" onclick="ResultsJs.checkVisibleMapPins();" href="javascript:void(0)">Page</a>
+													<span class="hideOnResults">&middot;</span>
+												</td>
+												<td class="css_innerLeft hideOnMap hideOnSearch" style="width: 155px; text-overflow: ellipsis; overflow: hidden;">
+													<a title="Agent Single Line display" id="m_lnkTopGotoDefaultTemplateLink" href="javascript:__doPostBack(&#39;m_lnkTopGotoDefaultTemplateLink&#39;,&#39;&#39;)">Agent Single Line display</a>
+												</td>
+												<td class="css_innerLeft hideOnSearch hideOnResults" style="width: 24px;">&nbsp;<a title="Clicking checks pins (Ctrl+click)" id="m_aSelectSingle" onclick="ResultsJs.selectSingle(this);" href="javascript:void(0)" style="display: inline-block;"><span class="linkIcon icon_selectSingle"></span></a>
+												</td>
+												<td class="css_innerLeft hideOnSearch hideOnResults" style="width: 24px;">
+													<a title="Check all in area (Ctrl+drag)" id="m_aSelectMultiple" onclick="ResultsJs.selectMultiple(this);" href="javascript:void(0)" style="display: inline-block;"><span class="linkIcon icon_selectMultiple"></span></a>
+												</td>
+
+												<td class="hideOnSearch hideOnResults" style="height: 26px; width: auto;">&nbsp;</td>
+												<td class="hideOnMap hideOnResults" style="height: 26px; width: 500px;">&nbsp;</td>
+
+												<td class="css_innerRight hideOnSearch hideOnMap">
+													<div style="padding: 4px 0px 4px 0px;">
+														<span id="m_ucDisplayPicker_m_mlChangeDisplay">Display</span>
+<select name="m_ucDisplayPicker$m_ddlDisplayFormats" id="m_ucDisplayPicker_m_ddlDisplayFormats" class="dropdown" onchange="return ResultsJs.displayPickerDisplayChange(event);" style="width:140px;">
+			<option value="1" class="noGoggles">Agent Single Line</option>
+			<option value="27" class="noGoggles">Hotsheet</option>
+			<option selected="selected" value="3" class="hasGoggles">Agent Full</option>
+			<option value="97" class="hasGoggles">Agent Full w Tabs</option>
+			<option value="100" class="noGoggles">History</option>
+			<option value="4" class="hasGoggles">Agent Thumbnail </option>
+			<option value="5" class="noGoggles">Client Single Line</option>
+			<option value="6" class="noGoggles">Client Full</option>
+			<option value="145" class="noGoggles">Client Full RatePlug</option>
+			<option value="7" class="noGoggles">Client Thumbnail </option>
+			<option value="131" class="noGoggles">Full Property View</option>
+
+		</select>
+<span id="m_ucDisplayPicker_m_spnPageSize">
+<span>at</span>
+<select name="m_ucDisplayPicker$m_ddlPageSize" id="m_ucDisplayPicker_m_ddlPageSize" class="dropdown" onchange="return ResultsJs.displayPickerPageSizeChange(event);" style="width:53px;">
+			<option selected="selected" value="1">1</option>
+
+		</select>
+<span>per page</span>
+</span>
+
+													</div>
+												</td>
+												<td class="css_innerRight hideOnSearch hideOnResults" style="width: 21px;">
+													<input type="hidden" id="hf_DriveTimeInfoBox_Label" value="Change DriveTime&trade; Info" />
+													
+												</td>
+												<td class="css_innerRight hideOnSearch hideOnResults" style="width: 21px;">
+													<a title="Draw Radius" id="m_aCircle" onclick="javascript:ResultsJs.drawShape(this,&#39;c&#39;);" href="javascript:void(0)"><span class="linkIcon icon_circle"></span></a>
+												</td>
+												<td class="css_innerRight hideOnSearch hideOnResults" style="width: 21px;">
+													<a title="Draw Rectangle" id="m_aRectangle" onclick="ResultsJs.drawShape(this,&#39;r&#39;);" href="javascript:void(0)"><span class="linkIcon icon_rectangle"></span></a>
+												</td>
+												<td class="css_innerRight hideOnSearch hideOnResults" style="width: 21px;">
+													<a title="Draw Polygon" id="m_aPolygon" onclick="javascript:ResultsJs.drawShape(this,&#39;p&#39;);" href="javascript:void(0)"><span class="linkIcon icon_polygon"></span></a>
+												</td>
+												<td class="css_innerRight hideOnSearch hideOnResults" style="width: 21px;">
+													<a title="Clear All Shapes" id="m_aClearShapes" onclick="javascript:ResultsJs.clearShapes(this);" href="javascript:void(0)"><span class="linkIcon icon_clear"></span></a>
+												</td>
+												<td class="css_innerRight hideOnSearch hideOnResults" style="width: 21px;">
+													<a title="Layers" id="m_aLayers" onclick="ResultsJs.showLayersList(event);" href="javascript:void(0)"><span class="linkIcon icon_layers"></span></a>
+												</td>
+												<td class="css_innerRight hideOnSearch hideOnResults" style="width: 21px;">
+													<a title="Recenter" id="m_aRecenter" onclick="ResultsJs.onMapReCenter();" href="javascript:void(0)"><span class="linkIcon icon_recenter"></span></a>
+												</td>
+												<td class="css_innerRight hideOnSearch hideOnResults" style="width: 130px;">
+													
+<div class="geocodeAddress" id="m_ga">
+	<span id="m_ga_m_spnLocBox" class="loc">
+		<input name="m_ga$m_tb" type="text" id="m_ga_m_tb" class="textbox" placeholder="Jump to Address" /><a class="dropdownIcon"></a>
+	</span>
+	<input type="hidden" name="m_ga$m_hfLat" id="m_ga_m_hfLat" />
+	<input type="hidden" name="m_ga$m_hfLong" id="m_ga_m_hfLong" />
+	<script type="text/html" class="disamDialog">
+		<div class="list" style="display:block;">
+			<span class="">Did you mean:</span>
+		</div>
+	</script>
+	<script type="text/html" class="approxDialog">
+		<div class="list" style="display:block;">
+			Your exact location could not be determined.
+			<a class="go" href="#">Use approximate location</a>
+			<a class="cancel" href="#">Cancel</a>
+		</div>
+	</script>
+	<script type="text/html" class="errorDialog">
+		<div class="list" style="display:block;">
+			No matching address in MLS boundaries.
+			<a class="cancel" href="#">Close</a>
+		</div>
+	</script>
+	<div class="list">
+		<a href="javascript:void(0);" userloc="userloc">My Current Location</a>
+		
+	</div>
+</div>
+												</td>
+												
+												<td class="css_innerRight" style="width: 21px;">
+													<a title="Set/Clear Defaults" id="m_aSetDefaults" href="javascript:void(0)"><span class="linkIcon icon_settings"></span></a>
+												</td>
+											</tr>
+										</table>
+									</div>
+								
+	</div>
+							
+</div>
+
+						<div id="m_upSearch">
+	
+								
+							
+</div>
+
+						<div style="position: relative;">
+							
+							<div id="m_upDisplayCore">
+	
+									<div id="m_DisplayCore"></div>
+								
+</div>
+							<div id="ctl14" style="display:none;">
+	
+									<div style="background: url(/Matrix/Images/bkg_semitrans.png); background: rgba(255,255,255,0.6); z-index: 40; position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px;">
+										<img title="loading" class="resultsUpdateProgress" src="Images/spinnerLarge.gif" style="height:32px;width:32px;" />
+									</div>
+								
+</div>
+							<div id="m_upDisplay">
+	
+									<div id="m_pnlDisplayTab">
+		
+										<div id="m_divContent">
+											
+											<div id="m_pnlDisplay">
+												<!--@Record:137163634@--><DIV class="multiLineDisplay ajax_display d3m_show nonresponsive"><a id='aDisplay_137163634'></a><table cellspacing='0' cellpadding='0' border='0'>
+					
+					
+					<tr><td><table class="DisplayRow d3m0" id='wrapperTable'><tr><td class="d3m1"><span class="display">
+<TABLE class="d3m2" cellSpacing=0 cellPadding=0>
+
+
+<TR>
+<TD class="d3m3"></TD></TR>
+
+
+
+<TR>
+<TD class="d3m3"><span class="formula"><!--@Record:137163634@--><DIV class="multiLineDisplay ajax_display d82m_show nonresponsive"><a id='aDisplay_137163634'></a><table cellspacing='0' cellpadding='0' border='0'>
+					
+					
+					<tr><td><table class="DisplayRow d82m0" id='wrapperTable'><tr><td class="d82m1"><span class="display">
+<P>
+<TABLE class="d82m2" cellSpacing=0 cellPadding=0 sizcache05308434392100187="73 76 83" sizset="false">
+
+<TBODY sizcache05308434392100187="73 76 83" sizset="false">
+<TR class="d82m3">
+<TD class="d82m4"></TD>
+<TD class="d82m5"></TD>
+<TD class="d82m6"></TD></TR>
+<TR>
+<TD class="d82m4"></TD>
+<TD class="d82m5"></TD>
+<TD class="d82m6"></TD></TR>
+<TR sizcache05308434392100187="73 76 83" sizset="false">
+<TD class="d82m4"></TD>
+<TD class="d82m5" sizcache05308434392100187="73 76 83" sizset="false">
+<TABLE class="d82m7" cellSpacing=0 cellPadding=0 sizcache05308434392100187="73 76 83" sizset="false">
+
+<TBODY sizcache05308434392100187="73 76 83" sizset="false">
+<TR class="d82m8" sizcache05308434392100187="73 76 83" sizset="false">
+<TD class="NoPrint d82m9">
+<TABLE class="d82m10" cellSpacing=0 cellPadding=0>
+
+
+<TR>
+<TD class="d82m11"><SPAN class="formula field"><input style="height:16px" type="checkbox" name="CHB_137163634" onclick="Dpy.onCheck(this,event)"/></span></TD></TR>
+<TR>
+<TD class="d82m11"><span class="field d82m12">
+<DIV class="d82m13"></DIV></SPAN></TD></TR>
+<TR>
+<TD class="d82m11"><SPAN class="formula field"><a href="javascript:ImageViewerLightbox(6,'http://matrixmedia.harmls.com/mediaserver/GetMedia.ashx?Key=137163634&TableID=9&Type=1','/Matrix/Public/Media/Captions.ashx',{L:1,tid:9,key:'137163634',mtid:1,View:'G'},{t:{u:'&Size=1&exk=44f83402f021961a23d73ae97145043f&Number=',w:133,h:100},m:{u:'&Size=2&exk=bd0837a923d6d4d799a3b64a6e74d013&Number=',w:296,h:222},l:{u:'&Size=3&exk=d8c3c72d93e58ecfc8006dd4d968159e&Number=',w:1024,h:768}}, 0, 'false', '137163634')" title="View Photos" class="mtx-imageViewerAlignmentHelper"><img width=16 height=16 border=0 src="/Matrix/Images/cammulti.gif"></a></span></TD></TR>
+<TR>
+<TD class="d82m11"><span class="formula field"><a title="View Map" href="javascript:Dpy.mapPopup(&#39;137163634&#39;, 9, 1)"><img src="/Matrix/Images/MapPoint.gif"  border=0 /></a></span></TD></TR>
+<TR>
+<TD class="d82m11"><span class="formula field"><a href="javascript:Dpy.ITQPopup(&#39;1&#39;,102,&#39;52 MTM3MTYzNjM0&#39;,&#39;514cd84c1b2d1eaee835e9d4f9a6eab0&#39;,0,0)" title="Property Archive"><img src="/Matrix/Images/TableIcons/table_history.gif"  border=0 /></a></span></TD></TR>
+<TR>
+<TD class="d82m11"><span class="formula"></span></TD></TR>
+<TR>
+<TD class="d82m11"><span class="formula"></span></TD></TR>
+<TR>
+<TD class="d82m11"><span class="formula field"></span></TD></TR>
+<TR>
+<TD class="d82m11"><span class="formula field"><a href="/Matrix/special/thirdpartyformpost.aspx?n=REALISTB&amp;ikey=137163634" target="nw"><img title='Realist Tax' alt='Realist Tax' src='/Matrix/Images/DisplayIcons/RealistB.gif'/></a></span></TD></TR>
+<TR>
+<TD class="d82m11"><span class="formula"><a href="/Matrix/special/thirdpartyformpost.aspx?n=DataCoopListing&amp;ikey=137163634" target="nw"><img title='Data Coop' alt='Data Coop' src='/Matrix/Images/DisplayIcons/DataCoop.gif'/></a></span></TD></TR>
+<TR>
+<TD class="d82m11"><span class="formula"><a href="http://Find.realtor.com/Houston/Partner/CommunityReport/77040/1290854?LoginUrl=https://find.realtor.com/Houston?xtan" target="nw"><img title='FIND Community Report' alt='FIND Community Report' src='/Matrix/Images/DisplayIcons/IconFind.gif'/></a></span></TD></TR>
+<TR>
+<TD class="d82m11"><span class="formula field"><a href="/Matrix/special/thirdpartyformpost.aspx?n=TDeskListing&amp;ikey=137163634" target="nw"><img src="/Matrix/Images/DisplayIcons/TDesk_StartTrans.gif"  title="Transaction Desk" border=0 /></a></span></TD></TR>
+<TR>
+<TD class="d82m11"><span class="formula field"></span></TD></TR>
+<TR>
+<TD class="d82m11"></TD></TR></TABLE><BR></TD>
+<TD class="d82m14"><span class="formula image"><div class="iv " id="m_DisplayCore_dpy1" data-key="137163634" style="width:196px; height:177px;"><div class="stage" style="width:196px; height:147px;"><table class="images" style="height: 147px;"><tbody><tr><td class="imageRow"><div class="pushbar" style="width: 196px;"></div><img style=" max-width:196px; max-height:147px;" src="http://matrixmedia.harmls.com/mediaserver/GetMedia.ashx?Key=137163634&TableID=9&Type=1&Number=0&Size=4&exk=2fa2e20be0720b8aa72c3208ea4b8ff0" alt="" data-width-original="196" data-height-original="147" /></td></tr></tbody></table><button class="nav right"></button><button class="nav left"></button></div><div class="bar"><div class="count"></div><div class="caption noCaptionText"></div><font class="lb icon" title="Larger View"></font> <font class="slideshow icon" title="Slideshow"></font> <font class="print icon" title="Open All"></font></div></div></span></TD>
+<TD class="d82m15" sizcache05308434392100187="73 76 83" sizset="false">
+<TABLE class="d82m16" cellSpacing=0 cellPadding=0 sizcache05308434392100187="73 76 83" sizset="false">
+
+<TBODY sizcache05308434392100187="73 76 83" sizset="false">
+<TR>
+<TD class="d82m17"></TD>
+<TD class="d82m18"></TD>
+<TD class="d82m19"></TD>
+<TD class="d82m20"></TD>
+<TD class="d82m18"></TD>
+<TD class="d82m21"></TD>
+<TD class="d82m22"></TD>
+<TD class="d82m23"></TD></TR>
+<TR class="d82m24">
+<TD class="d82m25" colSpan=5><span class="field d82m26">Rental</span></TD>
+<TD class="d82m21"><span class="label heading2 d82m27">List Price: </SPAN></TD>
+<TD class="d82m22"><SPAN class="formula field">$1,500</span><span class="formula field"></span></TD>
+<TD class="d82m23"></TD></TR>
+<TR>
+<TD class="d82m17"><span class="label d82m27">ML#: </SPAN></TD>
+<TD class="d82m18"><SPAN class="wrapped-field">1290854</span></TD>
+<TD class="d82m19"><span class="label d82m27">Status: </SPAN></TD>
+<TD class="d82m28" colSpan=2><SPAN class="formula field"><span class='Status_CLOSD'>Sold</span></span></TD>
+<TD class="d82m21"><span class="label">Orig Price: </SPAN></TD>
+<TD class="d82m22"><SPAN class="wrapped-field">$1,500</span></TD>
+<TD class="d82m23"></TD></TR>
+<TR class="d82m24">
+<TD class="d82m17"><span class="label d82m27">Address: </SPAN></TD>
+<TD class="d82m29" colSpan=4><SPAN class="formula wrapped-field"><a title="View Map" href="javascript:Dpy.mapPopup(&#39;137163634&#39;, 9, 1)">8818 E Donys</a></span></TD>
+<TD class="d82m21"><span class="label">LP For Sale:</SPAN></TD>
+<TD class="d82m22"><SPAN class="formula wrapped-field"></span></TD>
+<TD class="d82m23"></TD></TR>
+<TR>
+<TD class="d82m17"><span class="label heading2 d82m27">Class: </SPAN></TD>
+<TD class="d82m29" colSpan=4><SPAN class="wrapped-field">Single Family Detached</span></TD>
+<TD class="d82m21"><span class="label">Sale ML#:</SPAN></TD>
+<TD class="d82m22"><SPAN class="wrapped-field"></span></TD>
+<TD class="d82m6"></TD></TR>
+<TR class="d82m24">
+<TD class="d82m17"><span class="label d82m27">Area: </SPAN></TD>
+<TD class="d82m29" colSpan=4><SPAN class="wrapped-field">11</span></TD>
+<TD class="d82m21"><span class="label">LP/SF: </SPAN></TD>
+<TD class="d82m22"><SPAN class="formula wrapped-field">$.87</span></TD>
+<TD class="d82m23"></TD></TR>
+<TR class="d82m24">
+<TD class="d82m17"><span class="label d82m27">Tax Acc #: </SPAN></TD>
+<TD class="d82m29" colSpan=4><SPAN class="formula wrapped-field"><a href="/Matrix/special/thirdpartyformpost.aspx?n=REALISTB&amp;ikey=137163634" target="nw">107-205-000-0019</a></span></TD>
+<TD class="d82m30"><span class="label">DOM: </SPAN></TD>
+<TD class="d82m22"><SPAN class="formula wrapped-field">1</span></TD>
+<TD class="d82m6"></TD></TR>
+<TR class="d82m24">
+<TD class="d82m17"><span class="label">City: </SPAN></TD>
+<TD class="d82m29" colSpan=4><SPAN class="wrapped-field">Houston</span></TD>
+<TD class="d82m21"><span class="label d82m27">State: </SPAN></TD>
+<TD class="d82m22"><SPAN class="wrapped-field">Texas</span></TD>
+<TD class="d82m23"></TD></TR>
+<TR class="d82m24">
+<TD class="d82m17"><span class="label">County: </SPAN></TD>
+<TD class="d82m29" colSpan=4><SPAN class="wrapped-field">Harris</span></TD>
+<TD class="d82m21"><span class="label">Zip Code:</SPAN></TD>
+<TD class="d82m22"><SPAN class="formula wrapped-field"><a href="/Matrix/special/thirdpartyformpost.aspx?n=TerradataumZip&amp;ikey=137163634" target="nw">77040 - 1537</a></span></TD>
+<TD class="d82m23"></TD></TR>
+<TR>
+<TD class="d82m17"><span class="label">Market Area:</SPAN></TD>
+<TD class="d82m29" colSpan=4><SPAN class="wrapped-field">Northwest Houston</span></TD>
+<TD class="d82m21"><span class="label">Key Map:</SPAN></TD>
+<TD class="d82m22"><SPAN class="wrapped-field">410k</span></TD>
+<TD class="d82m6"></TD></TR>
+<TR>
+<TD class="d82m17"><span class="label">Subdivision: </SPAN></TD>
+<TD class="d82m29" colSpan=4><SPAN class="wrapped-field">Rolling Fork</span></TD>
+<TD class="d82m21"><span class="label">Country: </SPAN></TD>
+<TD class="d82m22"><SPAN class="wrapped-field">United States</span></TD>
+<TD class="d82m6"></TD></TR>
+<TR class="d82m24">
+<TD class="d82m17"><span class="label heading2">Building Name: </SPAN></TD>
+<TD class="d82m29" colSpan=4><SPAN class="formula wrapped-field field"><a href="/Matrix/special/thirdpartyformpost.aspx?n=HARHighRiseDetails&amp;ikey=137163634" target="nw"></a></span></TD>
+<TD class="d82m21"><span class="label">Section #:</SPAN></TD>
+<TD class="d82m22"><SPAN class="wrapped-field">3</span></TD>
+<TD class="d82m23"></TD></TR>
+<TR>
+<TD class="d82m17"><span class="label heading2">Lot Size: </SPAN></TD>
+<TD class="d82m29" colSpan=4><SPAN class="formula field">8,400</span></TD>
+<TD class="d82m21"><span class="label">Sale Also:</SPAN></TD>
+<TD class="d82m22"><SPAN class="wrapped-field"></span></TD>
+<TD class="d82m6"></TD></TR>
+<TR class="d82m24">
+<TD class="d82m17"><span class="label">Year Built:</SPAN></TD>
+<TD class="d82m29" colSpan=4><SPAN class="formula wrapped-field field">1977 / Appraisal</span></TD>
+<TD class="d82m21"><span class="label">Floor Loc: </SPAN></TD>
+<TD class="d82m22"><SPAN class="wrapped-field"></span></TD>
+<TD class="d82m6"></TD></TR>
+<TR class="d82m24">
+<TD class="d82m17"><span class="label">Legal Desc: </SPAN></TD>
+<TD class="d82m31" colSpan=4><SPAN class="wrapped-field">LT 19 BLK 5 Roling Fork</span></TD>
+<TD class="d82m21"><span class="label">SqFt: </SPAN></TD>
+<TD class="d82m22"><SPAN class="formula wrapped-field">1,730 / Appraisal</span></TD>
+<TD class="d82m6"></TD></TR>
+<TR class="d82m24">
+<TD class="d82m17"></TD>
+<TD class="d82m32" colSpan=6></TD>
+<TD class="d82m23"></TD></TR>
+<TR class="d82m24">
+<TD class="d82m17">
+<DIV class="d82m33"></DIV></TD>
+<TD class="d82m32" colSpan=6></TD>
+<TD class="d82m6"></TD></TR>
+<TR class="d82m24">
+<TD class="d82m17">
+<DIV class="d82m13"></DIV></TD>
+<TD class="d82m34" colSpan=2></TD>
+<TD class="d82m20"></TD>
+<TD class="d82m18"></TD>
+<TD class="d82m21"></TD>
+<TD class="d82m22"></TD>
+<TD class="d82m23"></TD></TR></TABLE></TD></TR>
+<TR>
+<TD class="d82m9"></TD>
+<TD class="d82m14"></TD>
+<TD class="d82m15"></TD></TR></TABLE></TD>
+<TD class="d82m6"></TD></TR>
+<TR>
+<TD class="d82m4"></TD>
+<TD class="d82m5">
+<TABLE class="d82m7" cellSpacing=0 cellPadding=0>
+
+
+<TR class="d82m24">
+<TD class="d82m22"><SPAN class="label">Directions: </SPAN></TD>
+<TD class="d82m35"><SPAN class="wrapped-field">290 West T @ Fairbanks N.Houston; L@ Rodney Ray, Houses on the right.</span></TD></TR>
+<TR>
+<TD class="d82m22">
+<DIV class="d82m33"></DIV></TD>
+<TD class="d82m35"></TD></TR>
+<TR class="d82m24">
+<TD class="d82m22"><SPAN class="formula field d82m36">Recent Change:</span></TD>
+<TD class="d82m35"><span class="formula field d82m27"><span class='Status_CLOSD'><b>06/05/2017 :
+</b><b>CLOSD</b><b> : <span title='Active->Sold'>ACT->CLOSD</span></b></span></span></TD></TR>
+<TR>
+<TD class="d82m22">
+<DIV class="d82m33"></DIV></TD>
+<TD class="d82m35"></TD></TR>
+<TR class="d82m24">
+<TD class="d82m22"><SPAN class="formula field d82m36"></span></TD>
+<TD class="d82m35"><span class="formula field d82m27"><span class='BrokerOpenhouse'></span></span></TD></TR>
+<TR>
+<TD class="d82m22">
+<DIV class="d82m33"></DIV></TD>
+<TD class="d82m35"></TD></TR></TABLE></TD>
+<TD class="d82m6"></TD></TR>
+<TR sizcache05308434392100187="73 76 150" sizset="false">
+<TD class="d82m4"></TD>
+<TD class="d82m5" sizcache05308434392100187="73 76 150" sizset="false">
+<TABLE class="d82m7" cellSpacing=0 cellPadding=0 sizcache05308434392100187="73 76 150" sizset="false">
+
+<TBODY sizcache05308434392100187="73 76 150" sizset="false">
+<TR class="d82m37">
+<TD class="d82m38" colSpan=8><SPAN class="label d82m39">Listing Office&nbsp;Information </SPAN></TD></TR>
+<TR>
+<TD class="d82m22">
+<DIV class="d82m33"></DIV></TD>
+<TD class="d82m40"></TD>
+<TD class="d82m41"></TD>
+<TD class="d82m42"></TD>
+<TD class="d82m43"></TD>
+<TD class="d82m44"></TD>
+<TD class="d82m18"></TD>
+<TD class="d82m45"></TD></TR>
+<TR>
+<TD class="d82m22"><SPAN class="label heading2 d82m27">List Broker: </SPAN></TD>
+<TD class="d82m46" colSpan=3><SPAN class="formula field d82m27"><a href="javascript:Dpy.ITQPopup(&#39;49&#39;,17,&#39;40 MTAzNTk0MQ))&#39;,&#39;a03e3fe01d1e36e672b00409776c0ce4&#39;,0,0)" title="To List Office">KWNW02/Keller Williams Realty Greater Northwest</a></span>&nbsp; <span class="formula field"><a href=mailto:annw@kw.com?subject=Inquiry&#32;re:&#32;ML%23&#32;1290854&#32;-&#32;8818E&#32;Donys,&#32;Houston,&#32;Texas&#32;77040>   <img title='Email About This Listing' alt='Email About This Listing' src='/Matrix/Images/DisplayIcons/envelope.png'/></a></span></TD>
+<TD class="d82m43"><span class="label heading2">Office Phone: </SPAN></TD>
+<TD class="d82m47" colSpan=3><SPAN class="formula wrapped-field field">(281) 856-0808</span></TD></TR>
+<TR>
+<TD class="d82m22"><span class="label heading2 d82m27">List Agent: </SPAN></TD>
+<TD class="d82m46" colSpan=3><SPAN class="field formula"><a href="javascript:Dpy.ITQPopup(&#39;2&#39;,14,&#39;23 NjExNjU0MDE)&#39;,&#39;bc9ff0f73383805b151584f66c1d4bde&#39;,0,0)" title="To List Agent">susankim/Susan Kim </a></span>&nbsp; <span class="formula field"><a href=mailto:cis1215@kw.com?subject=Inquiry&#32;re:&#32;ML%23&#32;1290854&#32;-&#32;8818E&#32;Donys,&#32;Houston,&#32;Texas&#32;77040>   <img title='Email About This Listing' alt='Email About This Listing' src='/Matrix/Images/DisplayIcons/envelope.png'/></a></span></TD>
+<TD class="d82m43"><span class="label heading2">Agent Phone: </SPAN></TD>
+<TD class="d82m47" colSpan=3><SPAN class="wrapped-field">(832) 493-8236</span></TD></TR>
+<TR>
+<TD class="d82m22"><span class="label heading2">Address:</SPAN></TD>
+<TD class="d82m46" colSpan=3><SPAN class="formula wrapped-field field">19708 Northwest Fwy Ste#2800, Houston               TX 77065</span></TD>
+<TD class="d82m43"><span class="label heading2">PM #: </SPAN></TD>
+<TD class="d82m47" colSpan=3><SPAN class="wrapped-field">(832) 493-8236</span></TD></TR>
+<TR>
+<TD class="d82m22"><span class="label heading2 d82m27">List Agent Web: </SPAN></TD>
+<TD class="d82m46" colSpan=3><SPAN class="formula field"></span></TD>
+<TD class="d82m43"><span class="label">Fax #:</SPAN></TD>
+<TD class="d82m47" colSpan=3><SPAN class="wrapped-field">281-856-7082</span></TD></TR>
+<TR>
+<TD class="d82m22"><span class="label heading2">Agent Email:</SPAN></TD>
+<TD class="d82m46" colSpan=3><SPAN class="formula wrapped-field field"><a href=mailto:cis1215@kw.com>cis1215@kw.com</a></span></TD>
+<TD class="d82m43"><span class="label heading2">Appt #:</SPAN></TD>
+<TD class="d82m47" colSpan=3><SPAN class="formula wrapped-field field">(713) 977-7469 / Showing Service</span></TD></TR>
+<TR>
+<TD class="d82m22"></TD>
+<TD class="d82m46" colSpan=3></TD>
+<TD class="d82m43"></TD>
+<TD class="d82m47" colSpan=3><span class="formula wrapped-field field"><a href="/Matrix/special/thirdpartyformpost.aspx?n=HARRequestAppt&amp;ikey=137163634" target="nw">Request an Appointment</a></span></TD></TR>
+
+
+<TR>
+<TD class="d82m22"><span class="label">Office Web:</SPAN></TD>
+<TD class="d82m35" colSpan=7><SPAN class="formula wrapped-field"><a href="http://www.kwhouston.com" target="_blank">http://www.kwhouston.com</a></span></TD></TR>
+<TR class="d82m24">
+<TD class="d82m48" colSpan=6></TD>
+<TD class="d82m49" colSpan=2><span class="formula field"><a href='/Matrix/Special/Supra.aspx?Act=Settings&Key=137163634&tid=9' title='View Supra Keybox Settings' target='_blank'><img src='/Matrix/Images/Supra/LockboxSettings.gif' border='0'/></a></span></TD></TR>
+<TR>
+<TD class="d82m22"></TD>
+<TD class="d82m40"></TD>
+<TD class="d82m41"></TD>
+<TD class="d82m42"></TD>
+<TD class="d82m43"></TD>
+<TD class="d82m44"></TD>
+<TD class="d82m18"></TD>
+<TD class="d82m45"></TD></TR>
+<TR class="d82m50">
+<TD class="d82m51" colSpan=8><span class="label d82m39">School&nbsp;Information </SPAN></TD></TR>
+<TR class="d82m24">
+<TD class="d82m22"><SPAN class="label">School District: </SPAN></TD>
+<TD class="d82m46" colSpan=3><SPAN class="formula wrapped-field"><a href="/Matrix/special/thirdpartyformpost.aspx?n=HARSchoolDetails&amp;ikey=137163634" target="nw">13 - Cypress-Fairbanks</a></span></TD>
+<TD class="d82m43"><span class="label">Elem: </SPAN></TD>
+<TD class="d82m47" colSpan=3><SPAN class="formula wrapped-field"><a href="http://www.har.com/school/101907129/school" target="nw">REED ELEMENTARY SCHOOL (CYPRESS-FAIRBANKS)</a></span></TD></TR>
+<TR class="d82m24">
+<TD class="d82m22"><span class="label">Middle: </SPAN></TD>
+<TD class="d82m46" colSpan=3><SPAN class="formula wrapped-field"><a href="http://www.har.com/school/101907042/school" target="nw">DEAN MIDDLE SCHOOL</a></span></TD>
+<TD class="d82m43"><span class="label">High: </SPAN></TD>
+<TD class="d82m47" colSpan=3><SPAN class="formula wrapped-field"><a href="http://www.har.com/school/101907003/school" target="nw">JERSEY VILLAGE HIGH SCHOOL</a></span></TD></TR>
+<TR>
+<TD class="d82m22">
+<DIV class="d82m33"></DIV></TD>
+<TD class="d82m40"></TD>
+<TD class="d82m41"></TD>
+<TD class="d82m42"></TD>
+<TD class="d82m43"></TD>
+<TD class="d82m44"></TD>
+<TD class="d82m18"></TD>
+<TD class="d82m45"></TD></TR>
+<TR>
+<TD class="d82m5" colSpan=8><SPAN class="label d82m52">SCHOOL INFORMATION IS COMPUTER GENERATED AND MAY NOT BE ACCURATE OR CURRENT. BUYER MUST INDEPENDENTLY VERIFY AND CONFIRM ENROLLMENT. </SPAN></TD></TR>
+<TR>
+<TD class="d82m22">
+<DIV class="d82m53"></DIV></TD>
+<TD class="d82m40"></TD>
+<TD class="d82m41"></TD>
+<TD class="d82m42"></TD>
+<TD class="d82m43"></TD>
+<TD class="d82m44"></TD>
+<TD class="d82m18"></TD>
+<TD class="d82m45"></TD></TR>
+<TR class="d82m37">
+<TD class="d82m38" colSpan=8><SPAN class="label d82m39">Description&nbsp;Information </SPAN></TD></TR>
+<TR class="d82m24">
+<TD class="d82m22"><SPAN class="label">Style: </SPAN></TD>
+<TD class="d82m54" colSpan=2><SPAN class="formula field d82m27"></span></TD>
+<TD class="d82m42"><span class="label heading2">Loft: </SPAN>&nbsp;<SPAN class="wrapped-field">No</span></TD>
+<TD class="d82m43"><span class="label">Unit Stories: </SPAN></TD>
+<TD class="d82m44"><SPAN class="wrapped-field">1</span></TD>
+<TD class="d82m18"><span class="label">Bedrooms: </SPAN></TD>
+<TD class="d82m45"><SPAN class="formula field">3/3</span></TD></TR>
+<TR class="d82m24">
+<TD class="d82m22"><span class="label">Type: </SPAN></TD>
+<TD class="d82m46" colSpan=3><SPAN class="wrapped-field">Free Standing</span></TD>
+<TD class="d82m43"><span class="label">Access: </SPAN></TD>
+<TD class="d82m44"><SPAN class="wrapped-field"></span></TD>
+<TD class="d82m18"><span class="label">Baths F/H: </SPAN></TD>
+<TD class="d82m45"><SPAN class="formula field">2/2</span></TD></TR>
+<TR>
+<TD class="d82m22"><span class="label">New Constr.: </SPAN></TD>
+<TD class="d82m46" colSpan=3><SPAN class="formula field">No</span></TD>
+<TD class="d82m43"><span class="label">Appx Complete: </SPAN></TD>
+<TD class="d82m44"><SPAN class="formula field"></span></TD>
+<TD class="d82m18"><span class="label">Bldg Stories: </SPAN></TD>
+<TD class="d82m45"><SPAN class="wrapped-field"></span></TD></TR>
+<TR>
+<TD class="d82m22"><span class="label heading2">Total Units: </SPAN></TD>
+<TD class="d82m40"><SPAN class="wrapped-field"></span></TD>
+<TD class="d82m41"><span class="label heading2">Furnished: </SPAN></TD>
+<TD class="d82m42"><SPAN class="wrapped-field"></span></TD>
+<TD class="d82m43"><span class="label heading2">Unit Level: </SPAN></TD>
+<TD class="d82m44"><SPAN class="wrapped-field"></span></TD>
+<TD class="d82m18"></TD>
+<TD class="d82m45"></TD></TR>
+<TR class="d82m24">
+<TD class="d82m22"><span class="label">Lot Dim: </SPAN></TD>
+<TD class="d82m46" colSpan=3><SPAN class="wrapped-field"></span></TD>
+<TD class="d82m43"><span class="label">Acres: </SPAN></TD>
+<TD class="d82m47" colSpan=3><SPAN class="formula wrapped-field"></span></TD></TR>
+<TR class="d82m24">
+<TD class="d82m22"><span class="label">Frt. Door Faces: </SPAN></TD>
+<TD class="d82m46" colSpan=3><SPAN class="wrapped-field">South</span></TD>
+<TD class="d82m43"><span class="label">Garage: </SPAN></TD>
+<TD class="d82m47" colSpan=3><SPAN class="formula wrapped-field">2/Detached Garage</span></TD></TR>
+<TR class="d82m24">
+<TD class="d82m22"><span class="label">Gar/Car: </SPAN></TD>
+<TD class="d82m46" colSpan=3><SPAN class="wrapped-field">Auto Garage Door Opener</span></TD>
+<TD class="d82m43"><span class="label">Carport: </SPAN></TD>
+<TD class="d82m47" colSpan=3><SPAN class="formula wrapped-field"></span></TD></TR>
+<TR>
+<TD class="d82m22"><span class="label">Parking:</SPAN></TD>
+<TD class="d82m55" colSpan=6><SPAN class="wrapped-field">Auto Garage Door Opener</span></TD>
+<TD class="d82m45"></TD></TR>
+<TR class="d82m24">
+<TD class="d82m22"><span class="label">Showing Instruct: </SPAN></TD>
+<TD class="d82m56" colSpan=5><SPAN class="wrapped-field">Supra Keybox</span></TD>
+<TD class="d82m49" colSpan=2></TD></TR>
+<TR>
+<TD class="d82m22"></TD>
+<TD class="d82m40"></TD>
+<TD class="d82m41"></TD>
+<TD class="d82m42"></TD>
+<TD class="d82m43"></TD>
+<TD class="d82m44"></TD>
+<TD class="d82m18"></TD>
+<TD class="d82m45"></TD></TR>
+<TR>
+<TD class="d82m22"><span class="label d82m27">Agent &nbsp;Remarks: </SPAN></TD>
+<TD class="d82m40"></TD>
+<TD class="d82m41"></TD>
+<TD class="d82m42"></TD>
+<TD class="d82m43"></TD>
+<TD class="d82m44"></TD>
+<TD class="d82m18"></TD>
+<TD class="d82m45"></TD></TR>
+<TR>
+<TD class="d82m5" colSpan=8><SPAN class="wrapped-field">Very Nice and upgraded house in nice community. Refrigerator, Washer&amp; Dryer stay.updated 3 bedrooms and 2 bathrooms.</span></TD></TR>
+<TR>
+<TD class="d82m22">
+<DIV class="d82m53"></DIV></TD>
+<TD class="d82m40"></TD>
+<TD class="d82m41"></TD>
+<TD class="d82m42"></TD>
+<TD class="d82m43"></TD>
+<TD class="d82m44"></TD>
+<TD class="d82m18"></TD>
+<TD class="d82m45"></TD></TR>
+<TR>
+<TD class="d82m57" colSpan=2><SPAN class="label d82m27">Public Remarks: </SPAN></TD>
+<TD class="d82m41"></TD>
+<TD class="d82m42"></TD>
+<TD class="d82m43"></TD>
+<TD class="d82m44"></TD>
+<TD class="d82m18"></TD>
+<TD class="d82m45"></TD></TR>
+<TR>
+<TD class="d82m5" colSpan=8><SPAN class="field wrapped-field">Beautiful Brick one story house. Nice school in CFISDVery beautiful colorful paint and updated counter top.All appliances are new and they stay such as refrigerator, washer and Dryer.  Nice community tennis court and beautiful park.</span></TD></TR>
+<TR>
+<TD class="d82m22">
+<DIV class="d82m53"></DIV></TD>
+<TD class="d82m40"></TD>
+<TD class="d82m41"></TD>
+<TD class="d82m42"></TD>
+<TD class="d82m43"></TD>
+<TD class="d82m44"></TD>
+<TD class="d82m18"></TD>
+<TD class="d82m45"></TD></TR>
+<TR class="d82m58">
+<TD class="d82m59" colSpan=8><SPAN class="label d82m60">Rooms Information </SPAN></TD></TR>
+<TR>
+<TD class="d82m5" colSpan=8><SPAN class="formula"><!--@Record:137163666@--><DIV class="multiLineDisplay ajax_display d49m_show multiColumnDisplay nonresponsive"><a id='aDisplay_137163666'></a><table class="DisplayRow d49m0" id='wrapperTable'><tr><td class="d49m1"><TABLE class="d49m2" cellSpacing=0 cellPadding=0>
+
+
+<TR>
+<TD class="d49m3"></TD>
+<TD class="d49m4"></TD>
+<TD class="d49m5"></TD>
+<TD class="d49m6"></TD>
+<TD class="d49m7"></TD>
+<TD class="d49m8" rowSpan=3></TD>
+<TD class="d49m9"></TD></TR>
+<TR>
+<TD class="d49m3"></TD>
+<TD class="d49m4"><span class="formula label field d49m10">Room</span></TD>
+<TD class="d49m5"><span class="formula label field d49m10">Dimensions</span></TD>
+<TD class="d49m6"><span class="formula label field d49m10">Location</span></TD>
+<TD class="d49m7"><span class="formula label field d49m10">Features</span></TD>
+<TD class="d49m9"></TD></TR>
+<TR class="d49m11">
+<TD class="d49m3"></TD>
+<TD class="d49m4"><span class="wrapped-field">Bedroom</span></TD>
+<TD class="d49m5"><span class="formula field">14 x 12</span></TD>
+<TD class="d49m6"><span class="wrapped-field">Down</span></TD>
+<TD class="d49m7"><span class="wrapped-field"></span></TD>
+<TD class="d49m9"></TD></TR></TABLE></td></tr></table></DIV><!--@Record:137163667@--><DIV class="multiLineDisplay ajax_display d49m_show multiColumnDisplay nonresponsive"><a id='aDisplay_137163667'></a><table class="DisplayRow d49m0" id='wrapperTable'><tr><td class="d49m1"><TABLE class="d49m2" cellSpacing=0 cellPadding=0>
+
+
+<TR>
+<TD class="d49m3"></TD>
+<TD class="d49m4"></TD>
+<TD class="d49m5"></TD>
+<TD class="d49m6"></TD>
+<TD class="d49m7"></TD>
+<TD class="d49m8" rowSpan=3></TD>
+<TD class="d49m9"></TD></TR>
+<TR>
+<TD class="d49m3"></TD>
+<TD class="d49m4"><span class="formula label field d49m10">Room</span></TD>
+<TD class="d49m5"><span class="formula label field d49m10">Dimensions</span></TD>
+<TD class="d49m6"><span class="formula label field d49m10">Location</span></TD>
+<TD class="d49m7"><span class="formula label field d49m10">Features</span></TD>
+<TD class="d49m9"></TD></TR>
+<TR class="d49m11">
+<TD class="d49m3"></TD>
+<TD class="d49m4"><span class="wrapped-field">Bedroom</span></TD>
+<TD class="d49m5"><span class="formula field">11 x 11</span></TD>
+<TD class="d49m6"><span class="wrapped-field">Down</span></TD>
+<TD class="d49m7"><span class="wrapped-field"></span></TD>
+<TD class="d49m9"></TD></TR></TABLE></td></tr></table></DIV><br><!--@Record:137163665@--><DIV class="multiLineDisplay ajax_display d49m_show multiColumnDisplay nonresponsive"><a id='aDisplay_137163665'></a><table class="DisplayRow d49m0" id='wrapperTable'><tr><td class="d49m1"><TABLE class="d49m2" cellSpacing=0 cellPadding=0>
+
+
+<TR>
+<TD class="d49m3"></TD>
+<TD class="d49m4"></TD>
+<TD class="d49m5"></TD>
+<TD class="d49m6"></TD>
+<TD class="d49m7"></TD>
+<TD class="d49m8" rowSpan=3></TD>
+<TD class="d49m9"></TD></TR>
+<TR>
+<TD class="d49m3"></TD>
+<TD class="d49m4"><span class="formula label field d49m10"></span></TD>
+<TD class="d49m5"><span class="formula label field d49m10"></span></TD>
+<TD class="d49m6"><span class="formula label field d49m10"></span></TD>
+<TD class="d49m7"><span class="formula label field d49m10"></span></TD>
+<TD class="d49m9"></TD></TR>
+<TR class="d49m11">
+<TD class="d49m3"></TD>
+<TD class="d49m4"><span class="wrapped-field">Bedroom</span></TD>
+<TD class="d49m5"><span class="formula field">11 x 10</span></TD>
+<TD class="d49m6"><span class="wrapped-field">Down</span></TD>
+<TD class="d49m7"><span class="wrapped-field"></span></TD>
+<TD class="d49m9"></TD></TR></TABLE></td></tr></table></DIV><!--@Record:137163668@--><DIV class="multiLineDisplay ajax_display d49m_show multiColumnDisplay nonresponsive"><a id='aDisplay_137163668'></a><table class="DisplayRow d49m0" id='wrapperTable'><tr><td class="d49m1"><TABLE class="d49m2" cellSpacing=0 cellPadding=0>
+
+
+<TR>
+<TD class="d49m3"></TD>
+<TD class="d49m4"></TD>
+<TD class="d49m5"></TD>
+<TD class="d49m6"></TD>
+<TD class="d49m7"></TD>
+<TD class="d49m8" rowSpan=3></TD>
+<TD class="d49m9"></TD></TR>
+<TR>
+<TD class="d49m3"></TD>
+<TD class="d49m4"><span class="formula label field d49m10"></span></TD>
+<TD class="d49m5"><span class="formula label field d49m10"></span></TD>
+<TD class="d49m6"><span class="formula label field d49m10"></span></TD>
+<TD class="d49m7"><span class="formula label field d49m10"></span></TD>
+<TD class="d49m9"></TD></TR>
+<TR class="d49m11">
+<TD class="d49m3"></TD>
+<TD class="d49m4"><span class="wrapped-field">Brkfst</span></TD>
+<TD class="d49m5"><span class="formula field">11 x 9</span></TD>
+<TD class="d49m6"><span class="wrapped-field"></span></TD>
+<TD class="d49m7"><span class="wrapped-field"></span></TD>
+<TD class="d49m9"></TD></TR></TABLE></td></tr></table></DIV><br><!--@Record:137163669@--><DIV class="multiLineDisplay ajax_display d49m_show multiColumnDisplay nonresponsive"><a id='aDisplay_137163669'></a><table class="DisplayRow d49m0" id='wrapperTable'><tr><td class="d49m1"><TABLE class="d49m2" cellSpacing=0 cellPadding=0>
+
+
+<TR>
+<TD class="d49m3"></TD>
+<TD class="d49m4"></TD>
+<TD class="d49m5"></TD>
+<TD class="d49m6"></TD>
+<TD class="d49m7"></TD>
+<TD class="d49m8" rowSpan=3></TD>
+<TD class="d49m9"></TD></TR>
+<TR>
+<TD class="d49m3"></TD>
+<TD class="d49m4"><span class="formula label field d49m10"></span></TD>
+<TD class="d49m5"><span class="formula label field d49m10"></span></TD>
+<TD class="d49m6"><span class="formula label field d49m10"></span></TD>
+<TD class="d49m7"><span class="formula label field d49m10"></span></TD>
+<TD class="d49m9"></TD></TR>
+<TR class="d49m11">
+<TD class="d49m3"></TD>
+<TD class="d49m4"><span class="wrapped-field">Den</span></TD>
+<TD class="d49m5"><span class="formula field">8 x 17</span></TD>
+<TD class="d49m6"><span class="wrapped-field"></span></TD>
+<TD class="d49m7"><span class="wrapped-field"></span></TD>
+<TD class="d49m9"></TD></TR></TABLE></td></tr></table></DIV><!--@Record:137163664@--><DIV class="multiLineDisplay ajax_display d49m_show multiColumnDisplay nonresponsive"><a id='aDisplay_137163664'></a><table class="DisplayRow d49m0" id='wrapperTable'><tr><td class="d49m1"><TABLE class="d49m2" cellSpacing=0 cellPadding=0>
+
+
+<TR>
+<TD class="d49m3"></TD>
+<TD class="d49m4"></TD>
+<TD class="d49m5"></TD>
+<TD class="d49m6"></TD>
+<TD class="d49m7"></TD>
+<TD class="d49m8" rowSpan=3></TD>
+<TD class="d49m9"></TD></TR>
+<TR>
+<TD class="d49m3"></TD>
+<TD class="d49m4"><span class="formula label field d49m10"></span></TD>
+<TD class="d49m5"><span class="formula label field d49m10"></span></TD>
+<TD class="d49m6"><span class="formula label field d49m10"></span></TD>
+<TD class="d49m7"><span class="formula label field d49m10"></span></TD>
+<TD class="d49m9"></TD></TR>
+<TR class="d49m11">
+<TD class="d49m3"></TD>
+<TD class="d49m4"><span class="wrapped-field">Study/Library</span></TD>
+<TD class="d49m5"><span class="formula field">10 x 10</span></TD>
+<TD class="d49m6"><span class="wrapped-field"></span></TD>
+<TD class="d49m7"><span class="wrapped-field"></span></TD>
+<TD class="d49m9"></TD></TR></TABLE></td></tr></table></DIV><br></span></TD></TR>
+<TR>
+<TD class="d82m22"></TD>
+<TD class="d82m40"></TD>
+<TD class="d82m41"></TD>
+<TD class="d82m42"></TD>
+<TD class="d82m43"></TD>
+<TD class="d82m44"></TD>
+<TD class="d82m18"></TD>
+<TD class="d82m45"></TD></TR>
+<TR>
+<TD class="d82m5" colSpan=8>
+<DIV class="d82m33"></DIV></TD></TR>
+<TR class="d82m58">
+<TD class="d82m59" colSpan=8><SPAN class="label d82m60">Interior, Exterior, Utilities and Additional Information </SPAN></TD></TR>
+<TR>
+<TD class="d82m22"></TD>
+<TD class="d82m40"></TD>
+<TD class="d82m41"></TD>
+<TD class="d82m42"></TD>
+<TD class="d82m43"></TD>
+<TD class="d82m44"></TD>
+<TD class="d82m18"></TD>
+<TD class="d82m45"></TD></TR>
+<TR>
+<TD class="d82m22"><SPAN class="label">Microwave: </SPAN></TD>
+<TD class="d82m40"><SPAN class="wrapped-field"></span></TD>
+<TD class="d82m41"><span class="label">Dishwasher: </SPAN></TD>
+<TD class="d82m42"><SPAN class="wrapped-field"></span></TD>
+<TD class="d82m43"><span class="label">Compactor: </SPAN></TD>
+<TD class="d82m44"><SPAN class="wrapped-field"></span></TD>
+<TD class="d82m18"><span class="label">Disposal: </SPAN></TD>
+<TD class="d82m45"><SPAN class="wrapped-field"></span></TD></TR>
+<TR class="d82m24">
+<TD class="d82m22"><span class="label">Fireplace: </SPAN></TD>
+<TD class="d82m46" colSpan=3><SPAN class="formula wrapped-field">1/Gaslog Fireplace</span></TD>
+<TD class="d82m43"><span class="label">Utility Dist: </SPAN></TD>
+<TD class="d82m44"><SPAN class="wrapped-field"></span></TD>
+<TD class="d82m18"><span class="label">Sep Ice Mkr:</SPAN></TD>
+<TD class="d82m45"><SPAN class="wrapped-field"></span></TD></TR>
+<TR class="d82m24">
+<TD class="d82m22"><span class="label">Connect: </SPAN></TD>
+<TD class="d82m46" colSpan=3><SPAN class="wrapped-field"></span></TD>
+<TD class="d82m43"><span class="label">Bedrooms: </SPAN></TD>
+<TD class="d82m47" colSpan=3><SPAN class="wrapped-field">All Bedrooms Down</span></TD></TR>
+<TR class="d82m24">
+<TD class="d82m22"><span class="label">Energy: </SPAN></TD>
+<TD class="d82m46" colSpan=3><SPAN class="wrapped-field"></span></TD>
+<TD class="d82m43"><span class="label">Room Desc: </SPAN></TD>
+<TD class="d82m47" colSpan=3><SPAN class="wrapped-field">Breakfast Room</span></TD></TR>
+<TR>
+<TD class="d82m22"><span class="label">Oven:</SPAN></TD>
+<TD class="d82m46" colSpan=3><SPAN class="wrapped-field">Electric Oven</span></TD>
+<TD class="d82m43"><span class="label">Range:</SPAN></TD>
+<TD class="d82m47" colSpan=3><SPAN class="wrapped-field">Electric Range</span></TD></TR>
+<TR class="d82m24">
+<TD class="d82m61" colSpan=4><span class="label">Green/Energy Cert: </SPAN>&nbsp; <SPAN class="wrapped-field"></span></TD>
+<TD class="d82m43"><span class="label">Flooring: </SPAN></TD>
+<TD class="d82m47" colSpan=3><SPAN class="wrapped-field">Laminate</span></TD></TR>
+<TR class="d82m24">
+<TD class="d82m22"><span class="label">Interior: </SPAN></TD>
+<TD class="d82m46" colSpan=3><SPAN class="wrapped-field"></span></TD>
+<TD class="d82m43"><span class="label">Countertops: </SPAN></TD>
+<TD class="d82m47" colSpan=3><SPAN class="wrapped-field">granite</span></TD></TR>
+<TR>
+<TD class="d82m22"><span class="label">Master Bath:</SPAN></TD>
+<TD class="d82m46" colSpan=3><SPAN class="wrapped-field">Master Bath Shower Only</span></TD>
+<TD class="d82m43"><span class="label">Prvt Pool:</SPAN></TD>
+<TD class="d82m47" colSpan=3><SPAN class="wrapped-field">No</span><span class="formula wrapped-field"></span></TD></TR>
+<TR class="d82m24">
+<TD class="d82m22"><span class="label">Appliances:</SPAN></TD>
+<TD class="d82m46" colSpan=3><SPAN class="wrapped-field">Dryer Included</span></TD>
+<TD class="d82m43"><span class="label">Area Pool: </SPAN></TD>
+<TD class="d82m62" colSpan=3><SPAN class="wrapped-field">Yes</span></TD></TR>
+<TR class="d82m24">
+<TD class="d82m22"><span class="label">Exterior: </SPAN></TD>
+<TD class="d82m46" colSpan=3><SPAN class="wrapped-field"></span></TD>
+<TD class="d82m43"><span class="label">Waterfront Feat: </SPAN></TD>
+<TD class="d82m47" colSpan=3><SPAN class="wrapped-field"></span></TD></TR>
+<TR class="d82m24">
+<TD class="d82m22"><span class="label">Lot Description: </SPAN></TD>
+<TD class="d82m46" colSpan=3><SPAN class="wrapped-field">Subdivision Lot</span></TD>
+<TD class="d82m43"><span class="label">Water/Sewer:</SPAN></TD>
+<TD class="d82m47" colSpan=3><SPAN class="wrapped-field">Water District</span></TD></TR>
+<TR>
+<TD class="d82m22"><span class="label">Heat: </SPAN></TD>
+<TD class="d82m46" colSpan=3><SPAN class="wrapped-field">Central Gas</span></TD>
+<TD class="d82m43"><span class="label">Cool: </SPAN></TD>
+<TD class="d82m47" colSpan=3><SPAN class="wrapped-field">Central Electric</span></TD></TR>
+<TR class="d82m24">
+<TD class="d82m22"><span class="label">Cable: </SPAN></TD>
+<TD class="d82m46" colSpan=3><SPAN class="wrapped-field"></span></TD>
+<TD class="d82m43"><span class="label">Golf Course Nm: </SPAN></TD>
+<TD class="d82m47" colSpan=3><SPAN class="wrapped-field"></span></TD></TR>
+<TR class="d82m24">
+<TD class="d82m22"><span class="label">Utilities Provd.:</SPAN></TD>
+<TD class="d82m46" colSpan=3><SPAN class="wrapped-field"></span></TD>
+<TD class="d82m43"><span class="label">Rec Facility Fee: </SPAN></TD>
+<TD class="d82m47" colSpan=3><SPAN class="wrapped-field"></span></TD></TR>
+<TR class="d82m24">
+<TD class="d82m22"><span class="label">Restrictions:</SPAN></TD>
+<TD class="d82m46" colSpan=3><SPAN class="wrapped-field">Deed Restrictions</span></TD>
+<TD class="d82m43"><span class="label">Disclosures: </SPAN></TD>
+<TD class="d82m47" colSpan=3><SPAN class="wrapped-field">No Disclosures</span></TD></TR>
+<TR>
+<TD class="d82m22">
+<DIV class="d82m53"></DIV></TD>
+<TD class="d82m40"></TD>
+<TD class="d82m41"></TD>
+<TD class="d82m42"></TD>
+<TD class="d82m43"></TD>
+<TD class="d82m44"></TD>
+<TD class="d82m18"></TD>
+<TD class="d82m45"></TD></TR>
+<TR>
+<TD class="d82m22"></TD>
+<TD class="d82m40"></TD>
+<TD class="d82m41"></TD>
+<TD class="d82m42"></TD>
+<TD class="d82m43"></TD>
+<TD class="d82m44"></TD>
+<TD class="d82m18"></TD>
+<TD class="d82m45"></TD></TR>
+<TR class="d82m37">
+<TD class="d82m63" colSpan=8><SPAN class="label d82m39">Lease and Additional Information</SPAN></TD></TR>
+<TR class="d82m24">
+<TD class="d82m61" colSpan=4><SPAN class="label d82m27">Management Company: </SPAN>&nbsp;<SPAN class="wrapped-field">Yes</span> <span class="formula wrapped-field"> / Rolling Fork HOA / (713) 937-4175</span></TD>
+<TD class="d82m43"><span class="label">List Type: </SPAN></TD>
+<TD class="d82m47" colSpan=3><SPAN class="wrapped-field">Exclusive Agency to Sell/Lease</span></TD></TR>
+<TR>
+<TD class="d82m22"><span class="label d82m27">List Date: </SPAN></TD>
+<TD class="d82m40"><SPAN class="field">06/05/2017</span></TD>
+<TD class="d82m41"><span class="label d82m27">Expire Date: </SPAN></TD>
+<TD class="d82m42"><SPAN class="field"></span></TD>
+<TD class="d82m43"><span class="label d82m27">T/Date: </SPAN></TD>
+<TD class="d82m44"><SPAN class="wrapped-field">06/05/2017</span></TD>
+<TD class="d82m18"></TD>
+<TD class="d82m45"></TD></TR>
+<TR class="d82m24">
+<TD class="d82m22"><span class="label d82m27">Comp: SubAgt: </SPAN></TD>
+<TD class="d82m40"><SPAN class="wrapped-field">0</span></TD>
+<TD class="d82m41"><span class="label d82m27">Buyer Agent: </SPAN></TD>
+<TD class="d82m42"><SPAN class="wrapped-field">500</span></TD>
+<TD class="d82m43"><span class="label d82m27">Bonus: </SPAN></TD>
+<TD class="d82m44"><SPAN class="wrapped-field"></span></TD>
+<TD class="d82m18"><span class="label">Var/Dual Rt: </SPAN></TD>
+<TD class="d82m45"><SPAN class="wrapped-field">No</span></TD></TR>
+<TR>
+<TD class="d82m57" colSpan=2><span class="label">If Purchased Sale Compensation:</SPAN></TD>
+<TD class="d82m41"><SPAN class="label">Sub:</SPAN></TD>
+<TD class="d82m42"><SPAN class="wrapped-field">0</span></TD>
+<TD class="d82m43"><span class="label">Buy:</SPAN></TD>
+<TD class="d82m44"><SPAN class="wrapped-field">3</span></TD>
+<TD class="d82m18"><span class="label">OPEnd Date:</SPAN></TD>
+<TD class="d82m45"></TD></TR>
+<TR>
+<TD class="d82m22">
+<DIV class="d82m53"></DIV></TD>
+<TD class="d82m40"></TD>
+<TD class="d82m41"></TD>
+<TD class="d82m42"></TD>
+<TD class="d82m43"></TD>
+<TD class="d82m44"></TD>
+<TD class="d82m18"></TD>
+<TD class="d82m45"></TD></TR>
+<TR>
+<TD class="d82m22"><SPAN class="label">Sec Deposit:</SPAN></TD>
+<TD class="d82m46" colSpan=3><SPAN class="wrapped-field">1500</span></TD>
+<TD class="d82m43"><span class="label">Smoke:</SPAN></TD>
+<TD class="d82m44"><SPAN class="wrapped-field">No</span></TD>
+<TD class="d82m18"></TD>
+<TD class="d82m45"></TD></TR>
+<TR class="d82m24">
+<TD class="d82m22"><span class="label">Date Avail:</SPAN></TD>
+<TD class="d82m46" colSpan=3><SPAN class="wrapped-field">06/10/2017</span></TD>
+<TD class="d82m43"><span class="label">Applic Fees:</SPAN></TD>
+<TD class="d82m44"><SPAN class="wrapped-field">$45.00</span></TD>
+<TD class="d82m18"></TD>
+<TD class="d82m45"></TD></TR>
+<TR class="d82m24">
+<TD class="d82m22"><span class="label">Rental Terms: </SPAN></TD>
+<TD class="d82m46" colSpan=3><SPAN class="wrapped-field">One Year</span></TD>
+<TD class="d82m43"><span class="label">Apprvl Req:</SPAN></TD>
+<TD class="d82m47" colSpan=3><SPAN class="formula wrapped-field">Yes/two month pay stubs/ good credit history/ good rental history/ No criminal history</span></TD></TR>
+<TR>
+<TD class="d82m22"><span class="label">Other Mand Fee: </SPAN></TD>
+<TD class="d82m46" colSpan=3><SPAN class="formula wrapped-field">No/0</span></TD>
+<TD class="d82m43"><span class="label">Vacation Rental: </SPAN></TD>
+<TD class="d82m44"><SPAN class="formula wrapped-field field">/</span></TD>
+<TD class="d82m18"><span class="label heading2">Daily:</SPAN></TD>
+<TD class="d82m45"><SPAN class="wrapped-field"></span></TD></TR>
+<TR class="d82m24">
+<TD class="d82m22"><span class="label d82m27">Pets: </SPAN></TD>
+<TD class="d82m46" colSpan=3><SPAN class="wrapped-field">Not Allowed</span></TD>
+<TD class="d82m43"><span class="label">Weekly:</SPAN></TD>
+<TD class="d82m44"><SPAN class="wrapped-field"></span></TD>
+<TD class="d82m18"><span class="label">Monthly:</SPAN></TD>
+<TD class="d82m45"><SPAN class="wrapped-field"></span></TD></TR>
+<TR class="d82m24">
+<TD class="d82m22"><span class="label d82m27">Pet Deposit: </SPAN></TD>
+<TD class="d82m46" colSpan=3><SPAN class="wrapped-field"></span></TD>
+<TD class="d82m43"><span class="label">Recurring Comp:</SPAN></TD>
+<TD class="d82m44"><SPAN class="wrapped-field"></span></TD>
+<TD class="d82m18"></TD>
+<TD class="d82m45"></TD></TR>
+<TR>
+<TD class="d82m22"><span class="label">Pet Description:</SPAN></TD>
+<TD class="d82m55" colSpan=6><SPAN class="wrapped-field">N/A</span></TD>
+<TD class="d82m45"></TD></TR>
+<TR>
+<TD class="d82m22">
+<DIV class="d82m53"></DIV></TD>
+<TD class="d82m40"></TD>
+<TD class="d82m41"></TD>
+<TD class="d82m42"></TD>
+<TD class="d82m43"></TD>
+<TD class="d82m44"></TD>
+<TD class="d82m18"></TD>
+<TD class="d82m45"></TD></TR>
+<TR class="d82m37">
+<TD class="d82m38" colSpan=8><SPAN class="label d82m39">Pending&nbsp;Information </SPAN></TD></TR>
+<TR>
+<TD class="d82m22"><SPAN class="label d82m27">Pending Date: </SPAN></TD>
+<TD class="d82m40"><SPAN class="wrapped-field">06/05/2017</span></TD>
+<TD class="d82m41"><span class="label d82m27">Est Close Dt: </SPAN></TD>
+<TD class="d82m42"><SPAN class="wrapped-field">06/05/2017</span></TD>
+<TD class="d82m43"><span class="label d82m27">TREC #: </SPAN></TD>
+<TD class="d82m44"><SPAN class="wrapped-field">0656477</span></TD>
+<TD class="d82m18"><span class="label d82m27">OPT End:</SPAN></TD>
+<TD class="d82m45"><SPAN class="wrapped-field"></span></TD></TR>
+<TR class="d82m24">
+<TD class="d82m22"><span class="label d82m27">Sell Agent: </SPAN></TD>
+<TD class="d82m46" colSpan=3><SPAN class="formula wrapped-field"><a href="javascript:Dpy.ITQPopup(&#39;4&#39;,14,&#39;23 NjExNjU0MDE)&#39;,&#39;bc9ff0f73383805b151584f66c1d4bde&#39;,0,0)" title="To Selling Agent">Susan Kim (susankim)</a></span></TD>
+<TD class="d82m43"><span class="label d82m27">Sell Broker: </SPAN></TD>
+<TD class="d82m47" colSpan=3><SPAN class="formula wrapped-field"><a href="javascript:Dpy.ITQPopup(&#39;50&#39;,17,&#39;40 MTAzNTk0MQ))&#39;,&#39;a03e3fe01d1e36e672b00409776c0ce4&#39;,0,0)" title="To Sell Office">Keller Williams Realty Greater Northwest (KWNW02)</a></span></TD></TR>
+<TR>
+<TD class="d82m22">
+<DIV class="d82m53"></DIV></TD>
+<TD class="d82m40"></TD>
+<TD class="d82m41"></TD>
+<TD class="d82m42"></TD>
+<TD class="d82m43"></TD>
+<TD class="d82m44"></TD>
+<TD class="d82m18"></TD>
+<TD class="d82m45"></TD></TR>
+<TR class="d82m37">
+<TD class="d82m38" colSpan=8><SPAN class="label d82m39">Leased&nbsp;Information </SPAN></TD></TR>
+<TR>
+<TD class="d82m22"><SPAN class="label d82m27">Leased&nbsp;Price: </SPAN></TD>
+<TD class="d82m40"><SPAN class="wrapped-field">$1,500</span>&nbsp;</TD>
+<TD class="d82m41"><span class="label d82m27">Leased&nbsp;Date: </SPAN></TD>
+<TD class="d82m42"><SPAN class="wrapped-field">06/05/2017</span></TD>
+<TD class="d82m43"><span class="label d82m27">Ttl Discount Pts: </SPAN></TD>
+<TD class="d82m44"><SPAN class="wrapped-field"></span></TD>
+<TD class="d82m49" colSpan=2>&nbsp; </TD></TR>
+<TR class="d82m24">
+<TD class="d82m22"><span class="label d82m27">SP$/SF: </SPAN></TD>
+<TD class="d82m40"><SPAN class="wrapped-field">$0.87</span></TD>
+<TD class="d82m41"><span class="label">Days to Close:</SPAN></TD>
+<TD class="d82m42"><SPAN class="wrapped-field"></span></TD>
+<TD class="d82m43"><span class="label d82m27">Terms: </SPAN></TD>
+<TD class="d82m47" colSpan=3><SPAN class="wrapped-field"></span></TD></TR>
+<TR class="d82m24">
+<TD class="d82m22"><span class="label d82m27">New Loan: </SPAN></TD>
+<TD class="d82m40"><SPAN class="wrapped-field"></span></TD>
+<TD class="d82m41"><span class="label d82m27">Interest Rate: </SPAN></TD>
+<TD class="d82m42"><SPAN class="wrapped-field"></span></TD>
+<TD class="d82m43"><span class="label d82m27">Amortize Years: </SPAN></TD>
+<TD class="d82m44"><SPAN class="wrapped-field"></span></TD>
+<TD class="d82m18"><span class="label d82m27">CoOp: </SPAN></TD>
+<TD class="d82m45"><SPAN class="wrapped-field">No</span></TD></TR>
+<TR>
+<TD class="d82m61" colSpan=4><span class="label d82m27">Seller Contribution to Buyer Costs: </SPAN>&nbsp; <SPAN class="wrapped-field"></span></TD>
+<TD class="d82m43"><span class="label d82m27">Repair/Actual Pd: </SPAN></TD>
+<TD class="d82m44"><SPAN class="wrapped-field"></span></TD>
+<TD class="d82m18"><span class="label d82m27">Title Pd By: </SPAN></TD>
+<TD class="d82m45"><SPAN class="wrapped-field"></span></TD></TR>
+<TR class="d82m24">
+<TD class="d82m5" colSpan=8>
+<DIV class="d82m53"></DIV></TD></TR>
+
+
+<TR>
+<TD class="d82m22"></TD>
+<TD class="d82m40"></TD>
+<TD class="d82m41"></TD>
+<TD class="d82m42"></TD>
+<TD class="d82m43"></TD>
+<TD class="d82m44"></TD>
+<TD class="d82m18"></TD>
+<TD class="d82m45"></TD></TR>
+<TR class="d82m58">
+<TD class="d82m5" colSpan=8></TD></TR>
+<TR>
+<TD class="d82m22"></TD>
+<TD class="d82m40"></TD>
+<TD class="d82m41"></TD>
+<TD class="d82m42"></TD>
+<TD class="d82m67" colSpan=2></TD>
+<TD class="d82m18"></TD>
+<TD class="d82m45"></TD></TR>
+<TR>
+<TD class="d82m63" colSpan=8></TD></TR></TABLE></TD>
+<TD class="d82m6"></TD></TR>
+<TR>
+<TD class="d82m4"></TD>
+<TD class="d82m5"></TD>
+<TD class="d82m6"></TD></TR>
+<TR>
+<TD class="d82m4"></TD>
+<TD class="d82m68"></TD>
+<TD class="d82m6"></TD></TR></TABLE></P></SPAN></td></tr></table></td></tr>
+				</table></DIV></span></TD></TR>
+
+
+
+<TR>
+<TD class="d3m3"></TD></TR>
+<TR>
+<TD class="d3m3">
+<TABLE class="d3m2" cellSpacing=0 cellPadding=0>
+
+
+<TR>
+<TD class="d3m4"></TD>
+<TD class="d3m5"><span class="label heading2" style='j_functiontype: "spacer"'>
+<DIV class="d3m6"></DIV></SPAN></TD>
+<TD class="d3m7"></TD>
+<TD class="d3m8"></TD>
+<TD class="d3m9"></TD></TR>
+<TR>
+<TD class="d3m4"></TD>
+<TD class="d3m10" colSpan=4>
+<TABLE class="d3m11" cellSpacing=0 cellPadding=0>
+
+
+<TR>
+<TD class="d3m12"><SPAN class="formula"><span onclick="DpyRollout.rolloutTriggerClick('137163634_98_1');" class="137163634_98_1" RolloutHTML="&lt;span class=&#39;ITQRollout icon icon_expand&#39;>&amp;nbsp;&lt;/span>" SpinnerHTML="&lt;span class=&#39;ITQRollout icon icon_spinner&#39;>&amp;nbsp;&lt;/span>" RollupHTML="&lt;span class=&#39;ITQRollout icon icon_contract&#39;>&amp;nbsp;&lt;/span>"><span class='ITQRollout icon icon_expand'>&nbsp;</span></span></span></TD>
+<TD class="NoPrint d3m13"><span class="formula NoPrint field d3m14"><span onclick="DpyRollout.rolloutTriggerClick('137163634_98_1');" class="137163634_98_1" RolloutHTML="Click here to view Photos" SpinnerHTML="Click here to view Photos" RollupHTML="Click here to hide Photos">Click here to view Photos</span></span></TD></TR>
+<TR>
+<TD class="d3m10" colSpan=2><span class="formula"><div id="137163634_98_1" QueryNumber="6" ItemKey="137163634" DisplayID="3" RolloutKey="98_1" style="display:none" ITQParams="iid=1&amp;did=98&amp;params=52 MTM3MTYzNjM0"></div></span></TD></TR></TABLE></TD></TR>
+<TR>
+<TD class="d3m4"></TD>
+<TD class="d3m5"><span class="label" style='j_functiontype: "spacer"'>
+<DIV class="d3m6"></DIV></SPAN></TD>
+<TD class="d3m7"></TD>
+<TD class="d3m8"></TD>
+<TD class="d3m9"></TD></TR>
+<TR class="d3m15">
+<TD class="d3m4"></TD>
+<TD class="d3m5"><SPAN class="formula field d3m16">Prepared By: Xiaowei Tan</span></TD>
+<TD class="d3m17" colSpan=2><span class="field">Data Not Verified/Guaranteed by MLS </SPAN></TD>
+<TD class="d3m9"><SPAN class="formula field">Date:    06/05/2017 9:16 PM</span></TD></TR>
+<TR>
+<TD class="d3m4"></TD>
+<TD class="d3m5"></TD>
+<TD class="d3m17" colSpan=2><span class="field">Obtain Signed HAR Broker Notice to Buyer Form </SPAN></TD>
+<TD class="d3m9"></TD></TR>
+<TR>
+<TD class="d3m4"></TD>
+<TD class="d3m5"><SPAN class="label" style='j_functiontype: "spacer"'>
+<DIV class="d3m18"></DIV></SPAN></TD>
+<TD class="d3m7"></TD>
+<TD class="d3m8"></TD>
+<TD class="d3m9"></TD></TR>
+<TR>
+<TD class="d3m4"></TD>
+<TD class="d3m19" colSpan=4><SPAN class="formula field d3m20">Copyright 2017 Houston Realtors Information Service, Inc.  All Rights Reserved. Users are Responsible for Verifying All Information for Total Accuracy.</span></TD></TR>
+<TR>
+<TD class="d3m4"></TD>
+<TD class="d3m5"></TD>
+<TD class="d3m7"></TD>
+<TD class="d3m8"></TD>
+<TD class="d3m9"></TD></TR></TABLE></TD></TR></TABLE></SPAN></td></tr></table></td></tr>
+				</table></DIV>
+											</div>
+											<input type="hidden" name="m_ucDragDropTable$m_hfGridState" id="m_ucDragDropTable_m_hfGridState" />
+<div id="columnProperties" class="colPropertyPopup">
+	<div class="colProperty">
+		<div style="float:right;margin-right:1em;">
+			<span>Alignment:</span>
+			<br />
+			<input id="m_ucDragDropTable_m_radioLeft" type="radio" name="m_ucDragDropTable$radiosAlign" value="left" /><label for="m_ucDragDropTable_m_radioLeft">Left</label>
+			<br />
+			<input id="m_ucDragDropTable_m_radioRight" type="radio" name="m_ucDragDropTable$radiosAlign" value="right" /><label for="m_ucDragDropTable_m_radioRight">Right</label>
+			<br />
+			<input id="m_ucDragDropTable_m_radioCenter" type="radio" name="m_ucDragDropTable$radiosAlign" value="center" /><label for="m_ucDragDropTable_m_radioCenter">Center</label>
+			<br/><br/>
+			<input id="m_ucDragDropTable_m_cbxWrap" type="checkbox" name="m_ucDragDropTable$m_cbxWrap" /><label for="m_ucDragDropTable_m_cbxWrap">Wrap Line</label>
+		</div>
+		<span>Pixel Width:</span>
+		<div style="line-height:21px; vertical-align: middle;">
+			
+			<input type="text" id="txtPixelWidth" size="8" maxlength="4" />
+			<table style="display:inline-block;position:relative;top:6px;" class="lowProfileButtonBar">
+				<tr>
+					<td class="left"></td>
+					<td class="link"><a class="autofit" href="javascript:__doPostBack(&#39;m_ucDragDropTable$ctl02&#39;,&#39;&#39;)">Auto-fit</a></td>
+					<td class="right"></td>
+				</tr>
+			</table>
+		</div>
+		<br/>
+		<a class="removeCol" href="javascript:__doPostBack(&#39;m_ucDragDropTable$ctl03&#39;,&#39;&#39;)">Remove Column</a><br /><br />
+		<a id="m_ucDragDropTable_m_lbAddColumn" class="addCol" href="javascript:__doPostBack(&#39;m_ucDragDropTable$m_lbAddColumn&#39;,&#39;&#39;)">Insert Column</a><br />
+		<div style="clear:both;"></div>
+		<div id="m_ucDragDropTable_m_upAddColumn" class="availColumnList">
+			
+				
+			
+		</div>		
+		<div class="error"></div>
+		<table class="buttonBar" style="float:right;">
+				<tr>
+					<td class="left"></td>
+					<td class="link"><a href="#" class="j-hideDialog"><span>Cancel</span></a></td>
+					<td class="link important barleft"><a id="m_ucDragDropTable_m_btnSave" class="j-save" href="javascript:__doPostBack(&#39;m_ucDragDropTable$m_btnSave&#39;,&#39;&#39;)">Apply</a></td>
+					<td class="rightImportant"></td>
+				</tr>
+			</table>
+	</div>
+</div>
+
+
+
+
+
+											<br />
+											
+										</div>
+									
+	</div>
+								
+</div>
+						</div>
+						<div style="position: relative;">
+							
+							<div id="m_upMap">
+	
+									
+								
+</div>
+						</div>
+					</div>
+					<div id="m_upDisplayButtons">
+	
+							<div style="z-index: 99; position: relative">
+								<div id="m_pnlDisplayButtons" class="floating resultsActive" style="padding: 10px 0px;">
+		
+									<input type="hidden" name="m_hfMenuState" id="m_hfMenuState" value="Actions" />
+									<div class="resultsMenu tabbedMenu" style="display: none;">
+										<ul class="mainmenu">
+											<li id="m_liActionsTab">
+												Actions</li>
+											<li id="m_liResultsTab">
+												Refine</li>
+											<li id="m_liSaveAsTab">
+												Save</li>
+											<li id="m_liCartsTab">
+												Carts</li>
+											
+										</ul>
+										<div class="paging hideOnMap">
+											
+											<span id="m_upPaging">
+													<span class="pagingLinks">
+<b>[1]</b>
+<a  href="javascript:__doPostBack('m_DisplayCore','Redisplay|,,1')" >2</a>
+<a  href="javascript:__doPostBack('m_DisplayCore','Redisplay|,,2')" >3</a>
+<a  href="javascript:__doPostBack('m_DisplayCore','Redisplay|,,3')" >4</a>
+<a  href="javascript:__doPostBack('m_DisplayCore','Redisplay|,,4')" >5</a>
+<a  href="javascript:__doPostBack('m_DisplayCore','Redisplay|,,5')" >6</a>
+<a  href="javascript:__doPostBack('m_DisplayCore','Redisplay|,,6')" >7</a>
+<a  href="javascript:__doPostBack('m_DisplayCore','Redisplay|,,7')" >8</a>
+<a  href="javascript:__doPostBack('m_DisplayCore','Redisplay|,,8')" >9</a>
+<a  href="javascript:__doPostBack('m_DisplayCore','Redisplay|,,9')" >10</a>
+<a  href="javascript:__doPostBack('m_DisplayCore','Redisplay|,,10')" >...</a>&nbsp;&middot;
+<a  disabled="disabled">Previous</a>&nbsp;&middot;
+<a  href="javascript:__doPostBack('m_DisplayCore','Redisplay|,,1')" >Next</a></span>
+
+												</span>
+										</div>
+										<div style="clear: both;"></div>
+										<div id="m_tblActionMenu" class="submenu">
+											<table border="0" cellspacing="0" cellpadding="0" class="buttonBar">
+												<tr>
+													<td class="leftImportant">
+														<img src="/matrix/images/c.gif" width="13" alt="spc" /></td>
+													<td id="m_tdRevise" class="link important barright" title="">
+														<a id="m_lbReviseSearch" href="javascript:__doPostBack(&#39;m_lbReviseSearch&#39;,&#39;&#39;)"><span class="linkIcon icon_search">Criteria</span></a></td>
+		
+													<td id="m_tdEmail" class="link important barright disabled" title="You must check at least 1 item.">
+														<a id="m_lbEmail" href="javascript:__doPostBack(&#39;m_lbEmail&#39;,&#39;&#39;)"><span class="linkIcon icon_emailSend">Email</span></a></td>
+		
+													<td id="m_tdPrint" class="link important disabled" title="You must check at least 1 item.">
+														<a id="m_lbPrint" href="javascript:__doPostBack(&#39;m_lbPrint&#39;,&#39;&#39;)"><span class="linkIcon icon_print">Print</span></a></td>
+		
+													<td id="m_tdCMA" class="link important barleft disabled" title="You must check at least 1 item.">
+														<a id="m_lbCMA" href="javascript:__doPostBack(&#39;m_lbCMA&#39;,&#39;&#39;)"><span class="linkIcon icon_cma">CMA</span></a></td>
+		
+													<td id="m_tdDrivingDirections" class="link important barleft disabled" title="You must check at least 1 item.">
+														<a id="m_lbDrivingDirections" href="javascript:__doPostBack(&#39;m_lbDrivingDirections&#39;,&#39;&#39;)"><span class="linkIcon icon_driving_directions">Directions</span></a></td>
+		
+													<td id="m_tdStats" class="link important barleft" title="">
+														<a id="m_btnStats" href="javascript:__doPostBack(&#39;m_btnStats&#39;,&#39;&#39;)"><span class="linkIcon icon_chartBar">Stats</span></a></td>
+		
+													<td id="m_tdExport" class="link important barleft disabled" title="You must check at least 1 item.">
+														<a id="m_lbExport" href="javascript:__doPostBack(&#39;m_lbExport&#39;,&#39;&#39;)"><span class="linkIcon icon_export">Export</span></a></td>
+		
+													
+		
+		<td id="m_cbbActionMenu_m_lvButtons_ctrl0_cbbButtonBar_m_tdTableCell" class="link important barleft disabled" title="You must check at least 1 item.">
+	<a id="m_cbbActionMenu_m_lvButtons_ctrl0_cbbButtonBar_m_lbCustomLink" href="javascript:Dpy.redirectThroughPopupCheck(1);">
+		<span class="linkIcon icon_pdfView" Style="">
+			Quick CMA
+		</span>
+	</a>
+	
+</td>
+		
+
+	
+		<td id="m_cbbActionMenu_m_lvButtons_ctrl1_cbbButtonBar_m_tdTableCell" class="link important barleft disabled" title="You must check at least 1 item.">
+	<a id="m_cbbActionMenu_m_lvButtons_ctrl1_cbbButtonBar_m_lbCustomLink" href="javascript:Dpy.redirectThroughPopupCheck(3);">
+		<span class="linkIcon icon_cma" Style="">
+			Cloud CMA
+		</span>
+	</a>
+	
+</td>
+		
+
+	
+		<td id="m_cbbActionMenu_m_lvButtons_ctrl2_cbbButtonBar_m_tdTableCell" class="link important barleft disabled" title="You must check at least 1 item.">
+	<a id="m_cbbActionMenu_m_lvButtons_ctrl2_cbbButtonBar_m_lbCustomLink" href="javascript:Dpy.redirectThroughPopupCheck(2);">
+		<span class="linkIcon icon_export" Style="">
+			Text Listings
+		</span>
+	</a>
+	
+</td>
+		
+
+	
+	
+<td class="rightImportant"><img src="/matrix/images/c.gif" width="13" alt="spc" /></td>
+
+												</tr>
+											</table>
+										</div>
+										<div id="m_tblRefineMenu" class="submenu">
+											<table border="0" cellspacing="0" cellpadding="0" class="buttonBar">
+												<tr>
+													<td class="leftImportant">
+														<img src="/matrix/images/c.gif" width="13" alt="spc" /></td>
+													<td id="m_tdGoggles" class="link important" style="position: relative;">
+														<span id="m_ucContacts_m_upMain">
+		<span class="contactSelectorInnerSpan">
+			<span id="m_ucContacts_m_lblText">View as</span><span id="m_ucContacts_m_spnSpace">&nbsp;</span><select name="m_ucContacts$m_ddlContacts" onchange="javascript:setTimeout(&#39;__doPostBack(\&#39;m_ucContacts$m_ddlContacts\&#39;,\&#39;\&#39;)&#39;, 0)" id="m_ucContacts_m_ddlContacts" class="" style="font-size:11px;margin:0px;font-family:Verdana,Helvetica,Arial,sans-serif;width:160px;">
+			<option selected="selected" value="-1">Select a Contact</option>
+			<option value="1758396" title="georgiachen@gmail.com" hasClientActivatedAE="true">Chen, Yunjia</option>
+			<option value="1753291" title="xiaoweitan@hotmail.com" hasClientActivatedAE="false">Xu, Ayi</option>
+
+		</select>
+		</span>
+	</span>
+
+													</td>
+		
+													<td id="m_tdNarrow" class="link important barleft disabled" title="You must check at least 1 item.">
+														<a id="m_lbNarrow" href="javascript:__doPostBack(&#39;m_lbNarrow&#39;,&#39;&#39;)"><span class="linkIcon icon_narrow">Narrow</span></a></td>
+		
+													<td id="m_tdDiscard" class="link important barleft disabled" title="You must check at least 1 item.">
+														<a id="m_lbDiscard" href="javascript:__doPostBack(&#39;m_lbDiscard&#39;,&#39;&#39;)"><span class="linkIcon icon_discard">Discard</span></a></td>
+		
+													
+													<td id="m_tdMultiSort" class="link important barleft disabled" title="You must check at least 1 item.">
+														<a onclick="DpyHelp.multiSortWindow(&#39;BB=MultiSort&#39;);" id="m_aSort" href="javascript:__doPostBack(&#39;m_aSort&#39;,&#39;&#39;)"><span class="linkIcon icon_sort">Sort</span></a></td>
+		
+													<td id="m_tdReSearch" class="link important barleft">
+														<span id="m_lblSearchSelected">Search selected for</span>&nbsp;<select name="m_ddlInterTableQueries" id="m_ddlInterTableQueries" onchange="(function(arg) { __doPostBack(&#39;m_DisplayCore&#39;,&#39;P-ITQ|&#39; + arg);})(this.value)">
+			<option value=""></option>
+			<option value="28">Listing History</option>
+
+		</select></td>
+		
+													
+<td class="rightImportant"><img src="/matrix/images/c.gif" width="13" alt="spc" /></td>
+
+												</tr>
+											</table>
+										</div>
+										<div id="m_tblSaveAsMenu" class="submenu">
+											<table border="0" cellspacing="0" cellpadding="0" class="buttonBar">
+												<tr>
+													<td class="leftImportant">
+														<img src="/matrix/images/c.gif" width="13" alt="spc" /></td>
+													
+													<td class="link important barright">
+														<a id="m_lbSaveAsSavedSearch" href="javascript:__doPostBack(&#39;m_lbSaveAsSavedSearch&#39;,&#39;&#39;)"><span class="linkIcon icon_savedsearch">New Saved Search</span></a></td>
+													<td id="m_tdSaveAsAutoEmail" class="link important barright disabled" title="This search returns too many results (max 250) to be saved as an Auto Email." onclick="alert(&#39;This search returns too many results (max 250) to be saved as an Auto Email.&#39;);return false;">
+														<a id="m_lbSaveAsAutoEmail" href="javascript:__doPostBack(&#39;m_lbSaveAsAutoEmail&#39;,&#39;&#39;)"><span class="linkIcon icon_autoemail">New Auto Email</span></a></td>
+		
+													<td id="m_tdSaveAsSpeedbar" class="link important">
+														<a id="m_lbSaveAsSpeedbarMacro" href="javascript:__doPostBack(&#39;m_lbSaveAsSpeedbarMacro&#39;,&#39;&#39;)"><span class="linkIcon icon_speedbar">New Speed Bar Shortcut</span></a></td>
+		
+													
+<td class="rightImportant"><img src="/matrix/images/c.gif" width="13" alt="spc" /></td>
+
+												</tr>
+											</table>
+										</div>
+										
+
+
+
+<table border="0" cellspacing="0" cellpadding="0" id="m_ucCartControl" class="buttonBar submenu">
+	<tr>
+		<td class="leftImportant"><img src="/matrix/images/c.gif" width="13" alt="spc" /></td>
+		<td id="m_ucCartControl_m_tdRemoveFrom" class="link important disabled" title="You must check at least 1 item." style="display:none;"><a id="m_ucCartControl_m_lbRemove" href="javascript:__doPostBack(&#39;m_ucCartControl$m_lbRemove&#39;,&#39;&#39;)"><span class="linkIcon icon_clear">Remove Checked</span></a></td>
+		
+		<td id="m_ucCartControl_m_tdAddTo" class="link important disabled" title="You must check at least 1 item." style="display:;"><a id="m_ucCartControl_m_lbAddTo" href="javascript:__doPostBack(&#39;m_ucCartControl$m_lbAddTo&#39;,&#39;&#39;)"><span class="linkIcon icon_add">Add to Cart</span></a></td>
+		
+		
+		
+		
+		<td id="m_ucCartControl_m_tdView" class="link important barleft" title=""><a id="m_ucCartControl_m_lbView" href="javascript:__doPostBack(&#39;m_ucCartControl$m_lbView&#39;,&#39;&#39;)"><span class="linkIcon icon_search">View</span></a></td>
+		 
+		<td id="m_ucCartControl_m_tdList" class="link important barleft">
+			<div id="m_ucCartControl_m_upCarts">
+			
+					<select name="m_ucCartControl$m_ddlCarts" id="m_ucCartControl_m_ddlCarts" onchange="return CartObj.ChangeSelectedCart(this,&#39;m_ucCartControl_&#39;,&#39;A&#39;,function(){__doPostBack(&#39;m_ucCartControl$m_ddlCarts&#39;,&#39;&#39;);});">
+				<option selected="selected" value="G9">Cart: My Cross Property (0)</option>
+				<option value="C1758396" title="georgiachen@gmail.com">Cart: Chen, Yunjia (115)</option>
+				<option value="C1753291" title="xiaoweitan@hotmail.com">Cart: Xu, Ayi (0)</option>
+
+			</select>
+				
+		</div>
+		</td>
+		
+        <td class="link important barleft">
+            <a id="m_ucCartControl_m_lbAddContact" href="javascript:void(0);"><span class="linkIcon icon_contactAdd">New Contact</span></a>
+            
+<div id="m_ucCartControl_m_ucAddEditContact_ctl00">
+
+		</div>
+<div id="m_ucCartControl_m_ucAddEditContact_m_divCustomCategories" class="jqmWindow" style="margin-left:-140px;top:7%;z-index:4000;">
+	<div id="m_ucCartControl_m_ucAddEditContact_m_upCustomCategories">
+			
+			
+		
+		</div>
+</div>
+<div id="m_ucCartControl_m_ucAddEditContact_m_divContactFields" class="jqmWindow" style="overflow:auto;max-height:79%;padding:0;z-index:3500;">
+	<div id="m_ucCartControl_m_ucAddEditContact_m_upContactFields">
+			
+			
+		
+		</div>
+</div>
+
+        </td>
+		
+<td class="rightImportant"><img src="/matrix/images/c.gif" width="13" alt="spc" /></td>
+
+	</tr>
+</table>
+										
+
+									</div>
+								
+	</div>
+							</div>
+							
+								<div class="buttonPopupContainer" id="statsOptionsContainer">
+									<div id="m_spnStatsOptions" class="buttonPopup" style="display: none; z-index: 100">
+										<ul>
+											<li>
+												<a id="m_lbNewStats" href="javascript:__doPostBack(&#39;m_lbNewStats&#39;,&#39;&#39;)">Charts</a></li>
+											<li>
+												<a id="m_lbOldStats" href="javascript:__doPostBack(&#39;m_lbOldStats&#39;,&#39;&#39;)">Tabular</a></li>
+										</ul>
+									</div>
+								</div>
+							
+						
+</div>
+
+					<div id="m_upResultsInfo">
+	
+							<div id="m_pnlResultsInfo" class="css_content" style="clear: both; padding-top: 5px;">
+		
+								<table id="m_tblSqlSearchInfo" cellspacing="0" cellpadding="0" border="0" style="width: 100%;">
+									<tr>
+										<td style="padding-right: 20px;">
+											<table cellspacing="0" cellpadding="0" class="faded">
+												<tr valign="top">
+													<td align="left" width="500">
+														<div class="clause"><span class="fieldName"><span class="fieldName">Status</span></span> is 'Sold'</div><div class="clause"><span class="fieldName">Status Contractual Search Date</span> is 06/05/2017 to 12/07/2016</div><div class="clause"><span class="fieldName"><span class="fieldName">Property Type</span></span> is 'Rental'</div>
+														
+													</td>
+												</tr>
+												<tr valign="top">
+													<td>
+														<span id="m_lblSqlSearchTime">Found  5000 results in 0.02 seconds.</span></td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							
+	</div>
+						
+</div>
+				</td>
+			</tr>
+		</table>
+	</div><div class="stickypush"></div></div>
+<div class="footer_div">
+    <br/>
+	<table class="footer" style="border-collapse:collapse" cellpadding="0" cellspacing="0">
+	<tr>
+	<td valign="bottom" width="1px" style="padding:0px 5px 0px 10px;">
+		<img src="images/logo_footer.png" />
+	</td>
+	<td valign="bottom" align="left" style="padding:0px 10px 0px 0px" nowrap>
+		<div id="ctl02_m_divFooterContainer" class="short_footer">DATA NOT VERIFIED/GUARANTEED BY MLS - Obtain signed HAR Broker Notice to Buyer form</div>
+		<div style="margin-bottom:2px"><a href="http://www.marketlinx.com" target="_blank">Matrix v<span title='7.0.3.35640'>7.0</span><!--, compiled -->. Copyright © 2017 CoreLogic. All rights reserved.</a></div>
+	</td>
+	</tr>
+	</table>
+	<!-- CL-HAR-WEB04 -->
+</div>
+
+
+<script type="text/javascript">
+//<![CDATA[
+new GeocodeAddressClass({base:'m_ga', tb:'m_ga_m_tb', hfLat:'m_ga_m_hfLat', hfLong:'m_ga_m_hfLong'}, 'AtmMylOwdOQG4NWGfiM7G1EsIkDI42JQuufWW9tF9PE8gKv2A77HyRzj4xEGEfqP', '29.213067435864,-96.9927976839244,30.7356960680906,-93.9668613107502', '/Matrix/Public/LocationList/GetLocations.ashx?L=1&u=84659', 0);new GeocodeAddressClass({base:'m_ucIMap_m_ucDriveTime_m_tbLoc', tb:'m_ucIMap_m_ucDriveTime_m_tbLoc_m_tb', hfLat:'m_ucIMap_m_ucDriveTime_m_tbLoc_m_hfLat', hfLong:'m_ucIMap_m_ucDriveTime_m_tbLoc_m_hfLong'}, 'AtmMylOwdOQG4NWGfiM7G1EsIkDI42JQuufWW9tF9PE8gKv2A77HyRzj4xEGEfqP', '29.213067435864,-96.9927976839244,30.7356960680906,-93.9668613107502', '/Matrix/Public/LocationList/GetLocations.ashx?L=1&u=84659', 1);ResultsJs.initialize({display:(function(arg) { __doPostBack('m_DisplayCore','P-Display|' + arg);}), pageSize:(function(arg) { __doPostBack('m_DisplayCore','P-PageSize|' + arg);}), shapes:MakePostBackFromStrictModeCodeFirefoxSafe((function(arg) { __doPostBack('m_DisplayCore','P-Shapes|' + arg);})), movemap:MakePostBackFromStrictModeCodeFirefoxSafe((function(arg) { __doPostBack('m_DisplayCore','P-MoveMap|' + arg);})), showUnmappable:(function(arg) { __doPostBack('m_DisplayCore','P-ShowUnmappable|' + arg);})},{noPinsVisible:function(  ){ return "No visible pins to check."; }, noResults:function(  ){ return "No items to check."; }, setTooBig:function(  ){ return "Too many items to check (max 5000)"; }, checkAll:function(  ){ return "Check All"; }});
+var ResultsMenu = new TabbedMenuClass('m_hfMenuState', {m_liActionsTab:{strID:'m_liActionsTab', strHFVal:'Actions', strSubMenuID:'m_tblActionMenu'},m_liResultsTab:{strID:'m_liResultsTab', strHFVal:'Results', strSubMenuID:'m_tblRefineMenu'},m_liSaveAsTab:{strID:'m_liSaveAsTab', strHFVal:'SaveAs', strSubMenuID:'m_tblSaveAsMenu'},m_liCartsTab:{strID:'m_liCartsTab', strHFVal:'Carts', strSubMenuID:'m_ucCartControl'}}, 'div.resultsMenu');
+ImageViewerClass('#m_DisplayCore_dpy1', 6, 'http://matrixmedia.harmls.com/mediaserver/GetMedia.ashx?Key=137163634&TableID=9&Type=1', [],{L:1,tid:9,key:'137163634',mtid:1,View:'G'}, {t:{u:'&Size=1&exk=44f83402f021961a23d73ae97145043f&Number=',w:133,h:100},m:{u:'&Size=4&exk=2fa2e20be0720b8aa72c3208ea4b8ff0&Number=',w:196,h:147},l:{u:'&Size=3&exk=d8c3c72d93e58ecfc8006dd4d968159e&Number=',w:1024,h:768}}, 0,'137163634');
+ImageViewerClass.captionInit('/Matrix/Public/Media/Captions.ashx', {L:1,tid:9,key:'137163634',mtid:1,View:'G'});
+var buttonOptions = new TimedShowHide();
+buttonOptions.wireupShowHidePopup( 'm_spnStatsOptions',document.getElementById('m_btnStats'), {top:8,left:52});
+displayButtons = new ButtonBar(function(  ){ return "You must check at least 1 item."; },function( extra ){ return "You have too many items checked for this action (max = " + ( extra.maxitemschecked != null ? extra.maxitemschecked : '' ) + ")."; });
+displayButtons.addButton('m_lbNarrow',1,500, undefined, undefined);
+displayButtons.addButton('m_lbDiscard',1,500, undefined, undefined);
+displayButtons.addButton('m_lbPrint',1,2500, undefined, undefined);
+displayButtons.addButton('m_lbCMA',1,50, undefined, undefined);
+displayButtons.addButton('m_lbEmail',1,500, undefined, undefined);
+displayButtons.addButton('m_lbDrivingDirections',1,20, undefined, undefined);
+displayButtons.addButton('m_lbUndiscard',0,2147483647, undefined, undefined);
+displayButtons.addButton('m_lbExport',1,5000, false, false);
+displayButtons.addButton('m_lbReviseSearch',0,2147483647, undefined, undefined);
+displayButtons.addButton('m_aSort',2147483647,2147483647, false, ResultsJs.whyCantSort(function(  ){ return "It is not meaningful to sort the results on the map page."; },function(  ){ return "Sort limit exceeded. Your search finds more than 5000 records, too many to sort."; }, false));
+displayButtons.addButton('m_btnStats',0,5000, false, false);
+displayButtons.addButton('m_ucCartControl_m_lbRemove',1,2147483647, undefined, undefined);
+displayButtons.addButton('m_ucCartControl_m_lbMoveToCart',1,2147483647, undefined, undefined);
+displayButtons.addButton('m_ucCartControl_m_lbMoveToHolds',1,2147483647, undefined, undefined);
+displayButtons.addButton('m_ucCartControl_m_lbAddTo',1,-1, undefined, CartObj.WhyCartAddDisabled);
+displayButtons.addButton('m_ucCartControl_m_lbView',0,2147483647, undefined, CartObj.WhyCartViewDisabled);
+displayButtons.addButton('m_cbbActionMenu_m_lvButtons_ctrl0_cbbButtonBar_m_lbCustomLink',1,500, undefined, undefined);
+displayButtons.addButton('m_cbbActionMenu_m_lvButtons_ctrl1_cbbButtonBar_m_lbCustomLink',1,50, undefined, undefined);
+displayButtons.addButton('m_cbbActionMenu_m_lvButtons_ctrl2_cbbButtonBar_m_lbCustomLink',1,120, undefined, undefined);
+displayButtons.addUpdateCallback(updateStatsLinks(5000,function( extra ){ return "You have too many items checked for this action (max = " + ( extra.maxitemschecked != null ? extra.maxitemschecked : '' ) + ")."; },function(  ){ return "The Charts function does not work on a specific set of checked listings. Please un-check all and try again."; }));displayButtons.addSelect('m_ddlInterTableQueries','m_lblSearchSelected',1,5000);
+window.displayPaging = new DisplayPagingClass('m_DisplayCore_dpy2','m_DisplayCore_dpy3', false);
+$('ul.sf-menu').supersubs().superfish();
+RegisterPostbackOnClick('ctl01_m_tdMenu','ctl01$m_pbtRedirect');
+ConfirmationMessage.confirmationMessage = new ConfirmationMessage('ctl01_ctl00_m_lblConf', 'ctl01_ctl00_m_divConf');
+SpeedBarJs.setErrorState(false);
+var gridSaveLinks = new GridSaveLinksJsClass({displayName:'#m_ucGridSaveLinks_m_tbNewDisplayName',save:'#m_ucGridSaveLinks_m_lbSave',saveAs:'#m_ucGridSaveLinks_m_lbSaveAs'}, {BlankDisplayName:function(  ){ return "The Display Name cannot be blank. No changes are saved."; }});gridSaveLinks.init();var ddt = new DragDropTableClass({hfGridState:'#m_ucDragDropTable_m_hfGridState',radioLeft:'#m_ucDragDropTable_m_radioLeft',radioRight:'#m_ucDragDropTable_m_radioRight',radioCenter:'#m_ucDragDropTable_m_radioCenter',ckboxWrap:'#m_ucDragDropTable_m_cbxWrap',txtPixelWidth:'#txtPixelWidth',lbInsertColumn:'#m_ucDragDropTable_m_lbAddColumn',upAddColumn:'#m_ucDragDropTable_m_upAddColumn',lbxAvailableColumns:'#m_ucDragDropTable_m_lbxAvailableFields',popupColProperties:'#columnProperties',tGridTable:'table.displayGrid',tExtraColumns:''}, '3', 25, 0, 50, {TooManyColumns:function(  ){ return "Too many columns added (max 50 total)"; },CannotRemoveColumn:function(  ){ return "There must be at least one column in a grid."; },HowToInsertColumn:function(  ){ return "Select column(s) below and click Apply."; }}, 1);document.getElementById('m_pnlDisplayButtons').reAnchor = keepInViewport('#m_pnlDisplayButtons',false);
+var aec = new AddEditContact({ID:'m_ucCartControl_m_ucAddEditContact',DivID:'m_ucCartControl_m_ucAddEditContact_m_divContactFields',AddContactSel:'#m_ucCartControl_m_lbAddContact',EditContactSel:'',SaveButtonID:'m_ucCartControl_m_ucAddEditContact_m_btnSave',TDExpandID:'m_ucCartControl_m_ucAddEditContact_m_tdExpand',TDCollapseID:'m_ucCartControl_m_ucAddEditContact_m_tdCollapse',MissingRequiredFields:function(  ){ return "You have not entered values for all required fields."; },HasProspectWeb:false,IsSelf:true,RaisePostBackEvent:function(strAction,nContact){__doPostBack('m_ucCartControl$m_ucAddEditContact$m_ucPostBackTarget',strAction + ',' + nContact);},CustomCategoriesDivID:'m_ucCartControl_m_ucAddEditContact_m_divCustomCategories',ReloadOnChange:false,RequiredFieldsSel:'#m_ucCartControl_m_ucAddEditContact_m_cf_m_txtPIFirstName,#m_ucCartControl_m_ucAddEditContact_m_cf_m_txtPILastName,#m_ucCartControl_m_ucAddEditContact_m_cf_m_txtPIEmailAddress',CategoryDropDownID:'m_ucCartControl_m_ucAddEditContact_m_cf_m_ucCategory_m_ddlCategory',SalutationFields:{Title:'m_ucCartControl_m_ucAddEditContact_m_cf_m_txtPITitle', FirstName:'m_ucCartControl_m_ucAddEditContact_m_cf_m_txtPIFirstName', LastName:'m_ucCartControl_m_ucAddEditContact_m_cf_m_txtPILastName'},SalutationPicker:new SalutationPicker('m_ucCartControl_m_ucAddEditContact_m_cf_m_ucSalutations_m_ddlSalutations',{'1':function(rec,ME){return 'Hi '+rec('FirstName')+',';},'2':function(rec,ME){return 'Hello '+rec('FirstName')+',';},'3':function(rec,ME){return 'Dear '+(ME.isEmpty(rec('Title'))?'':rec('Title')+' ')+rec('FullName')+',';},'0':null})});ResultsJs.bindResults(DpyCB,true);
+ResultsJs.setCanCheckAll(false);
+ResultsJs.bindSubHeader();
+Sys.Application.add_init(function() {
+    $create(Sys.UI._UpdateProgress, {"associatedUpdatePanelId":"m_ucTitle_m_ucMarketWatch_m_upContent","displayAfter":0,"dynamicLayout":true}, null, null, $get("m_ucTitle_m_ucMarketWatch_m_ucHeader_m_spnUpdateSpinner"));
+});
+Sys.Application.add_init(function() {
+    $create(Sys.UI._UpdateProgress, {"associatedUpdatePanelId":"m_upDisplayCore","displayAfter":1000,"dynamicLayout":true}, null, null, $get("ctl14"));
+});
+//]]>
+</script>
+</form>
+</body>
+</html>
