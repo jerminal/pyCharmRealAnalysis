@@ -18,11 +18,25 @@ def writeToCSV(ary):
     aryValues = []
     for item in ary:
         aryValues.append(list(item.values()))
-    with open(r"c:\temp\output.csv", 'w') as f:
+    aryFileData = []
+    for dict in ary:
+        row = []
+        for key in header:
+            try:
+                valCol = dict[key]
+            except:
+                valCol = None
+            row.append(valCol)
+        aryFileData.append(row)
+
+    with open(r"c:\temp\outputraw.csv", 'w') as f:
         wr = csv.writer(f, dialect='excel')
         wr.writerow(header)
         wr.writerows(aryValues)
-
+    with open(r"c:\temp\output.csv", 'w') as f:
+        wr = csv.writer(f, dialect='excel')
+        wr.writerow(header)
+        wr.writerows(aryFileData)
     print('done')
 
 
@@ -95,7 +109,8 @@ if __name__ == "__main__":
     if not elemSold.is_selected():
         elemSold.click()
     #now set date range
-    datEnd= datetime.date.today()
+    #datEnd= datetime.date.today()
+    datEnd = datetime.date(2000,1,1)
     datStart=datEnd + datetime.timedelta(days = -1)
     strDateRange = datStart.strftime("%m/%d/%Y") + "-" + datEnd.strftime("%m/%d/%Y")
     xpSoldDateRange = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content']/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[6]/td[2]/input[@id='FmFm1_Ctrl16_20916_Ctrl16_TB']"
