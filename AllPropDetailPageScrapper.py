@@ -17,15 +17,13 @@ def parseSection(sectionContent, dictColumns):
             print("{0} not found".format(dictColumns[key]))
     return dictResults
 
-
-def parseDetails(sHtml):
-    lstPropTypes = ['Townhouse/Condo','Lots','Multi-Family','Rental','Single-Family']
-    cfg = XmlConfigReader.Config("AllPropScrapper","DEV")
-    #now start retrieve the page section names and column dictionary
+def readAllPropScrapperConfigSections():
+    cfg = XmlConfigReader.Config("AllPropScrapper", "DEV")
+    # now start retrieve the page section names and column dictionary
     dictSectionLookup = {}
     lstSectKeys = []
     lstSectDict = []
-    #general section
+    # general section
     strGeneral = cfg.getConfigValue("PageSections/Section[@name='{0}']/SectionString".format("General"))
     strTemp = cfg.getConfigValue("PageSections/Section[@name='{0}']/ColumnDictionary".format("General"))
     dictGeneral = ast.literal_eval(strTemp.strip())
@@ -33,7 +31,7 @@ def parseDetails(sHtml):
     lstSectDict.append(dictGeneral)
     dictSectionLookup[strGeneral] = dictGeneral
 
-    #ListingOffice section
+    # ListingOffice section
     strListingOffice = cfg.getConfigValue("PageSections/Section[@name='{0}']/SectionString".format("ListingOffice"))
     strTemp = cfg.getConfigValue("PageSections/Section[@name='{0}']/ColumnDictionary".format("ListingOffice"))
     dictListingOffice = ast.literal_eval(strTemp.strip())
@@ -41,7 +39,7 @@ def parseDetails(sHtml):
     lstSectDict.append(dictListingOffice)
     dictSectionLookup[strListingOffice] = dictListingOffice
 
-    #SchoolSection
+    # SchoolSection
     strSchool = cfg.getConfigValue("PageSections/Section[@name='{0}']/SectionString".format("School"))
     strTemp = cfg.getConfigValue("PageSections/Section[@name='{0}']/ColumnDictionary".format("School"))
     dictSchool = ast.literal_eval(strTemp.strip())
@@ -49,14 +47,14 @@ def parseDetails(sHtml):
     lstSectDict.append(dictSchool)
     dictSectionLookup[strSchool] = dictSchool
 
-    #Description section
+    # Description section
     strDescription = cfg.getConfigValue("PageSections/Section[@name='{0}']/SectionString".format("Description"))
     strTemp = cfg.getConfigValue("PageSections/Section[@name='{0}']/ColumnDictionary".format("Description"))
     dictDescription = ast.literal_eval(strTemp.strip())
     lstSectKeys.append(strDescription)
     lstSectDict.append(dictDescription)
     dictSectionLookup[strDescription] = dictDescription
-    #Rooms section
+    # Rooms section
     '''
     strRooms = cfg.getConfigValue("PageSections/Section[@name='{0}']/SectionString".format("Rooms"))
     strTemp = cfg.getConfigValue("PageSections/Section[@name='{0}']/ColumnDictionary".format("Rooms"))
@@ -64,7 +62,7 @@ def parseDetails(sHtml):
     lstSectKeys.append(strRooms)
     lstSectDict.append(dictRooms)
     '''
-    #Additional section
+    # Additional section
     strAdditional = cfg.getConfigValue("PageSections/Section[@name='{0}']/SectionString".format("Additional"))
     strTemp = cfg.getConfigValue("PageSections/Section[@name='{0}']/ColumnDictionary".format("Additional"))
     dictAdditional = ast.literal_eval(strTemp.strip())
@@ -72,7 +70,7 @@ def parseDetails(sHtml):
     lstSectDict.append(dictAdditional)
     dictSectionLookup[strAdditional] = dictAdditional
 
-    #LeaseAdditinal
+    # LeaseAdditinal
     strLeaseAdditional = cfg.getConfigValue("PageSections/Section[@name='{0}']/SectionString".format("LeaseAdditinal"))
     strTemp = cfg.getConfigValue("PageSections/Section[@name='{0}']/ColumnDictionary".format("LeaseAdditinal"))
     dictLeaseAdditional = ast.literal_eval(strTemp.strip())
@@ -80,7 +78,7 @@ def parseDetails(sHtml):
     lstSectDict.append(dictLeaseAdditional)
     dictSectionLookup[strLeaseAdditional] = dictLeaseAdditional
 
-    #Financial section
+    # Financial section
     strFinancial = cfg.getConfigValue("PageSections/Section[@name='{0}']/SectionString".format("Financial"))
     strTemp = cfg.getConfigValue("PageSections/Section[@name='{0}']/ColumnDictionary".format("Financial"))
     dictFinancial = ast.literal_eval(strTemp.strip())
@@ -101,16 +99,23 @@ def parseDetails(sHtml):
     strTemp = cfg.getConfigValue("PageSections/Section[@name='{0}']/ColumnDictionary".format("Sold"))
     dictSold = ast.literal_eval(strTemp.strip())
     lstSectKeys.append(strSold)
-    lstSectDict.append(dictSold )
+    lstSectDict.append(dictSold)
     dictSectionLookup[strSold] = dictSold
 
-    #LeasedInformation
-    strLeasedInformation = cfg.getConfigValue("PageSections/Section[@name='{0}']/SectionString".format("LeasedInformation"))
+    # LeasedInformation
+    strLeasedInformation = cfg.getConfigValue(
+        "PageSections/Section[@name='{0}']/SectionString".format("LeasedInformation"))
     strTemp = cfg.getConfigValue("PageSections/Section[@name='{0}']/ColumnDictionary".format("LeasedInformation"))
     dictLeasedInformation = ast.literal_eval(strTemp.strip())
     lstSectKeys.append(strLeasedInformation)
     lstSectDict.append(dictLeasedInformation)
     dictSectionLookup[strLeasedInformation] = dictLeasedInformation
+
+    return (lstSectKeys, lstSectDict, dictSectionLookup)
+
+def parseDetails(sHtml):
+    lstPropTypes = ['Townhouse/Condo','Lots','Multi-Family','Rental','Single-Family']
+    (lstSectKeys, lstSectDict, dictSectionLookup ) = readAllPropScrapperConfigSections()
 
     soup = BeautifulSoup(sHtml, 'lxml')
     #extract all tables' contents
@@ -237,8 +242,8 @@ def parseDetails(sHtml):
     # close agent info
     try:
         entry = dictResults['CloseAgent']
-        dictResults['CloseAgentId'] = (entry.split('(')[1]).strip()
-        dictResults['CloseAgentName'] = (entry.split('(')[0]).rstrip(")")
+        dictResults['CloseAgentId'] = (entry.split('(')[1]).rstrip(")")
+        dictResults['CloseAgentName'] = entry.split('(')[0]
     except:
         print("Error occured while trying to generate close agent id and name. original value: {0}".format(entry))
         dictResults['CloseAgentId'] = entry
@@ -255,8 +260,8 @@ def parseDetails(sHtml):
 # close broker info
     try:
         entry = dictResults['CloseBroker']
-        dictResults['CloseBrokerId'] = (entry.split('(')[1]).strip()
-        dictResults['CloseBrokerName'] = (entry.split('(')[0]).rstrip(")")
+        dictResults['CloseBrokerId'] = (entry.split('(')[1]).rstrip(")")
+        dictResults['CloseBrokerName'] = entry.split('(')[0]
     except:
         print("Error occured while trying to generate broker id and name. original value: {0}".format(entry))
         dictResults['CloseBrokerId'] = entry

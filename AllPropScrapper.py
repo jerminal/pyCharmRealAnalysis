@@ -14,7 +14,13 @@ import AllPropDetailPageScrapper as PropScrap
 import traceback
 
 def writeToCSV(ary):
-    header = list(ary[0].keys())
+    (lstSectKeys, lstSectDict, dictSectionLookup) = PropScrap.readAllPropScrapperConfigSections()
+    for idx, item in enumerate(lstSectDict):
+        if idx >0:
+            lstSectDict[0].update(item)
+    header = list(lstSectDict[0].keys())
+
+    #header = list(ary[0].keys())
     aryValues = []
     for item in ary:
         aryValues.append(list(item.values()))
@@ -39,9 +45,7 @@ def writeToCSV(ary):
         wr.writerows(aryFileData)
     print('done')
 
-
-
-if __name__ == "__main__":
+def scrapSoldProperties(datFrom, datTo):
     cfg = XmlConfigReader.Config("AllPropScrapper", "DEV")
     strUserName = cfg.getConfigValue("HARUserName")
     strPwd = cfg.getConfigValue("HARPassword")
@@ -109,10 +113,8 @@ if __name__ == "__main__":
     if not elemSold.is_selected():
         elemSold.click()
     #now set date range
-    #datEnd= datetime.date.today()
-    datEnd = datetime.date(2000,1,1)
-    datStart=datEnd + datetime.timedelta(days = -1)
-    strDateRange = datStart.strftime("%m/%d/%Y") + "-" + datEnd.strftime("%m/%d/%Y")
+
+    strDateRange = datFrom.strftime("%m/%d/%Y") + "-" + datTo.strftime("%m/%d/%Y")
     xpSoldDateRange = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content']/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[6]/td[2]/input[@id='FmFm1_Ctrl16_20916_Ctrl16_TB']"
     elemSoldDateRange = driver.find_element_by_xpath(xpSoldDateRange)
     elemSoldDateRange.clear()
@@ -177,3 +179,9 @@ if __name__ == "__main__":
             time.sleep(2)
 
     writeToCSV(lstScrapResults)
+    driver.quit()
+
+if __name__ == "__main__":
+    datEnd = datetime.date(2017,1,2)
+    datStart = datEnd + datetime.timedelta(days=-1)
+    scrapSoldProperties(datStart, datEnd)
