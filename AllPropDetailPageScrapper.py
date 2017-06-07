@@ -19,6 +19,7 @@ def parseSection(sectionContent, dictColumns):
 
 
 def parseDetails(sHtml):
+    lstPropTypes = ['Townhouse/Condo','Lots','Multi-Family','Rental','Single-Family']
     cfg = XmlConfigReader.Config("AllPropScrapper","DEV")
     #now start retrieve the page section names and column dictionary
     dictSectionLookup = {}
@@ -71,6 +72,14 @@ def parseDetails(sHtml):
     lstSectDict.append(dictAdditional)
     dictSectionLookup[strAdditional] = dictAdditional
 
+    #LeaseAdditinal
+    strLeaseAdditional = cfg.getConfigValue("PageSections/Section[@name='{0}']/SectionString".format("LeaseAdditinal"))
+    strTemp = cfg.getConfigValue("PageSections/Section[@name='{0}']/ColumnDictionary".format("LeaseAdditinal"))
+    dictLeaseAdditional = ast.literal_eval(strTemp.strip())
+    lstSectKeys.append(strLeaseAdditional)
+    lstSectDict.append(dictLeaseAdditional)
+    dictSectionLookup[strLeaseAdditional] = dictLeaseAdditional
+
     #Financial section
     strFinancial = cfg.getConfigValue("PageSections/Section[@name='{0}']/SectionString".format("Financial"))
     strTemp = cfg.getConfigValue("PageSections/Section[@name='{0}']/ColumnDictionary".format("Financial"))
@@ -95,8 +104,16 @@ def parseDetails(sHtml):
     lstSectDict.append(dictSold )
     dictSectionLookup[strSold] = dictSold
 
+    #LeasedInformation
+    strLeasedInformation = cfg.getConfigValue("PageSections/Section[@name='{0}']/SectionString".format("LeasedInformation"))
+    strTemp = cfg.getConfigValue("PageSections/Section[@name='{0}']/ColumnDictionary".format("LeasedInformation"))
+    dictLeasedInformation = ast.literal_eval(strTemp.strip())
+    lstSectKeys.append(strLeasedInformation)
+    lstSectDict.append(dictLeasedInformation)
+    dictSectionLookup[strLeasedInformation] = dictLeasedInformation
+
     soup = BeautifulSoup(sHtml, 'lxml')
-    #extract section 1 details- basic property info
+    #extract all tables' contents
     dataCollect = []
     tables = soup.find_all("table")
     for table in tables:
@@ -106,63 +123,53 @@ def parseDetails(sHtml):
                 if temp is None:
                     dataCollect.append(None)
                 else:
-                    dataCollect.append(temp.replace(u'\xa0', u' '))
+                    dataCollect.append((temp.replace(u'\xa0', u' ')).strip())
+    print("dataCollect: ")
     print (dataCollect)
     # now, separate the long string into sections extracted above
     dictSectionContents = {}
     idxStart = 0
-    for n, item in enumerate(dictSectionLookup.keys()):
+    for n, item in enumerate(lstSectKeys):
         if n > 0:
             try:
-                idxEnd = dataCollect.index(item)
-                dictSectionContents[prevItem] = dataCollect[idxStart:idxEnd]
+                idxEnd = dataCollect.index((item).strip())
+                dictSectionContents[strKey] = dataCollect[idxStart:idxEnd]
+                if n == len(lstSectKeys)-1:
+                    #if it's the last in the list of section keys, add that as as well
+                    dictSectionContents[item] = dataCollect[idxEnd:]
                 idxStart = idxEnd
-                previtem = item
+                strKey = item
             except:
                 # item not found, just move on
                 print("section {0} not found".format(item))
         else:
-            prevItem = item
+            strKey = item
+    selectedPropType = ''
+    for propType in lstPropTypes:
+        if propType in dictSectionContents[''][138:142]:
+            selectedPropType = propType
+    if selectedPropType == '':
+        return None
+
     #now start extract details section by section
-    for sectionKey in dictSectionLookup.keys():
-        dictLookup = dictSectionLookup[sectionKey]
-        valueList = dictSectionContents[sectionKey]
-        for columnKey in dictLookup.keys():
-            try:
-                idx = valueList.index(columnKey)
-                columnVal = valueList[idx+1]
-                print("{0}'s value is {1}".format(columnKey, columnVal))
-            except:
-                print("not found")
     dictResults = {}
-'''
-    table = soup.find_all("table", {"class":"d82m7"})
-    for tr in table[0].findAll("tr"):
-        for td in tr.findAll("td"):
-            temp = td.find(text=True)
-            if temp is None:
-                dataCollect.append(None)
-            else:
-                dataCollect.append(temp.replace(u'\xa0', u' '))
-    #extract section 2 details - listing agent information
-    tables = soup.find_all("table", {"class": "d48m7"})
-    for table in tables:
-        for tr in table.findAll("tr"):
-            for td in tr.findAll("td"):
-                temp = td.find(text=True)
-                if temp is None:
-                    dataCollect.append(None)
-                else:
-                    dataCollect.append(temp.replace(u'\xa0', u' '))
-    print(dataCollect)
-    
-    for n, section in enumerate(sections):
-        dictResults.update(parseSection(section, lstSectDict[n]))
+    dictResults['PropertyType'] = selectedPropType
 
-
-    
-    dictResutls = {}
-    print(dictResults)
+    for sectionKey in dictSectionLookup.keys():
+        try:
+            dictLookup = dictSectionLookup[sectionKey]
+            valueList = dictSectionContents[sectionKey]
+            for columnKey in dictLookup.keys():
+                try:
+                    idx = valueList.index(dictLookup[columnKey])
+                    columnVal = valueList[idx+1]
+                    #print("{0}: {1}".format(columnKey, columnVal))
+                except:
+                    print("{0} not found".format(dictLookup[columnKey]))
+                    columnVal = None
+                dictResults[columnKey] = columnVal
+        except:
+            print("Section {} doesn't exist in the context".format(sectionKey))
     # now do some clean up
     # BldgSqft: example: 2,705 / Appr Dist, needs to get rid of the part after /
     try:
@@ -227,11 +234,40 @@ def parseDetails(sHtml):
         print("Error occured while trying to generate broker id and name. original value: {0}".format(entry))
         dictResults['ListBrokerId'] = entry
         dictResults['ListBrokerName'] = entry
+    # close agent info
+    try:
+        entry = dictResults['CloseAgent']
+        dictResults['CloseAgentId'] = (entry.split('(')[1]).strip()
+        dictResults['CloseAgentName'] = (entry.split('(')[0]).rstrip(")")
+    except:
+        print("Error occured while trying to generate close agent id and name. original value: {0}".format(entry))
+        dictResults['CloseAgentId'] = entry
+        dictResults['CloseAgentName'] = entry
+    # sell agent info
+    try:
+        entry = dictResults['SellAgent']
+        dictResults['SellAgentId'] = (entry.split('(')[1]).strip()
+        dictResults['SellAgentName'] = (entry.split('(')[0]).rstrip(")")
+    except:
+        print("Error occured while trying to generate sell agent id and name. original value: {0}".format(entry))
+        dictResults['SellAgentId'] = entry
+        dictResults['SellAgentName'] = entry
+# close broker info
+    try:
+        entry = dictResults['CloseBroker']
+        dictResults['CloseBrokerId'] = (entry.split('(')[1]).strip()
+        dictResults['CloseBrokerName'] = (entry.split('(')[0]).rstrip(")")
+    except:
+        print("Error occured while trying to generate broker id and name. original value: {0}".format(entry))
+        dictResults['CloseBrokerId'] = entry
+        dictResults['CloseBrokerName'] = entry
+
     return dictResults
-'''
+
 #this is unit test code for the module
 if __name__ == "__main__":
-    fileName = r'testData/sfh.html'
+    #fileName = r'testData/sfh.html'
+    fileName = r'testData/th.html'
     s = open(fileName, 'r').read()
     result = parseDetails(s)
     print(result)
