@@ -158,7 +158,6 @@ def parseDetails(sHtml):
 
     #now start extract details section by section
     dictResults = {}
-    dictResults['PropertyType'] = selectedPropType
 
     for sectionKey in dictSectionLookup.keys():
         try:
@@ -210,22 +209,25 @@ def parseDetails(sHtml):
     # ListPrice
     try:
         entry = dictResults['ListPrice'][1:]  # pick the number part, leave out the dollar sign
-        dictResults['ListPrice'] = float(entry.replace(',', ''))
+        if not entry is None:
+            dictResults['ListPrice'] = float(entry.replace(',', ''))
     except:
         print("Exception occured while trying to parse ListPrice. Original value: {0}".format(entry))
         dictResults["ListPrice"] = None
     # YearBuilt
     try:
         entry = dictResults['YearBuilt']
-        dictResults['YearBuilt'] = int(entry.split(' ')[0])
+        if not entry is None:
+            dictResults['YearBuilt'] = int(entry.split(' ')[0])
     except:
         print("Exception occured while trying to parse YearBuilt. Original value: {0}".format(entry))
         dictResults["YearBuilt"] = None
     # now separate list agent id and name
     try:
         entry = dictResults['ListAgent']
-        dictResults['ListAgentId'] = entry.split('/')[0]
-        dictResults['ListAgentName'] = entry.split('/')[1]
+        if not entry is None:
+            dictResults['ListAgentId'] = entry.split('/')[0]
+            dictResults['ListAgentName'] = entry.split('/')[1]
     except:
         print("Error occured while trying to generate agent id and name. original value: {0}".format(entry))
         dictResults['ListAgentId'] = entry
@@ -233,8 +235,9 @@ def parseDetails(sHtml):
     # now separate broker id and name
     try:
         entry = dictResults['ListBroker']
-        dictResults['ListBrokerId'] = entry.split('/')[0]
-        dictResults['ListBrokerName'] = entry.split('/')[1]
+        if not entry is None:
+            dictResults['ListBrokerId'] = entry.split('/')[0]
+            dictResults['ListBrokerName'] = entry.split('/')[1]
     except:
         print("Error occured while trying to generate broker id and name. original value: {0}".format(entry))
         dictResults['ListBrokerId'] = entry
@@ -242,8 +245,9 @@ def parseDetails(sHtml):
     # close agent info
     try:
         entry = dictResults['CloseAgent']
-        dictResults['CloseAgentId'] = (entry.split('(')[1]).rstrip(")")
-        dictResults['CloseAgentName'] = entry.split('(')[0]
+        if not entry is None:
+            dictResults['CloseAgentId'] = (entry.split('(')[1]).rstrip(")")
+            dictResults['CloseAgentName'] = entry.split('(')[0]
     except:
         print("Error occured while trying to generate close agent id and name. original value: {0}".format(entry))
         dictResults['CloseAgentId'] = entry
@@ -251,8 +255,9 @@ def parseDetails(sHtml):
     # sell agent info
     try:
         entry = dictResults['SellAgent']
-        dictResults['SellAgentId'] = (entry.split('(')[1]).strip()
-        dictResults['SellAgentName'] = (entry.split('(')[0]).rstrip(")")
+        if not entry is None:
+            dictResults['SellAgentId'] = (entry.split('(')[1]).strip()
+            dictResults['SellAgentName'] = (entry.split('(')[0]).rstrip(")")
     except:
         print("Error occured while trying to generate sell agent id and name. original value: {0}".format(entry))
         dictResults['SellAgentId'] = entry
@@ -260,8 +265,9 @@ def parseDetails(sHtml):
 # close broker info
     try:
         entry = dictResults['CloseBroker']
-        dictResults['CloseBrokerId'] = (entry.split('(')[1]).rstrip(")")
-        dictResults['CloseBrokerName'] = entry.split('(')[0]
+        if not entry is None:
+            dictResults['CloseBrokerId'] = (entry.split('(')[1]).rstrip(")")
+            dictResults['CloseBrokerName'] = entry.split('(')[0]
     except:
         print("Error occured while trying to generate broker id and name. original value: {0}".format(entry))
         dictResults['CloseBrokerId'] = entry
@@ -269,38 +275,50 @@ def parseDetails(sHtml):
     #onvert dollar to numbers
     try:
         entry = dictResults['LeasePrice']
-        dictResults['LeasePrice'] = float(entry.replace("$",""))
+        if not entry is None:
+            dictResults['LeasePrice'] = float(entry.strip().replace("$","").replace(",",""))
     except:
         print("Error occured while trying to convert LeasePrice to float. original value: {0}".format(entry))
 
     #convert application fee to float
     try:
         entry = dictResults['ApplicationFee']
-        dictResults['ApplicationFee'] = float(entry.replace("$", ""))
+        if not entry is None:
+            dictResults['ApplicationFee'] = float(entry.replace("$", ""))
     except:
         print("Error occured while trying to convert ApplicationFee to float. original value: {0}".format(entry))
 
-        # convert Bonue to number
-        try:
-            entry = dictResults['Bonus']
+    # convert Bonue to number
+    try:
+        entry = dictResults['Bonus']
+        if not entry is None:
             dictResults['Bonus'] = float(entry.replace("$", ""))
-        except:
-            print("Error occured while trying to convert Bonus to float. original value: {0}".format(entry))
-        #LeasedPricePerSqft
-        try:
-            entry = dictResults['LeasedPricePerSqft']
-            dictResults['LeasedPricePerSqft'] = float(entry.replace("$", ""))
-        except:
-            print("Error occured while trying to convert LeasedPricePerSqft to float. original value: {0}".format(entry))
+    except:
+        print("Error occured while trying to convert Bonus to float. original value: {0}".format(entry))
+    #LeasedPricePerSqft
+    try:
+        entry = dictResults['LeasedPricePerSqft']
+        if not entry is None:
+            dictResults['LeasedPricePerSqft'] = float(entry.strip().replace("$", ""))
+    except:
+        print("Error occured while trying to convert LeasedPricePerSqft to float. original value: {0}".format(entry))
 
-        #SalePricePerSqft
-        try:
-            entry = dictResults['SalePricePerSqft']
+    #SalePricePerSqft
+    try:
+        entry = dictResults['SalePricePerSqft']
+        if not entry is None:
             dictResults['SalePricePerSqft'] = float(entry.replace("$", ""))
-        except:
-            print("Error occured while trying to convert SalePricePerSqft to float. original value: {0}".format(entry))
-
-
+    except:
+        print("Error occured while trying to convert SalePricePerSqft to float. original value: {0}".format(entry))
+    # SoldPricePerSqft
+    try:
+        entry = None
+        entry = dictResults['SoldPricePerSqft']
+        if not entry is None:
+            dictResults['SoldPricePerSqft'] = float(entry.replace("$", ""))
+    except:
+        print("Error occured while trying to convert SoldPricePerSqft to float. original value: {0}".format(entry))
+    dictResults['PropertyType'] = selectedPropType
     return dictResults
 
 #this is unit test code for the module

@@ -34,7 +34,12 @@ class MSAccess:
     def InsertDictionary(self, strTableName, dict, ):
         lstColumns = list(dict.keys())
         lstValues = list(dict.values())
-        self.InsertOne(strTableName, lstColumns, lstValues)
+        try:
+            self.InsertOne(strTableName, lstColumns, lstValues)
+            return 1
+        except:
+            print(traceback.print_exc())
+            return 0
 
     '''
     here keys is a list of keys used in where statement 

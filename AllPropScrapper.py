@@ -12,6 +12,7 @@ import DBMSAccess
 import XmlConfigReader
 import AllPropDetailPageScrapper as PropScrap
 import traceback
+import DBMSAccess
 
 def writeToCSV(ary):
     (lstSectKeys, lstSectDict, dictSectionLookup) = PropScrap.readAllPropScrapperConfigSections()
@@ -160,9 +161,10 @@ def scrapSoldProperties(datFrom, datTo):
     lstScrapResults = []
     nTotalCount = 0
     #now iterate through all the deails pages
+    db = DBMSAccess.MSAccess(r"c:/temp/NewListings.accdb")
     while nTotalCount < nRecCnt - 1:
         try:
-            print("Rec {0} of {1}".format(nTotalCount, nRecCnt))
+            print("Rec {0} of {1}".format(nTotalCount+1, nRecCnt))
             time.sleep(1)
             while True:
                 nCntTries = 0
@@ -194,7 +196,8 @@ def scrapSoldProperties(datFrom, datTo):
             driver.switch_to.window(mapWindow)
             #look for the tag with id: m_ucStreetViewService_m_hfParams
             tagId = "m_ucStreetViewService_m_hfParams"
-            elemLatLon = driver.find_element_by_id(tagId)
+            elemLatLon = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.ID, tagId)))
+            #elemLatLon = driver.find_element_by_id(tagId)
             #strip lat/lon:
             tagText = str(elemLatLon.get_attribute("value"))
             (lat, lon) = tagText.split("$")[1:3]
@@ -206,6 +209,10 @@ def scrapSoldProperties(datFrom, datTo):
                 dictPageResult["Latitude"] = lat
                 dictPageResult["Longitude"] = lon
                 lstScrapResults.append(dictPageResult)
+                if db.InsertDictionary("AllPropertyRecords",dictPageResult) == 0:
+                    #if insertion fails:
+                    print("insertion failed. record: {0}".format(str(dictPageResult)))
+                db.Committ()
             elemNextLnk.click()
             nTotalCount +=1
         except:
