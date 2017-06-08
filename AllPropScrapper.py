@@ -44,6 +44,15 @@ def writeToCSV(ary):
         wr.writerow(header)
         wr.writerows(aryFileData)
     print('done')
+'''
+this procedure waits until new window opens
+'''
+def wait_for_new_window(driver, timeout=10):
+    handles_before = driver.window_handles
+    yield
+    WebDriverWait(driver, timeout).until(
+        lambda driver: len(handles_before) != len(driver.window_handles))
+
 
 def scrapSoldProperties(datFrom, datTo):
     cfg = XmlConfigReader.Config("AllPropScrapper", "DEV")
@@ -60,7 +69,6 @@ def scrapSoldProperties(datFrom, datTo):
     driver.get(cfg.getConfigValue("StartingUrl"))  # load the web page
 
     # look for user name log in:
-
     elemUsr = driver.find_element_by_id("member_email")
     elemUsr.send_keys(strUserName)
     elemPwd = driver.find_element_by_id("member_pass")
@@ -73,8 +81,9 @@ def scrapSoldProperties(datFrom, datTo):
     elemNextLnk = driver.find_element_by_xpath(xpath)
     elemNextLnk.click()
     # switch to the new window, and click on "new listing"
-    time.sleep(2)
+    wait_for_new_window(driver)
     window_after = driver.window_handles[1]
+    driver.close()
     driver.switch_to.window(window_after)
     strPartialText = "New Listing ("
     elemNextLnk = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.PARTIAL_LINK_TEXT, strPartialText)))
@@ -133,9 +142,16 @@ def scrapSoldProperties(datFrom, datTo):
 
     # now click the first listing in the list
     xpathFirstMLS = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[3]/div[@id='m_upDisplay']/div[@id='m_pnlDisplayTab']/div[@id='m_divContent']/div[@id='m_pnlDisplay']/table[@class='displayGrid nonresponsive ajax_display d1m_show']/tbody/tr[@id='wrapperTable'][1]/td[@class='d1m5']/span[@class='d1m1']/a"
-    elemFirstMLS = driver.find_element_by_xpath(xpathFirstMLS)
-    sMLS = elemFirstMLS.text
-    elemFirstMLS.click()
+    nCntTries = 0
+    while nCntTries<3:
+        try:
+            elemFirstMLS = driver.find_element_by_xpath(xpathFirstMLS)
+            sMLS = elemFirstMLS.text
+            elemFirstMLS.click()
+            break
+        except:
+            driver.refresh()
+            nCntTries+=1
     # wait for the details page to load
     # xPathMLS = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[3]/div[@id='m_upDisplay']/div[@id='m_pnlDisplayTab']/div[@id='m_divContent']/div[@id='m_pnlDisplay']/div[@class='multiLineDisplay ajax_display d3m_show nonresponsive']/table/tbody/tr/td/table[@id='wrapperTable']/tbody/tr/td[@class='d3m1']/span[@class='display']/table[@class='d3m2']/tbody/tr[2]/td[@class='d3m3']/span[@class='formula']/div[@class='multiLineDisplay ajax_display d48m_show nonresponsive']/table[@id='wrapperTable']/tbody/tr/td[@class='d48m1']/span[@class='display']/table[@class='d48m2']/tbody/tr[3]/td[@class='d48m5']/table[@class='d48m7']/tbody/tr[@class='d48m8']/td[@class='d48m16']/table[@class='d48m17']/tbody/tr[3]/td[@class='d48m19']/span[@class='wrapped-field']"
     xPathNext = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSubHeader']/div[@id='m_pnlSubHeader']/div/table/tbody/tr/td[@class='css_innerLeft hideOnMap hideOnSearch hideNoResults']/span[@id='m_lblPagingSummary']/span[@class='pagingLinks']/a[@id='m_DisplayCore_dpy3']"
@@ -149,26 +165,46 @@ def scrapSoldProperties(datFrom, datTo):
             print("Rec {0} of {1}".format(nTotalCount, nRecCnt))
             time.sleep(1)
             while True:
-                nCntTrial = 0
+                nCntTries = 0
                 try:
                     elemNextLnk = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.ID, NextLinkId)))
                     break
                 except:
-                    if nCntTrial < 3:
+                    if nCntTries < 3:
                         driver.refresh()
                     else:
                         print("encountered error while trying to click the next link")
                         exit()
-                    nCntTrial +=1
+                    nCntTries +=1
 
             #get the transaction type (rental, residental, etc)
             #xpTransType = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[3]/div[@id='m_upDisplay']/div[@id='m_pnlDisplayTab']/div[@id='m_divContent']/div[@id='m_pnlDisplay']/div[@class='multiLineDisplay ajax_display d3m_show nonresponsive']/table/tbody/tr/td/table[@id='wrapperTable']/tbody/tr/td[@class='d3m1']/span[@class='display']/table[@class='d3m2']/tbody/tr[2]/td[@class='d3m3']/span[@class='formula']/div[@class='multiLineDisplay ajax_display d82m_show nonresponsive']/table/tbody/tr/td/table[@id='wrapperTable']/tbody/tr/td[@class='d82m1']/span[@class='display']/table[@class='d82m2']/tbody/tr[3]/td[@class='d82m5']/table[@class='d82m7']/tbody/tr[@class='d82m8']/td[@class='d82m15']/table[@class='d82m16']/tbody/tr[@class='d82m24'][1]/td[@class='d82m25']/span[@class='field d82m26']"
             #elemTransType = driver.find_element_by_xpath(xpTransType)
             #strTransType = elemTransType.text
             pageSource = driver.page_source
-
+            #now get the lat/lon:
+            #first the the current window handle
+            mainWindow = driver.window_handles[0]
+            #next trigger the new map view window
+            elemViewMap = driver.find_element_by_xpath('//*[@title="View Map"]')
+            elemViewMap.click()
+            #switch to the map view window
+            wait_for_new_window(driver)
+            mapWindow = driver.window_handles[1]
+            driver.switch_to.window(mapWindow)
+            #look for the tag with id: m_ucStreetViewService_m_hfParams
+            tagId = "m_ucStreetViewService_m_hfParams"
+            elemLatLon = driver.find_element_by_id(tagId)
+            #strip lat/lon:
+            tagText = str(elemLatLon.get_attribute("value"))
+            (lat, lon) = tagText.split("$")[1:3]
+            #switch back to the original window
+            driver.close()
+            driver.switch_to.window(mainWindow)
             dictPageResult = PropScrap.parseDetails(pageSource)
             if dictPageResult is not None:
+                dictPageResult["Latitude"] = lat
+                dictPageResult["Longitude"] = lon
                 lstScrapResults.append(dictPageResult)
             elemNextLnk.click()
             nTotalCount +=1
@@ -179,6 +215,7 @@ def scrapSoldProperties(datFrom, datTo):
             time.sleep(2)
 
     writeToCSV(lstScrapResults)
+
     driver.quit()
 
 if __name__ == "__main__":
