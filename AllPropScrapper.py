@@ -182,6 +182,6 @@ def scrapSoldProperties(datFrom, datTo):
     driver.quit()
 
 if __name__ == "__main__":
-    datEnd = datetime.date(2017,1,2)
-    datStart = datEnd + datetime.timedelta(days=-1)
+    datEnd = datetime.date.today()
+    datStart = datEnd + datetime.timedelta(days=-6)
     scrapSoldProperties(datStart, datEnd)

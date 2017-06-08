@@ -266,6 +266,40 @@ def parseDetails(sHtml):
         print("Error occured while trying to generate broker id and name. original value: {0}".format(entry))
         dictResults['CloseBrokerId'] = entry
         dictResults['CloseBrokerName'] = entry
+    #onvert dollar to numbers
+    try:
+        entry = dictResults['LeasePrice']
+        dictResults['LeasePrice'] = float(entry.replace("$",""))
+    except:
+        print("Error occured while trying to convert LeasePrice to float. original value: {0}".format(entry))
+
+    #convert application fee to float
+    try:
+        entry = dictResults['ApplicationFee']
+        dictResults['ApplicationFee'] = float(entry.replace("$", ""))
+    except:
+        print("Error occured while trying to convert ApplicationFee to float. original value: {0}".format(entry))
+
+        # convert Bonue to number
+        try:
+            entry = dictResults['Bonus']
+            dictResults['Bonus'] = float(entry.replace("$", ""))
+        except:
+            print("Error occured while trying to convert Bonus to float. original value: {0}".format(entry))
+        #LeasedPricePerSqft
+        try:
+            entry = dictResults['LeasedPricePerSqft']
+            dictResults['LeasedPricePerSqft'] = float(entry.replace("$", ""))
+        except:
+            print("Error occured while trying to convert LeasedPricePerSqft to float. original value: {0}".format(entry))
+
+        #SalePricePerSqft
+        try:
+            entry = dictResults['SalePricePerSqft']
+            dictResults['SalePricePerSqft'] = float(entry.replace("$", ""))
+        except:
+            print("Error occured while trying to convert SalePricePerSqft to float. original value: {0}".format(entry))
+
 
     return dictResults
 
