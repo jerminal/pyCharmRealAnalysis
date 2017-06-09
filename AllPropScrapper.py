@@ -219,7 +219,7 @@ def scrapSoldProperties(datFrom, datTo):
             mainWindow = driver.window_handles[0]
             #next trigger the new map view window
             #elemViewMap = driver.find_element_by_xpath('//*[@title="View Map"]')
-            elemViewMap = find_wait_get_element(driver, "xpath", '//*[title="View Map"]')
+            elemViewMap = find_wait_get_element(driver, "xpath", '//*[@title="View Map"]')
             if not elemViewMap is None:
                 elemViewMap.click()
                 #switch to the map view window
@@ -244,11 +244,15 @@ def scrapSoldProperties(datFrom, datTo):
             if dictPageResult is not None:
                 dictPageResult["Latitude"] = lat
                 dictPageResult["Longitude"] = lon
-                lstScrapResults.append(dictPageResult)
-                if db.InsertDictionary("AllPropertyRecords",dictPageResult) == 0:
-                    #if insertion fails:
-                    print("insertion failed. record: {0}".format(str(dictPageResult)))
-                db.Committ()
+                nMLSNum = dictPageResult['MLSNum']
+                if nMLSNum is not None:
+                    lstScrapResults.append(dictPageResult)
+                    if db.InsertDictionary("AllPropertyRecords",dictPageResult) == 0:
+                        #if insertion fails:
+                        print("insertion failed. record: {0}".format(str(dictPageResult)))
+                    else:
+                        db.UpdateTable("AllPropertyRecords", ["LastUpdate"], [datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")], ["MLSNum"], [int(nMLSNum)], False)
+                    db.Committ()
             elemNextLnk.click()
             nTotalCount +=1
         except:
@@ -258,10 +262,24 @@ def scrapSoldProperties(datFrom, datTo):
             time.sleep(2)
 
     writeToCSV(lstScrapResults)
-
     driver.quit()
+    return (nTotalCount, nRecCnt)
 
 if __name__ == "__main__":
-    datEnd = datetime.date.today()
-    datStart = datEnd + datetime.timedelta(days=-6)
-    scrapSoldProperties(datStart, datEnd)
+    db = DBMSAccess.MSAccess(r"c:/temp/NewListings.accdb")
+    sql = "SELECT JobId, DateFrom, DateTo FROM JobLog WHERE Status not in ('WIP', 'Complete', 'Fail')"
+    db._cursor.execute(sql)
+    rToProcess = db._cursor.fetchone()
+    datEnd = rToProcess.DateTo
+    datStart = rToProcess.DateFrom
+    nJobId = rToProcess.JobId
+    tStart = datetime.datetime.now()
+    db.UpdateTable("JobLog",["JobStartTime", "Status"], [datStart.strftime("%Y-%m-%d %H:%M:%S"), "WIP"], ["JobId"], [nJobId])
+
+    #datEnd = datetime.date.today()
+    #datStart = datEnd + datetime.timedelta(days=-6)
+    (nProcessed, nTotal) = scrapSoldProperties(datStart, datEnd)
+    tEnd = datetime.datetime.now()
+    nDuration = (tEnd-tStart).seconds/60
+    db.UpdateTable("JobLog", ["JobStartTime", "Status", "Duration"], [datEnd.strftime("%Y-%m-%d %H:%M:%S"), "Complete", ], ["JobId"],[nJobId])
+

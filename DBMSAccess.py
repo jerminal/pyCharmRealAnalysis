@@ -14,29 +14,55 @@ class MSAccess:
 
         self._conn = pyodbc.connect(odbc_conn_str)
         self._cursor = self._conn.cursor()
+    def Execute(self, sql):
+        return self._cursor.execute(sql)
 
-    def InsertMany(self, strTable, lstColumns, lstValues):
+    def InsertMany(self, strTable, lstColumns, lstValues, bAutoCommit = True):
         sql = self.prepareInsertSQL(strTable, lstColumns)
-        self._cursor.executemany(sql, lstValues)
-        self._conn.commit()
 
-    def InsertOne(self, strTable, lstColumns, lstValues):
+        rslt = self._cursor.executemany(sql, lstValues)
+        if bAutoCommit:
+            self._conn.commit()
+        return rslt.rowcount
+
+    def InsertOne(self, strTable, lstColumns, lstValues, bAutoCommit = True):
         sql = self.prepareInsertSQL(strTable, lstColumns)
-        self._cursor.execute(sql, lstValues)
+        rslt = self._cursor.execute(sql, lstValues)
+        if bAutoCommit:
+            self._conn.commit()
+        return rslt.rowcount
 
     def Committ(self):
         self._conn.commit()
+
+    def prepareUpdateSQL(self, strTable, lstColumnsToUpdate, lstKeysToUpdate):
+        cols = '=?'.join(lstColumnsToUpdate) + '=?'
+        keys = '=? and '.join(lstKeysToUpdate) + '=?'
+        sql = "UPDATE {0} SET {1} WHERE {2}".format(strTable, cols, keys)
+        print(sql)
+        return sql
 
     def prepareInsertSQL(self, strTable, lstColumns):
         sql = "INSERT INTO {0} ({1}) VALUES ({2})".format(strTable, ",".join(lstColumns),",".join(['?'] * len(lstColumns)))
         return sql
 
-    def InsertDictionary(self, strTableName, dict, ):
+    def InsertDictionary(self, strTableName, dict, bAutoCommit = True):
         lstColumns = list(dict.keys())
         lstValues = list(dict.values())
         try:
-            self.InsertOne(strTableName, lstColumns, lstValues)
-            return 1
+            nRows = self.InsertOne(strTableName, lstColumns, lstValues)
+            return nRows
+        except:
+            print(traceback.print_exc())
+            return 0
+
+    def UpdateTable(self, strTableName, lstColumnsToUpdate, lstValsToUpdate, lstKeys, lstKeyVals, bAutoCommit = True):
+        sql = self.prepareUpdateSQL(strTableName, lstColumnsToUpdate, lstKeys)
+        try:
+            rslt = self._cursor.execute(sql, lstValsToUpdate + lstKeyVals)
+            if bAutoCommit:
+                self._conn.commit()
+            return rslt.rowcount
         except:
             print(traceback.print_exc())
             return 0
@@ -58,9 +84,10 @@ class MSAccess:
         sql = "UPDATE {0} SET {1} WHERE {2}".format(strTableName, a, b)
         print (sql)
         try:
-            self._cursor.execute(sql, lstValuesToUpdate + lstKeyValues)
+            rslt = self._cursor.execute(sql, lstValuesToUpdate + lstKeyValues)
             if bAutoCommit:
                 self._conn.commit()
+            return rslt.rowcount
         except:
             print(traceback.print_exc())
-        return
+            return 0
