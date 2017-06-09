@@ -58,27 +58,27 @@ find, wait and get element, if not successful, it will keep on trying for 10 tim
 '''
 def find_wait_get_element(driver, elementType, val):
     nFailureCount = 0
-    while nFailureCount < 10:
+    while nFailureCount < 5:
         try:
             if elementType == "link_text":
-                elem = elemNextLnk = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.LINK_TEXT, val)))
+                elem = elemNextLnk = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.LINK_TEXT, val)))
             elif elementType == "xpath":
-                elem = elemNextLnk = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, val)))
+                elem = elemNextLnk = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, val)))
             elif elementType == "id":
-                elem = elemNextLnk = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.ID, val)))
+                elem = elemNextLnk = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, val)))
             elif elementType == "partial_link_text":
-                elem = elemNextLnk = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.PARTIAL_LINK_TEXT, val)))
+                elem = elemNextLnk = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.PARTIAL_LINK_TEXT, val)))
             elif elementType == "name":
-                elem = elemNextLnk = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.NAME, val)))
+                elem = elemNextLnk = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.NAME, val)))
             else:
-                elem = elemNextLnk = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.TAG_NAME, val)))
+                elem = elemNextLnk = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, val)))
             return elem
         except:
             nFailureCount +=1
             driver.refresh()
     return None
 
-def scrapSoldProperties(datFrom, datTo):
+def scrapSoldProperties(datFrom, datTo, nJobId):
     cfg = XmlConfigReader.Config("AllPropScrapper", "DEV")
     strUserName = cfg.getConfigValue("HARUserName")
     strPwd = cfg.getConfigValue("HARPassword")
@@ -236,8 +236,10 @@ def scrapSoldProperties(datFrom, datTo):
                 (lat, lon) = tagText.split("$")[1:3]
                 driver.close()
                 driver.switch_to.window(mainWindow)
+                bNeedToRefreshNext = False
             else:
                 (lat, lon) = (None, None)
+                bNeedToRefreshNext = True
             #switch back to the original window
 
             dictPageResult = PropScrap.parseDetails(pageSource)
@@ -251,8 +253,11 @@ def scrapSoldProperties(datFrom, datTo):
                         #if insertion fails:
                         print("insertion failed. record: {0}".format(str(dictPageResult)))
                     else:
-                        db.UpdateTable("AllPropertyRecords", ["LastUpdate"], [datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")], ["MLSNum"], [int(nMLSNum)], False)
+                        db.UpdateTable("AllPropertyRecords", ["LastUpdate", "FK_JobId"], [datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), nJobId], ["MLSNum"], [int(nMLSNum)], False)
                     db.Committ()
+            if bNeedToRefreshNext:
+                elemNextLnk = find_wait_get_element(driver, "id", NextLinkId)
+
             elemNextLnk.click()
             nTotalCount +=1
         except:
@@ -267,19 +272,19 @@ def scrapSoldProperties(datFrom, datTo):
 
 if __name__ == "__main__":
     db = DBMSAccess.MSAccess(r"c:/temp/NewListings.accdb")
-    sql = "SELECT JobId, DateFrom, DateTo FROM JobLog WHERE Status not in ('WIP', 'Complete', 'Fail')"
+    sql = "SELECT JobId, DateFrom, DateTo FROM JobLog WHERE Status is null"
     db._cursor.execute(sql)
     rToProcess = db._cursor.fetchone()
     datEnd = rToProcess.DateTo
     datStart = rToProcess.DateFrom
     nJobId = rToProcess.JobId
     tStart = datetime.datetime.now()
-    db.UpdateTable("JobLog",["JobStartTime", "Status"], [datStart.strftime("%Y-%m-%d %H:%M:%S"), "WIP"], ["JobId"], [nJobId])
+    db.UpdateTable("JobLog",["JobStartTime", "Status"], [tStart.strftime("%Y-%m-%d %H:%M:%S"), "WIP"], ["JobId"], [nJobId])
 
     #datEnd = datetime.date.today()
     #datStart = datEnd + datetime.timedelta(days=-6)
-    (nProcessed, nTotal) = scrapSoldProperties(datStart, datEnd)
+    (nProcessed, nTotal) = scrapSoldProperties(datStart, datEnd, nJobId)
     tEnd = datetime.datetime.now()
     nDuration = (tEnd-tStart).seconds/60
-    db.UpdateTable("JobLog", ["JobStartTime", "Status", "Duration"], [datEnd.strftime("%Y-%m-%d %H:%M:%S"), "Complete", ], ["JobId"],[nJobId])
+    db.UpdateTable("JobLog", ["JobStartTime", "Status", "Duration"], [tEnd.strftime("%Y-%m-%d %H:%M:%S"), "Complete", nDuration], ["JobId"],[nJobId])
 

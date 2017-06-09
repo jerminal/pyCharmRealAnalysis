@@ -36,7 +36,7 @@ class MSAccess:
         self._conn.commit()
 
     def prepareUpdateSQL(self, strTable, lstColumnsToUpdate, lstKeysToUpdate):
-        cols = '=?'.join(lstColumnsToUpdate) + '=?'
+        cols = '=?, '.join(lstColumnsToUpdate) + '=?'
         keys = '=? and '.join(lstKeysToUpdate) + '=?'
         sql = "UPDATE {0} SET {1} WHERE {2}".format(strTable, cols, keys)
         print(sql)
