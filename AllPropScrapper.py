@@ -56,7 +56,7 @@ def wait_for_new_window(driver, timeout=10):
 '''
 find, wait and get element, if not successful, it will keep on trying for 10 times before quit the program
 '''
-def find_wait_get_element(driver, elementType, val):
+def find_wait_get_element(driver, elementType, val, bClick = False):
     nFailureCount = 0
     while nFailureCount < 5:
         try:
@@ -72,11 +72,13 @@ def find_wait_get_element(driver, elementType, val):
                 elem = elemNextLnk = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.NAME, val)))
             else:
                 elem = elemNextLnk = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, val)))
-            return elem
+            if bClick:
+                elem.click()
+            return (elem, nFailureCount)
         except:
             nFailureCount +=1
             driver.refresh()
-    return None
+    return (None, nFailureCount)
 
 def scrapSoldProperties(datFrom, datTo, nJobId):
     cfg = XmlConfigReader.Config("AllPropScrapper", "DEV")
@@ -100,12 +102,12 @@ def scrapSoldProperties(datFrom, datTo, nJobId):
     elemPwd.send_keys(Keys.RETURN)
 
     #elemNextLnk = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.LINK_TEXT, "Enter Matrix MLS")))
-    elemNextLnk = find_wait_get_element(driver, "link_text", "Enter Matrix MLS")
+    (elemNextLnk, nFailureCnt) = find_wait_get_element(driver, "link_text", "Enter Matrix MLS")
     window_before = driver.window_handles[0]
     xpath = "/html[@class='wf-effra-n4-active wf-effra-n7-active wf-effra-n3-active wf-effra-n5-active wf-effra-n9-active wf-active']/body/div[@class='content overlay']/div[@class='container']/div[@class='rightPane']/div[@class='box_simple gray agentbox newhar']/div[@class='box_content grid_view']/a[1]"
     #elemNextLnk = driver.find_element_by_xpath(xpath)
-    elemNextLnk = find_wait_get_element(driver, "xpath", xpath)
-    elemNextLnk.click()
+    (elemNextLnk, nFailureCnt) = find_wait_get_element(driver, "xpath", xpath, True)
+    #elemNextLnk.click()
     # switch to the new window, and click on "new listing"
     wait_for_new_window(driver)
     window_after = driver.window_handles[1]
@@ -113,7 +115,7 @@ def scrapSoldProperties(datFrom, datTo, nJobId):
     driver.switch_to.window(window_after)
     strPartialText = "New Listing ("
     #elemNextLnk = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.PARTIAL_LINK_TEXT, strPartialText)))
-    elemNextLnk = find_wait_get_element(driver, "partial_link_text", strPartialText)
+    (elemNextLnk, nFailureCnt) = find_wait_get_element(driver, "partial_link_text", strPartialText)
     driver.get(strEntryUrl)
 
     xpChkActive = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content']/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[2]/td[1]/div/input[@class='checkbox']"
@@ -161,7 +163,7 @@ def scrapSoldProperties(datFrom, datTo, nJobId):
     #below is the xpath to the total # of records
     xpTotalRecCount = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSubHeader']/div[@id='m_pnlSubHeader']/div/table/tbody/tr/td[@class='css_innerLeft hideOnMap hideOnSearch hideNoResults']/span[@id='m_lblPagingSummary']/b[3]"
     #elemRecCnt = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, xpTotalRecCount)))
-    elemRecCnt = find_wait_get_element(driver, "xpath", xpTotalRecCount)
+    (elemRecCnt, nFailureCnt) = find_wait_get_element(driver, "xpath", xpTotalRecCount)
     try:
         nRecCnt = int(elemRecCnt.text)
     except:
@@ -171,16 +173,21 @@ def scrapSoldProperties(datFrom, datTo, nJobId):
     # now click the first listing in the list
     xpathFirstMLS = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[3]/div[@id='m_upDisplay']/div[@id='m_pnlDisplayTab']/div[@id='m_divContent']/div[@id='m_pnlDisplay']/table[@class='displayGrid nonresponsive ajax_display d1m_show']/tbody/tr[@id='wrapperTable'][1]/td[@class='d1m5']/span[@class='d1m1']/a"
     nCntTries = 0
+    (elemFirstMLS, nFailureCnt) = find_wait_get_element(driver, "xpath", xpathFirstMLS)
+    sMLS = elemFirstMLS.text
+    (elemFirstMLS, nFailureCnt) = find_wait_get_element(driver, "xpath", xpathFirstMLS, True)
+    '''
     while nCntTries<3:
         try:
             #elemFirstMLS = driver.find_element_by_xpath(xpathFirstMLS)
-            elemFirstMLS = find_wait_get_element(driver, "xpath", xpathFirstMLS)
+            (elemFirstMLS, nFailureCnt) = find_wait_get_element(driver, "xpath", xpathFirstMLS)
             sMLS = elemFirstMLS.text
             elemFirstMLS.click()
             break
         except:
             driver.refresh()
             nCntTries+=1
+    '''
     # wait for the details page to load
     # xPathMLS = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[3]/div[@id='m_upDisplay']/div[@id='m_pnlDisplayTab']/div[@id='m_divContent']/div[@id='m_pnlDisplay']/div[@class='multiLineDisplay ajax_display d3m_show nonresponsive']/table/tbody/tr/td/table[@id='wrapperTable']/tbody/tr/td[@class='d3m1']/span[@class='display']/table[@class='d3m2']/tbody/tr[2]/td[@class='d3m3']/span[@class='formula']/div[@class='multiLineDisplay ajax_display d48m_show nonresponsive']/table[@id='wrapperTable']/tbody/tr/td[@class='d48m1']/span[@class='display']/table[@class='d48m2']/tbody/tr[3]/td[@class='d48m5']/table[@class='d48m7']/tbody/tr[@class='d48m8']/td[@class='d48m16']/table[@class='d48m17']/tbody/tr[3]/td[@class='d48m19']/span[@class='wrapped-field']"
     xPathNext = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSubHeader']/div[@id='m_pnlSubHeader']/div/table/tbody/tr/td[@class='css_innerLeft hideOnMap hideOnSearch hideNoResults']/span[@id='m_lblPagingSummary']/span[@class='pagingLinks']/a[@id='m_DisplayCore_dpy3']"
@@ -191,80 +198,78 @@ def scrapSoldProperties(datFrom, datTo, nJobId):
     #now iterate through all the deails pages
     db = DBMSAccess.MSAccess(r"c:/temp/NewListings.accdb")
     while nTotalCount < nRecCnt - 1:
+
+        print("Rec {0} of {1}".format(nTotalCount+1, nRecCnt))
+        #time.sleep(1)
+        #while True:
+        #nCntTries = 0
+        (elemNextLnk, nFailureCnt) = find_wait_get_element(driver, "id", NextLinkId, True)
+        if elemNextLnk is None:
+            return (0,0)
+        '''
         try:
-            print("Rec {0} of {1}".format(nTotalCount+1, nRecCnt))
-            time.sleep(1)
-            #while True:
-            #nCntTries = 0
-            elemNextLnk = find_wait_get_element(driver, "id", NextLinkId)
-            '''
-            try:
-                elemNextLnk = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.ID, NextLinkId)))
-                break
-            except:
-                if nCntTries < 3:
-                    driver.refresh()
-                else:
-                    print("encountered error while trying to click the next link")
-                    exit()
-                nCntTries +=1
-            '''
-            #get the transaction type (rental, residental, etc)
-            #xpTransType = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[3]/div[@id='m_upDisplay']/div[@id='m_pnlDisplayTab']/div[@id='m_divContent']/div[@id='m_pnlDisplay']/div[@class='multiLineDisplay ajax_display d3m_show nonresponsive']/table/tbody/tr/td/table[@id='wrapperTable']/tbody/tr/td[@class='d3m1']/span[@class='display']/table[@class='d3m2']/tbody/tr[2]/td[@class='d3m3']/span[@class='formula']/div[@class='multiLineDisplay ajax_display d82m_show nonresponsive']/table/tbody/tr/td/table[@id='wrapperTable']/tbody/tr/td[@class='d82m1']/span[@class='display']/table[@class='d82m2']/tbody/tr[3]/td[@class='d82m5']/table[@class='d82m7']/tbody/tr[@class='d82m8']/td[@class='d82m15']/table[@class='d82m16']/tbody/tr[@class='d82m24'][1]/td[@class='d82m25']/span[@class='field d82m26']"
-            #elemTransType = driver.find_element_by_xpath(xpTransType)
-            #strTransType = elemTransType.text
-            pageSource = driver.page_source
-            #now get the lat/lon:
-            #first the the current window handle
-            mainWindow = driver.window_handles[0]
-            #next trigger the new map view window
-            #elemViewMap = driver.find_element_by_xpath('//*[@title="View Map"]')
-            elemViewMap = find_wait_get_element(driver, "xpath", '//*[@title="View Map"]')
-            if not elemViewMap is None:
-                elemViewMap.click()
-                #switch to the map view window
-                wait_for_new_window(driver)
-                mapWindow = driver.window_handles[1]
-                driver.switch_to.window(mapWindow)
-                #look for the tag with id: m_ucStreetViewService_m_hfParams
-                tagId = "m_ucStreetViewService_m_hfParams"
-                #elemLatLon = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.ID, tagId)))
-                elemLatLon = find_wait_get_element(driver, "id", tagId)
-                #elemLatLon = driver.find_element_by_id(tagId)
-                #strip lat/lon:
-                tagText = str(elemLatLon.get_attribute("value"))
-                (lat, lon) = tagText.split("$")[1:3]
-                driver.close()
-                driver.switch_to.window(mainWindow)
-                bNeedToRefreshNext = False
-            else:
-                (lat, lon) = (None, None)
-                bNeedToRefreshNext = True
-            #switch back to the original window
-
-            dictPageResult = PropScrap.parseDetails(pageSource)
-            if dictPageResult is not None:
-                dictPageResult["Latitude"] = lat
-                dictPageResult["Longitude"] = lon
-                nMLSNum = dictPageResult['MLSNum']
-                if nMLSNum is not None:
-                    lstScrapResults.append(dictPageResult)
-                    if db.InsertDictionary("AllPropertyRecords",dictPageResult) == 0:
-                        #if insertion fails:
-                        print("insertion failed. record: {0}".format(str(dictPageResult)))
-                    else:
-                        db.UpdateTable("AllPropertyRecords", ["LastUpdate", "FK_JobId"], [datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), nJobId], ["MLSNum"], [int(nMLSNum)], False)
-                    db.Committ()
-            if bNeedToRefreshNext:
-                elemNextLnk = find_wait_get_element(driver, "id", NextLinkId)
-
-            elemNextLnk.click()
-            nTotalCount +=1
+            elemNextLnk = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.ID, NextLinkId)))
+            break
         except:
-            traceback.print_exc()
-            print('the next link is not found, it will try again')
-            driver.refresh()
-            time.sleep(2)
+            if nCntTries < 3:
+                driver.refresh()
+            else:
+                print("encountered error while trying to click the next link")
+                exit()
+            nCntTries +=1
+        '''
+        #get the transaction type (rental, residental, etc)
+        #xpTransType = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[3]/div[@id='m_upDisplay']/div[@id='m_pnlDisplayTab']/div[@id='m_divContent']/div[@id='m_pnlDisplay']/div[@class='multiLineDisplay ajax_display d3m_show nonresponsive']/table/tbody/tr/td/table[@id='wrapperTable']/tbody/tr/td[@class='d3m1']/span[@class='display']/table[@class='d3m2']/tbody/tr[2]/td[@class='d3m3']/span[@class='formula']/div[@class='multiLineDisplay ajax_display d82m_show nonresponsive']/table/tbody/tr/td/table[@id='wrapperTable']/tbody/tr/td[@class='d82m1']/span[@class='display']/table[@class='d82m2']/tbody/tr[3]/td[@class='d82m5']/table[@class='d82m7']/tbody/tr[@class='d82m8']/td[@class='d82m15']/table[@class='d82m16']/tbody/tr[@class='d82m24'][1]/td[@class='d82m25']/span[@class='field d82m26']"
+        #elemTransType = driver.find_element_by_xpath(xpTransType)
+        #strTransType = elemTransType.text
+        pageSource = driver.page_source
+        #now get the lat/lon:
+        #first the the current window handle
+        mainWindow = driver.window_handles[0]
+        #next trigger the new map view window
+        #elemViewMap = driver.find_element_by_xpath('//*[@title="View Map"]')
+        (elemViewMap, temp) = find_wait_get_element(driver, "xpath", '//*[@title="View Map"]', True)
+        if not elemViewMap is None:
+            #elemViewMap.click()
+            #switch to the map view window
+            wait_for_new_window(driver)
+            mapWindow = driver.window_handles[1]
+            driver.switch_to.window(mapWindow)
+            #look for the tag with id: m_ucStreetViewService_m_hfParams
+            tagId = "m_ucStreetViewService_m_hfParams"
+            #elemLatLon = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.ID, tagId)))
+            (elemLatLon, temp) = find_wait_get_element(driver, "id", tagId)
+            #elemLatLon = driver.find_element_by_id(tagId)
+            #strip lat/lon:
+            tagText = str(elemLatLon.get_attribute("value"))
+            (lat, lon) = tagText.split("$")[1:3]
+            driver.close()
+            driver.switch_to.window(mainWindow)
+            bNeedToRefreshNext = False
+        else:
+            (lat, lon) = (None, None)
+            bNeedToRefreshNext = True
+        #switch back to the original window
+
+        dictPageResult = PropScrap.parseDetails(pageSource)
+        if dictPageResult is not None:
+            dictPageResult["Latitude"] = lat
+            dictPageResult["Longitude"] = lon
+            nMLSNum = dictPageResult['MLSNum']
+            if nMLSNum is not None:
+                lstScrapResults.append(dictPageResult)
+                if db.InsertDictionary("AllPropertyRecords",dictPageResult) == 0:
+                    #if insertion fails:
+                    print("insertion failed. record: {0}".format(str(dictPageResult)))
+                else:
+                    db.UpdateTable("AllPropertyRecords", ["LastUpdate", "FK_JobId"], [datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), nJobId], ["MLSNum"], [int(nMLSNum)], False)
+                db.Committ()
+        #if bNeedToRefreshNext or nFailureCnt>0:
+        #    elemNextLnk = find_wait_get_element(driver, "id", NextLinkId)
+
+        #elemNextLnk.click()
+        (elemNextLnk, nFailureCnt) = find_wait_get_element(driver, "id", NextLinkId, True)
+        nTotalCount +=1
 
     writeToCSV(lstScrapResults)
     driver.quit()
@@ -275,16 +280,25 @@ if __name__ == "__main__":
     sql = "SELECT JobId, DateFrom, DateTo FROM JobLog WHERE Status is null"
     db._cursor.execute(sql)
     rToProcess = db._cursor.fetchone()
-    datEnd = rToProcess.DateTo
-    datStart = rToProcess.DateFrom
-    nJobId = rToProcess.JobId
-    tStart = datetime.datetime.now()
-    db.UpdateTable("JobLog",["JobStartTime", "Status"], [tStart.strftime("%Y-%m-%d %H:%M:%S"), "WIP"], ["JobId"], [nJobId])
+    while rToProcess is not None:
+        datEnd = rToProcess.DateTo
+        datStart = rToProcess.DateFrom
+        nJobId = rToProcess.JobId
+        tStart = datetime.datetime.now()
+        db.UpdateTable("JobLog",["JobStartTime", "Status"], [tStart.strftime("%Y-%m-%d %H:%M:%S"), "WIP"], ["JobId"], [nJobId])
 
-    #datEnd = datetime.date.today()
-    #datStart = datEnd + datetime.timedelta(days=-6)
-    (nProcessed, nTotal) = scrapSoldProperties(datStart, datEnd, nJobId)
-    tEnd = datetime.datetime.now()
-    nDuration = (tEnd-tStart).seconds/60
-    db.UpdateTable("JobLog", ["JobStartTime", "Status", "Duration"], [tEnd.strftime("%Y-%m-%d %H:%M:%S"), "Complete", nDuration], ["JobId"],[nJobId])
-
+        #datEnd = datetime.date.today()
+        #datStart = datEnd + datetime.timedelta(days=-6)
+        (nProcessed, nTotal) = scrapSoldProperties(datStart, datEnd, nJobId)
+        if nProcessed == 0:
+            #the job failed
+            tEnd = datetime.datetime.now()
+            nDuration = (tEnd - tStart).seconds / 60
+            db.UpdateTable("JobLog", ["JobStartTime", "Status", "Duration", "HARRecCnt","RecCnt"],
+                           [tEnd.strftime("%Y-%m-%d %H:%M:%S"), "Fail", nDuration, nTotal, nProcessed], ["JobId"], [nJobId])
+        else:
+            tEnd = datetime.datetime.now()
+            nDuration = (tEnd-tStart).seconds/60
+            db.UpdateTable("JobLog", ["JobStartTime", "Status", "Duration", "HARRecCnt","RecCnt"],
+                           [tEnd.strftime("%Y-%m-%d %H:%M:%S"), "Complete", nDuration, nTotal, nProcessed], ["JobId"],[nJobId])
+        rToProcess = db._cursor.fetchone()
