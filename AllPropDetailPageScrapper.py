@@ -5,6 +5,7 @@ This code scrapps property details using beautiful soup
 from bs4 import BeautifulSoup
 import ast
 import XmlConfigReader
+import traceback
 
 #parse a section and returns a dictionary
 def parseSection(sectionContent, dictColumns):
@@ -16,6 +17,18 @@ def parseSection(sectionContent, dictColumns):
         except:
             print("{0} not found".format(dictColumns[key]))
     return dictResults
+'''
+convert strings led by $ and , to a number
+'''
+def convertToNumber(entry):
+    if entry is None:
+        return None
+    else:
+        try:
+            return float(entry.strip().replace("$", "").replace(",",""))
+        except:
+            print("Error occured while trying to convert to float. original value: {0}".format(entry))
+            return None
 
 def readAllPropScrapperConfigSections():
     cfg = XmlConfigReader.Config("AllPropScrapper", "DEV")
@@ -272,52 +285,51 @@ def parseDetails(sHtml):
         print("Error occured while trying to generate broker id and name. original value: {0}".format(entry))
         dictResults['CloseBrokerId'] = entry
         dictResults['CloseBrokerName'] = entry
+
     #onvert dollar to numbers
     try:
-        entry = dictResults['LeasePrice']
-        if not entry is None:
-            dictResults['LeasePrice'] = float(entry.strip().replace("$","").replace(",",""))
+        val = dictResults['LeasePrice']
+        dictResults['LeasePrice'] = convertToNumber(val)
     except:
-        print("Error occured while trying to convert LeasePrice to float. original value: {0}".format(entry))
+        print ("error when processing LeasePrice: {0}".format(traceback.print_exc()))
 
     #convert application fee to float
     try:
-        entry = dictResults['ApplicationFee']
-        if not entry is None:
-            dictResults['ApplicationFee'] = float(entry.replace("$", ""))
+        val = dictResults['ApplicationFee']
+        dictResults['ApplicationFee'] = convertToNumber(val)
     except:
-        print("Error occured while trying to convert ApplicationFee to float. original value: {0}".format(entry))
+        print("error when processing ApplicationFee: {0}".format(traceback.print_exc()))
 
     # convert Bonue to number
+    dictResults['Bonus'] = convertToNumber(dictResults['Bonus'])
     try:
-        entry = dictResults['Bonus']
-        if not entry is None:
-            dictResults['Bonus'] = float(entry.replace("$", ""))
+        val = dictResults['ApplicationFee']
+        dictResults['ApplicationFee'] = convertToNumber(val)
     except:
-        print("Error occured while trying to convert Bonus to float. original value: {0}".format(entry))
+        print("error when processing ApplicationFee: {0}".format(traceback.print_exc()))
+
     #LeasedPricePerSqft
+    dictResults['LeasedPricePerSqft'] = convertToNumber(['LeasedPricePerSqft'])
     try:
-        entry = dictResults['LeasedPricePerSqft']
-        if not entry is None:
-            dictResults['LeasedPricePerSqft'] = float(entry.strip().replace("$", ""))
+        val = dictResults['ApplicationFee']
+        dictResults['ApplicationFee'] = convertToNumber(val)
     except:
-        print("Error occured while trying to convert LeasedPricePerSqft to float. original value: {0}".format(entry))
+        print("error when processing ApplicationFee: {0}".format(traceback.print_exc()))
 
     #SalePricePerSqft
     try:
-        entry = dictResults['SalePricePerSqft']
-        if not entry is None:
-            dictResults['SalePricePerSqft'] = float(entry.replace("$", ""))
+        val = dictResults['SalePricePerSqft']
+        dictResults['SalePricePerSqft'] = convertToNumber(val)
     except:
-        print("Error occured while trying to convert SalePricePerSqft to float. original value: {0}".format(entry))
+        print("error when processing SalePricePerSqft: {0}".format(traceback.print_exc()))
+
     # SoldPricePerSqft
     try:
-        entry = None
-        entry = dictResults['SoldPricePerSqft']
-        if not entry is None:
-            dictResults['SoldPricePerSqft'] = float(entry.replace("$", ""))
+        val = dictResults['SoldPricePerSqft']
+        dictResults['SoldPricePerSqft'] = convertToNumber(val)
     except:
-        print("Error occured while trying to convert SoldPricePerSqft to float. original value: {0}".format(entry))
+        print("error when processing SoldPricePerSqft: {0}".format(traceback.print_exc()))
+
     dictResults['PropertyType'] = selectedPropType
     return dictResults
 
