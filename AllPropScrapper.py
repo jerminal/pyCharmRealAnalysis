@@ -13,6 +13,14 @@ import XmlConfigReader
 import AllPropDetailPageScrapper as PropScrap
 import traceback
 import DBMSAccess
+import os
+
+def appendToCSV(nJObId, nMLS, msg):
+    strLogFilePath = os.getcwd() + r'\errorLog.csv'
+    with open(strLogFilePath, 'a') as f:
+        wr = csv.writer(f, dialect= 'excel')
+        wr.writerow((nJobId,)+  (nMLS, ) + (msg, ))
+    f.close()
 
 def writeToCSV(ary):
     (lstSectKeys, lstSectDict, dictSectionLookup) = PropScrap.readAllPropScrapperConfigSections()
@@ -196,7 +204,7 @@ def scrapSoldProperties(datFrom, datTo, nJobId):
     lstScrapResults = []
     nTotalCount = 0
     #now iterate through all the deails pages
-    db = DBMSAccess.MSAccess(r"c:/temp/NewListings.accdb")
+    db = DBMSAccess.MSAccess(r"c:/temp/RealAnalysis.accdb")
     while nTotalCount < nRecCnt - 1:
 
         print("Rec {0} of {1}".format(nTotalCount+1, nRecCnt))
@@ -261,6 +269,7 @@ def scrapSoldProperties(datFrom, datTo, nJobId):
                 if db.InsertDictionary("AllPropertyRecords",dictPageResult) == 0:
                     #if insertion fails:
                     print("insertion failed. record: {0}".format(str(dictPageResult)))
+                    appendToCSV(nJobId, nMLSNum, str(dictPageResult))
                 else:
                     db.UpdateTable("AllPropertyRecords", ["LastUpdate", "FK_JobId"], [datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), nJobId], ["MLSNum"], [int(nMLSNum)], False)
                 db.Committ()
@@ -276,11 +285,12 @@ def scrapSoldProperties(datFrom, datTo, nJobId):
     return (nTotalCount, nRecCnt)
 
 if __name__ == "__main__":
-    db = DBMSAccess.MSAccess(r"c:/temp/NewListings.accdb")
+    db = DBMSAccess.MSAccess(r"c:/temp/RealAnalysis.accdb")
     sql = "SELECT JobId, DateFrom, DateTo FROM JobLog WHERE Status is null"
     db._cursor.execute(sql)
-    rToProcess = db._cursor.fetchone()
-    while rToProcess is not None:
+    #rToProcess = db._cursor.fetchone()
+    rows = db._cursor.fetchall()
+    for rToProcess in rows:
         datEnd = rToProcess.DateTo
         datStart = rToProcess.DateFrom
         nJobId = rToProcess.JobId
@@ -301,4 +311,3 @@ if __name__ == "__main__":
             nDuration = (tEnd-tStart).seconds/60
             db.UpdateTable("JobLog", ["JobStartTime", "Status", "Duration", "HARRecCnt","RecCnt"],
                            [tEnd.strftime("%Y-%m-%d %H:%M:%S"), "Complete", nDuration, nTotal, nProcessed], ["JobId"],[nJobId])
-        rToProcess = db._cursor.fetchone()

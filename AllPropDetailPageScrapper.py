@@ -15,7 +15,8 @@ def parseSection(sectionContent, dictColumns):
             idx = sectionContent.index(dictColumns[key])
             dictResults[key] = sectionContent[idx + 1]
         except:
-            print("{0} not found".format(dictColumns[key]))
+            #print("{0} not found".format(dictColumns[key]))
+            pass
     return dictResults
 '''
 convert strings led by $ and , to a number
@@ -23,6 +24,8 @@ convert strings led by $ and , to a number
 def convertToNumber(entry):
     if entry is None:
         return None
+    elif type(entry) is float:
+        return entry
     else:
         try:
             return float(entry.strip().replace("$", "").replace(",",""))
@@ -142,8 +145,8 @@ def parseDetails(sHtml):
                     dataCollect.append(None)
                 else:
                     dataCollect.append((temp.replace(u'\xa0', u' ')).strip())
-    print("dataCollect: ")
-    print (dataCollect)
+    #print("dataCollect: ")
+    #print (dataCollect)
     # now, separate the long string into sections extracted above
     dictSectionContents = {}
     idxStart = 0
@@ -159,7 +162,8 @@ def parseDetails(sHtml):
                 strKey = item
             except:
                 # item not found, just move on
-                print("section {0} not found".format(item))
+                #print("section {0} not found".format(item))
+                pass
         else:
             strKey = item
     selectedPropType = ''
@@ -182,7 +186,7 @@ def parseDetails(sHtml):
                     columnVal = valueList[idx+1]
                     #print("{0}: {1}".format(columnKey, columnVal))
                 except:
-                    print("{0} not found".format(dictLookup[columnKey]))
+                    #print("{0} not found".format(dictLookup[columnKey]))
                     columnVal = None
                 dictResults[columnKey] = columnVal
         except:
@@ -191,7 +195,10 @@ def parseDetails(sHtml):
     # BldgSqft: example: 2,705 / Appr Dist, needs to get rid of the part after /
     try:
         entry = dictResults["BldgSqft"]
-        dictResults["BldgSqft"] = int((entry.split(' ')[0]).replace(',', ''))
+        if entry is not None:
+            dictResults["BldgSqft"] = int((entry.split(' ')[0]).replace(',', ''))
+    except KeyError:
+        pass
     except:
         print("Exception occured while trying to parse BldgSqft. Original value: {0}".format(entry))
         dictResults["BldgSqft"] = None
@@ -200,30 +207,43 @@ def parseDetails(sHtml):
 
     try:
         entry = dictResults['DaysOnMarket']
-        if entry[-1:] == '*':
-            dictResults['DaysOnMarket'] = entry[:-1]
+        if entry is not None:
+            if entry[-1:] == '*':
+                dictResults['DaysOnMarket'] = entry[:-1]
+    except KeyError:
+        pass
     except:
         print("Exception occured while trying to parse DOM. Original value: {0}".format(entry))
         dictResults["DaysOnMarket"] = None
     # lot size:
     try:
         entry = dictResults["LotSize"]
-        dictResults["LotSize"] = int((entry.split(' ')[0]).replace(',', ''))
+        if entry is not None:
+            dictResults["LotSize"] = int((entry.split(' ')[0]).replace(',', ''))
+    except KeyError:
+        pass
     except:
         print("Exception occured while trying to parse Lotsize. Original value: {0}".format(entry))
         dictResults["LotSize"] = None
     # LPperSqft
     try:
-        entry = dictResults['LPperSqft'][1:]  # pick the number part, leave out the dollar sign
-        dictResults['LPperSqft'] = float(entry.replace(',', ''))
+        entry = dictResults['LPperSqft']
+        if entry is not None:
+            entry = entry[1:]  # pick the number part, leave out the dollar sign
+            dictResults['LPperSqft'] = float(entry.replace(',', ''))
+    except KeyError:
+        pass
     except:
         print("Exception occured while trying to parse LPperSqft. Original value: {0}".format(entry))
         dictResults["LPperSqft"] = None
     # ListPrice
     try:
-        entry = dictResults['ListPrice'][1:]  # pick the number part, leave out the dollar sign
-        if not entry is None:
+        entry = dictResults['ListPrice']
+        if entry is not None:
+            entry = entry[1:]  # pick the number part, leave out the dollar sign
             dictResults['ListPrice'] = float(entry.replace(',', ''))
+    except KeyError:
+        pass
     except:
         print("Exception occured while trying to parse ListPrice. Original value: {0}".format(entry))
         dictResults["ListPrice"] = None
@@ -232,6 +252,8 @@ def parseDetails(sHtml):
         entry = dictResults['YearBuilt']
         if not entry is None:
             dictResults['YearBuilt'] = int(entry.split(' ')[0])
+    except KeyError:
+        pass
     except:
         print("Exception occured while trying to parse YearBuilt. Original value: {0}".format(entry))
         dictResults["YearBuilt"] = None
@@ -241,6 +263,8 @@ def parseDetails(sHtml):
         if not entry is None:
             dictResults['ListAgentId'] = entry.split('/')[0]
             dictResults['ListAgentName'] = entry.split('/')[1]
+    except KeyError:
+        pass
     except:
         print("Error occured while trying to generate agent id and name. original value: {0}".format(entry))
         dictResults['ListAgentId'] = entry
@@ -251,6 +275,8 @@ def parseDetails(sHtml):
         if not entry is None:
             dictResults['ListBrokerId'] = entry.split('/')[0]
             dictResults['ListBrokerName'] = entry.split('/')[1]
+    except KeyError:
+        pass
     except:
         print("Error occured while trying to generate broker id and name. original value: {0}".format(entry))
         dictResults['ListBrokerId'] = entry
@@ -261,6 +287,8 @@ def parseDetails(sHtml):
         if not entry is None:
             dictResults['CloseAgentId'] = (entry.split('(')[1]).rstrip(")")
             dictResults['CloseAgentName'] = entry.split('(')[0]
+    except KeyError:
+        pass
     except:
         print("Error occured while trying to generate close agent id and name. original value: {0}".format(entry))
         dictResults['CloseAgentId'] = entry
@@ -271,6 +299,8 @@ def parseDetails(sHtml):
         if not entry is None:
             dictResults['SellAgentId'] = (entry.split('(')[1]).strip()
             dictResults['SellAgentName'] = (entry.split('(')[0]).rstrip(")")
+    except KeyError:
+        pass
     except:
         print("Error occured while trying to generate sell agent id and name. original value: {0}".format(entry))
         dictResults['SellAgentId'] = entry
@@ -281,6 +311,8 @@ def parseDetails(sHtml):
         if not entry is None:
             dictResults['CloseBrokerId'] = (entry.split('(')[1]).rstrip(")")
             dictResults['CloseBrokerName'] = entry.split('(')[0]
+    except KeyError:
+        pass
     except:
         print("Error occured while trying to generate broker id and name. original value: {0}".format(entry))
         dictResults['CloseBrokerId'] = entry
@@ -290,6 +322,8 @@ def parseDetails(sHtml):
     try:
         val = dictResults['LeasePrice']
         dictResults['LeasePrice'] = convertToNumber(val)
+    except KeyError:
+        pass
     except:
         print ("error when processing LeasePrice: {0}".format(traceback.print_exc()))
 
@@ -297,22 +331,42 @@ def parseDetails(sHtml):
     try:
         val = dictResults['ApplicationFee']
         dictResults['ApplicationFee'] = convertToNumber(val)
+    except KeyError:
+        pass
     except:
         print("error when processing ApplicationFee: {0}".format(traceback.print_exc()))
 
     # convert Bonue to number
-    dictResults['Bonus'] = convertToNumber(dictResults['Bonus'])
+    try:
+        val = dictResults['Bonus']
+        dictResults['Bonus'] = convertToNumber(val)
+    except KeyError:
+        pass
+    except:
+        if val is not None:
+            print("error when processing Bonus: {0}".format(traceback.print_exc()))
     try:
         val = dictResults['ApplicationFee']
         dictResults['ApplicationFee'] = convertToNumber(val)
+    except KeyError:
+        pass
     except:
         print("error when processing ApplicationFee: {0}".format(traceback.print_exc()))
 
     #LeasedPricePerSqft
-    dictResults['LeasedPricePerSqft'] = convertToNumber(['LeasedPricePerSqft'])
+    try:
+        val = dictResults['LeasedPricePerSqft']
+        dictResults['LeasedPricePerSqft'] = convertToNumber(val)
+    except KeyError:
+        pass
+    except:
+        print("error when processing LeasePricePerSqft: {0}".format(traceback.print_exc()))
+
     try:
         val = dictResults['ApplicationFee']
         dictResults['ApplicationFee'] = convertToNumber(val)
+    except KeyError:
+        pass
     except:
         print("error when processing ApplicationFee: {0}".format(traceback.print_exc()))
 
@@ -320,13 +374,17 @@ def parseDetails(sHtml):
     try:
         val = dictResults['SalePricePerSqft']
         dictResults['SalePricePerSqft'] = convertToNumber(val)
-    except:
+    except KeyError:
+        pass
+    except :
         print("error when processing SalePricePerSqft: {0}".format(traceback.print_exc()))
 
     # SoldPricePerSqft
     try:
         val = dictResults['SoldPricePerSqft']
         dictResults['SoldPricePerSqft'] = convertToNumber(val)
+    except KeyError:
+        pass
     except:
         print("error when processing SoldPricePerSqft: {0}".format(traceback.print_exc()))
 
