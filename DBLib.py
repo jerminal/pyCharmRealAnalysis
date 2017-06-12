@@ -4,7 +4,7 @@ import traceback
 import pyodbc
 import pymysql
 
-class MSAccess:
+class DBAccess:
     def __init__(self, db_type = "msacccess", ms_access_path = "", host=None, port=0, db_name = "", user_id = "", pwd = ""):
         if db_type == 'msaccess':
             self._db_file = ms_access_path
@@ -14,15 +14,22 @@ class MSAccess:
                 odbc_conn_str = 'DRIVER={Microsoft Access Driver (*.mdb)};DBQ=%s;UID=%s;PWD=%s' % (self._db_file,self._user, self._password)
             else: # Or, for newer versions of the Access drivers:
                 odbc_conn_str = 'DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=%s;UID=%s;PWD=%s' % (self._db_file,self._user, self._password)
+            try:
+                self._conn = pyodbc.connect(odbc_conn_str)
+            except:
+                print("failed to connect the database. error details:{0}".format(traceback.print_exc()))
         elif db_type == 'mysql':
             self._host = host
             self._port = port
             self._db_name = db_name
             self._user = user_id
             self._password = pwd
-
-        self._conn = pyodbc.connect(odbc_conn_str)
+            try:
+                self._conn = pymysql.connect(host=host, port=port, user=user_id, passwd=pwd, db=db_name)
+            except:
+                print("failed to connect the database. error details:{0}".format(traceback.print_exc()))
         self._cursor = self._conn.cursor()
+
     def Execute(self, sql):
         return self._cursor.execute(sql)
 

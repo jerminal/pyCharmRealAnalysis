@@ -13,6 +13,8 @@ import XmlConfigReader
 import AllPropDetailPageScrapper as PropScrap
 import traceback
 import DBMSAccess
+from DBLib import DBAccess
+
 import os
 
 def appendToCSV(nJObId, nMLS, msg):
@@ -285,15 +287,22 @@ def scrapSoldProperties(datFrom, datTo, nJobId):
     return (nTotalCount, nRecCnt)
 
 if __name__ == "__main__":
-    db = DBMSAccess.MSAccess(r"c:/temp/RealAnalysis.accdb")
+    cfg = XmlConfigReader.Config("AllPropScrapper", "DEV")
+    host = cfg.getConfigValue(r'MySQL/host')
+    port = int(cfg.getConfigValue(r"MySQL/port"))
+    user = cfg.getConfigValue(r"MySQL/user")
+    passwd = cfg.getConfigValue(r"MySQL/password")
+    db = cfg.getConfigValue(r"MySQL/DB")
+    db = DBAccess('mysql', host=host, port=port, db_name =db, user_id = user, pwd = passwd)
+    #db = DBMSAccess.MSAccess(r"c:/temp/RealAnalysis.accdb")
     sql = "SELECT JobId, DateFrom, DateTo FROM JobLog WHERE Status is null"
     db._cursor.execute(sql)
-    #rToProcess = db._cursor.fetchone()
+
     rows = db._cursor.fetchall()
     for rToProcess in rows:
-        datEnd = rToProcess.DateTo
-        datStart = rToProcess.DateFrom
-        nJobId = rToProcess.JobId
+        datEnd = rToProcess[2]
+        datStart = rToProcess[1]
+        nJobId = rToProcess[0]
         tStart = datetime.datetime.now()
         db.UpdateTable("JobLog",["JobStartTime", "Status"], [tStart.strftime("%Y-%m-%d %H:%M:%S"), "WIP"], ["JobId"], [nJobId])
 
