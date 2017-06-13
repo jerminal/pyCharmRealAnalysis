@@ -6,13 +6,7 @@ import datetime
 from io import StringIO
 
 class db_mysql:
-    '''
-    host = 73.136.184.214"
-    _usr = 'xiaowei'
-   _pwd = 'Hhxxttxs2017'
-    _port = 3306
-    _DBName = 'HARHistory'
-    '''
+
     def __init__(self, strHost, nPort, strUsr, strPwd, strDBName):
         self.getConnection(strHost, nPort, strUsr, strPwd, strDBName)
 
@@ -24,8 +18,10 @@ class db_mysql:
     def getColumnsList(self, strTableName):
         self._cur = self._conn.cursor()
         self._cur.execute("SELECT * FROM {0} LIMIT 1".format(strTableName))
-        print( [x[0] for x in self._cur.description])
-        return [x[0] for x in self._cur.description]
+        temp = [x[0] for x in self._cur.description]
+        self._ColumnsList = temp
+        #print( temp)
+        return temp
 
     '''get the insert statement for a target table'''
     '''it retrieves all the columns of a table, and generate the sql insertion string'''
@@ -39,31 +35,76 @@ class db_mysql:
         self._InsertSql = sql
         return sql
 
+    '''
+        prepare the update statement
+    '''
+    def prepareUpdateStatement(self, strTargetTable, keyColumns):
+        lstColumns = self.getColumnsList(strTargetTable)
+        for item in keyColumns:
+            lstColumns.remove(item)
+        lstValClause = '=?, '.join(lstColumns) + '=?'
+        lstWhereClause = '=? and '.join(keyColumns) + '=?'
+        sql = "UPDATE {0} SET {1} WHERE {2}".format(strTargetTable, lstValClause, lstWhereClause)
+        self._updateSql = sql
+
     '''params is a tuple that contains the values to insert'''
-    def executeOneInsertCommand(self, sql, params):
-        self._cur.execute(sql, params)
-        self._conn.commit()
-
-    def logJobLog(self, zipCode, PropType, StartDate, EndDate, RecordCount, JobStartTime, JobEndTime, Result, Note):
-        sql = "INSERT INTO joblog (zipCode, PropertyType, DateRangeFrom, DateRangeTo, RecordCount, JobStartTime, JobEndTime, Result, Note) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    def insertOneRecord(self, params, bAutoCommit = True):
         try:
-            self._cur.execute(sql, (zipCode, PropType, StartDate, EndDate, RecordCount, JobStartTime, JobEndTime, Result, Note))
-            self._conn.commit()
+            result = self._cur.execute(self._InsertSql, params)
         except:
-            print(sys.exc_info())
+            print(traceback.print_exc())
+            return 0
+        if bAutoCommit:
+            self._conn.commit()
+        return result.rowcount
 
-    '''transfers one record contained in data row to target table'''
-    def transferOneRecord(self, dataRow):
-        #sql = self.prepareInsertStatement(strTargetTable)
+    def insertManyRecord(self, dataSet, bAutoCommit=True):
         try:
-            #print(len(dataRow))
-            self._cur.execute(self._InsertSql, dataRow)
+            result = self._cur.executemany(self._InsertSql, dataSet)
+        except:
+            print(traceback.print_exc())
+            return 0
+        if bAutoCommit:
+            self._conn.commit()
+        return result.rowcount
+
+    '''
+    the data here can be a dictionary or a list/tuple of data points
+    if it's a list/tuple, the column sequence must be the same as the table column sequence
+    if it's a dictionary, then the keys must be the same as column names
+    '''
+    def updateRecord(self, strTargetTable, data, whereClauseColumns, bAutoCommit = True):
+        whereData = []
+        if type(data) is tuple or type(data) is list:
+            for item in whereClauseColumns:
+                idx = self._ColumnsList[item]
+                if type(data) is tuple:
+                    data = list(data)
+                whereData.append(data.pop(idx))
+                self._cur.execute(self._updateSql,data + whereData)
+        else:
+            #it's a dictionary
+            dict = {}
+            for item in whereClauseColumns:
+                dict[item] = data.pop(item)
+
+        if bAutoCommit:
+            self._conn.commit()
+    '''transfers one record contained in data row to target table
+    difference between transfer and insert is transfer wraps around the insert, prepares the insert sql 
+    and switch to update if insert causes a primary key violation
+    '''
+
+    def transferOneRecord(self, strTargetTable, dataRow, whereClauseColumns, bAutocommit = True):
+        self.prepareInsertStatement(strTargetTable)
+        try:
+            result = self._cur.execute(self._InsertSql, dataRow)
+
             self._conn.commit()
             #print('1 row updated to mysql')
             return 1
         except:
             print(sys.exc_info())
-            self.logJobLog(None, None, None, None, 1, None, None, 'transferOneRecord failed to insert record', str(dataRow))
             return 0
 
     def WriteHistoryData(self, sIO, strType):
@@ -126,7 +167,8 @@ class db_mysql:
 
 if __name__ == "__main__":
     #test the code
-    host = '73.136.184.214'
+    #host = '73.136.184.214'
+    host = 'localhost'
     usr = 'xiaowei'
     pwd = 'Hhxxttxs2017'
     port = 3306
