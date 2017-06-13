@@ -1,0 +1,138 @@
+import pymysql
+from functools import reduce
+import traceback
+import sys
+import datetime
+from io import StringIO
+
+class db_mysql:
+    '''
+    host = 73.136.184.214"
+    _usr = 'xiaowei'
+   _pwd = 'Hhxxttxs2017'
+    _port = 3306
+    _DBName = 'HARHistory'
+    '''
+    def __init__(self, strHost, nPort, strUsr, strPwd, strDBName):
+        self.getConnection(strHost, nPort, strUsr, strPwd, strDBName)
+
+
+    def getConnection(self, _host, _port, _usr, _pwd, _DBName):
+        self._conn = pymysql.connect(host=_host, port=_port, user=_usr, passwd=_pwd, db=_DBName)
+        self._cur   = self._conn.cursor()
+
+    def getColumnsList(self, strTableName):
+        self._cur = self._conn.cursor()
+        self._cur.execute("SELECT * FROM {0} LIMIT 1".format(strTableName))
+        print( [x[0] for x in self._cur.description])
+        return [x[0] for x in self._cur.description]
+
+    '''get the insert statement for a target table'''
+    '''it retrieves all the columns of a table, and generate the sql insertion string'''
+    def prepareInsertStatement(self, strTargetTable):
+        lstColumns = self.getColumnsList(strTargetTable)
+        columnsList = reduce((lambda x, y: x + ', ' + y) , lstColumns)
+        valueList = ["%s"]* len(lstColumns)
+        valueList1 = reduce((lambda x,y: x + ', ' +y), valueList)
+        sql = "INSERT INTO {0} ({1}) VALUES ({2})".format(strTargetTable, columnsList, valueList1)
+        print(sql)
+        self._InsertSql = sql
+        return sql
+
+    '''params is a tuple that contains the values to insert'''
+    def executeOneInsertCommand(self, sql, params):
+        self._cur.execute(sql, params)
+        self._conn.commit()
+
+    def logJobLog(self, zipCode, PropType, StartDate, EndDate, RecordCount, JobStartTime, JobEndTime, Result, Note):
+        sql = "INSERT INTO joblog (zipCode, PropertyType, DateRangeFrom, DateRangeTo, RecordCount, JobStartTime, JobEndTime, Result, Note) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        try:
+            self._cur.execute(sql, (zipCode, PropType, StartDate, EndDate, RecordCount, JobStartTime, JobEndTime, Result, Note))
+            self._conn.commit()
+        except:
+            print(sys.exc_info())
+
+    '''transfers one record contained in data row to target table'''
+    def transferOneRecord(self, dataRow):
+        #sql = self.prepareInsertStatement(strTargetTable)
+        try:
+            #print(len(dataRow))
+            self._cur.execute(self._InsertSql, dataRow)
+            self._conn.commit()
+            #print('1 row updated to mysql')
+            return 1
+        except:
+            print(sys.exc_info())
+            self.logJobLog(None, None, None, None, 1, None, None, 'transferOneRecord failed to insert record', str(dataRow))
+            return 0
+
+    def WriteHistoryData(self, sIO, strType):
+        #dateParse = lambda x: pd.datetime.strptime(x, '%m/%d/%Y %I:%M:%S %p') if len(x) > 10 else pd.datetime.strptime(x, '%m/%d/%Y')
+        nTotRow = 0
+        if strType == 'res':
+            dateColumns = ['AuctionDate','BonusEndDate','ClosedDate','CompletedConstructionDate','CompletionDate','EstClosedDate','Modified','ListDate','OffMarketDate','OnlineBiddingDate','PendingDate','RemovalOptDate','TerminationDate','WithdrawnDate']
+            strTableName = "residentialsaleshistory"
+        elif strType == 'rnt':
+            dateColumns=['BonusEndDate','ClosedDate','CompletionDate','DateAvail','EstClosedDate','ListDate','OffMarketDate','Modified','PendingDate','RemovalOptDate','TerminationDate','WithdrawnDate']
+            strTableName = "rentalsaleshistory"
+        else:
+            return (False, "Type {0} is not recognized".format(strType))
+        self.prepareInsertStatement(strTableName)
+
+        lines = sIO.readlines()
+        nRowCount = len(lines)
+        lines = [x.rstrip('\n') for x in lines]
+        for line in lines[1:]:
+            data = line.split(sep='\t')
+            for idx, item in enumerate(data):
+                if item.count("/") == 2 and item[:4] != 'http':
+                    if len(item) <= 10:
+                        # it is a date
+                        try:
+                            data[idx] = datetime.datetime.strptime(item, "%m/%d/%Y").strftime("%Y-%m-%d")
+                        except:
+                            # do nothing here
+                            print("fail to convert to date: {0}".format(item))
+                    elif len(item) <= 30:
+                        try:
+                            # it is a datetime
+                            data[idx] = datetime.datetime.strptime(item, "%m/%d/%Y %I:%M:%S %p").strftime(
+                                "%Y-%m-%d %H:%M:%S")
+                        except:
+                            print("fail to convert to datetime: {0}".format(item))
+                elif item == '':
+                    data[idx] = None
+            #print(data)
+            dataRow = tuple(data)
+            nTotRow += self.transferOneRecord(dataRow)
+
+        '''
+        dataF = pd.read_table(sIO, error_bad_lines=False, parse_dates=dateColumns, infer_datetime_format=True, warn_bad_lines=True)
+        dataF1 = dataF.where((pd.notnull(dataF)), None)
+        nRowCount = len(dataF1.index)
+        # print(dataF.columns)
+        for id, row in dataF1.iterrows():
+            try:
+                dataRow = tuple(dataF1.ix[id])
+                self.transferOneRecord(dataRow)
+                nTotRow +=1
+            except:
+                print(sys.exc_info())
+                return (False, traceback.format_exc())
+        '''
+        print("{0}/{1} records updated".format(nTotRow, nRowCount))
+        return (True, "{0}/{1} records updated".format(nTotRow, nRowCount))
+
+
+if __name__ == "__main__":
+    #test the code
+    host = '73.136.184.214'
+    usr = 'xiaowei'
+    pwd = 'Hhxxttxs2017'
+    port = 3306
+    DBName = 'HARHistory'
+    db = db_mysql(host, port, usr, pwd, DBName)
+    column_list = db.getColumnsList("joblog")
+    print(column_list)
+    column_list = db.getColumnsList("ZipCodeList")
+    print(column_list)
