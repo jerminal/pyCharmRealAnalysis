@@ -6,6 +6,7 @@ import pymysql
 
 class DBAccess:
     def __init__(self, db_type = "msacccess", ms_access_path = "", host=None, port=0, db_name = "", user_id = "", pwd = ""):
+        self._dbtype = db_type
         if db_type == 'msaccess':
             self._db_file = ms_access_path
             self._user = 'admin'
@@ -52,14 +53,23 @@ class DBAccess:
         self._conn.commit()
 
     def prepareUpdateSQL(self, strTable, lstColumnsToUpdate, lstKeysToUpdate):
-        cols = '=?, '.join(lstColumnsToUpdate) + '=?'
-        keys = '=? and '.join(lstKeysToUpdate) + '=?'
-        sql = "UPDATE {0} SET {1} WHERE {2}".format(strTable, cols, keys)
+        if self._dbtype == 'msaccess':
+            cols = '=?, '.join(lstColumnsToUpdate) + '=?'
+            keys = '=? and '.join(lstKeysToUpdate) + '=?'
+            sql = "UPDATE {0} SET {1} WHERE {2}".format(strTable, cols, keys)
+        else:
+            cols = '=%s, '.join(lstColumnsToUpdate) + '=%s'
+            keys = '=%s and '.join(lstKeysToUpdate) + '=%s'
+            sql = "UPDATE {0} SET {1} WHERE {2}".format(strTable, cols, keys)
         #print(sql)
         return sql
 
     def prepareInsertSQL(self, strTable, lstColumns):
-        sql = "INSERT INTO {0} ({1}) VALUES ({2})".format(strTable, ",".join(lstColumns),",".join(['?'] * len(lstColumns)))
+        if self._dbtype == 'msaccess':
+            sql = "INSERT INTO {0} ({1}) VALUES ({2})".format(strTable, ",".join(lstColumns),",".join(['?'] * len(lstColumns)))
+        else:
+            sql = "INSERT INTO {0} ({1}) VALUES ({2})".format(strTable, ",".join(lstColumns),
+                                                              ",".join(['%s'] * len(lstColumns)))
         return sql
 
     def InsertDictionary(self, strTableName, dict, bAutoCommit = True):
@@ -110,6 +120,7 @@ class DBAccess:
 
 
 if __name__ == "__main__":
-    db = MSAccess(r"c:/temp/RealAnalysis.accdb")
+    #db = MSAccess(r"c:/temp/RealAnalysis.accdb")
+    db=DBAccess
     dict = {'ListAgentId': 'worker', 'CompBuyerAgent': None, 'Area': '9', 'ListBroker': 'HORE01/Homestead Realty', 'MarketArea': 'Heights/Greater Heights', 'CloseAgtTRECId': '0391794', 'YearBuilt': 1920, 'Heat': 'Central Gas', 'Baths': '2/0', 'Roof': None, 'LPperSqft': 1.29, 'PendingDate': '12/20/2015', 'LeasedPricePerSqft': 1.24, 'SchoolDistrict': '27 - Houston', 'Flooring': 'Wood', 'TaxID': '021-018-000-0030', 'SaleMLSNum': None, 'MasterBath': None, 'LotSize': 8180, 'Address': '533 Oxford Street', 'OrigPrice': None, 'LeaseAlso': None, 'AgentPhone': None, 'LotDesc': 'Other', 'HighSchool': 'HEIGHTS HIGH SCHOOL', 'UnitLevel': None, 'ListDate': '12/20/2015', 'ListAgentName': 'Kim Pedigo', 'TaxRate': None, 'Foundation': None, 'Latitude': '29.781141', 'PropertyType': 'Rental', 'BrokerAddress': 'PO Box 130385, Houston               TX 77219', 'AgentEmail': None, 'Interior': None, 'Subdivision': 'Houston Heights', 'ListPrice': 2300.0, 'CompSubAgent': None, 'WaterfrontFeat': None, 'LeaseDate': '01/01/2016', 'TotalDiscount': None, 'ApprovalRequirement': 'Yes/Good job, good credit.', 'City': 'Houston', 'Heating': 'Central Gas', 'ApplicationFee': 55.0, 'MaintFee': None, 'Countertops': 'Tiles', 'Status': 'Sold', 'TotalUnits': None, 'UnitStories': '1', 'Bonus': None, 'Longitude': '-95.392221', 'Restrictions': 'No Restrictions', 'CloseAgentId': 'WORKER', 'ListAgent': 'worker/Kim Pedigo', 'Range': 'Electric Cooktop', 'LegalDesc': 'TRS 1A 2A & 3 BLK 286 HOUSTON HEIGHTS', 'County': 'Harris', 'ListBrokerName': 'Homestead Realty', 'Stories': None, 'TDate': '12/20/2015', 'FloorLocation': None, 'Zip': '77007 - 2601', 'PropertyClass': 'Single Family Detached', 'MLSNum': '77163257', 'DateAvail': '10/23/2015', 'Access': None, 'CloseBroker': 'Homestead Realty (HORE01)', 'Style': None, 'EstCloseDate': '01/01/2016', 'CloseAgentName': 'Kim Pedigo ', 'LotValue': None, 'Acres': '/ 0 Up To 1/4 Acre', 'ListBrokerId': 'HORE01', 'Builder': None, 'MiddleSchool': 'HOGG MIDDLE SCHOOL (HOUSTON)', 'ExteriorCons': None, 'Type': None, 'LeasePrice': 2200.0, 'Cooling': 'Central Electric', 'PrivatePool': 'No', 'Location': None, 'Bedrooms': '3/', 'RentalTerm': 'One Year', 'State': 'Texas', 'BedroomsDesc': 'All Bedrooms Down', 'DaysOnMarket': '', 'CloseBrokerId': 'HORE01', 'CloseAgent': 'Kim Pedigo (WORKER)', 'SecurityDeposit': '2300', 'BldgSqft': 1780, 'MasterPlanned': None, 'LicensedSupervisor': None, 'Connections': None, 'PrvtPool': 'No', 'CloseBrokerName': 'Homestead Realty ', 'ElemSchool': 'HARVARD ELEMENTARY SCHOOL', 'Oven': 'Electric Oven'}
     db.InsertDictionary("AllPropertyRecords", dict)

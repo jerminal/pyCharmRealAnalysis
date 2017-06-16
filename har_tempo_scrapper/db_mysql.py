@@ -3,6 +3,7 @@ from functools import reduce
 import traceback
 import sys
 import datetime
+import dateutil.parser as dparser
 from io import StringIO
 
 class db_mysql:
@@ -25,8 +26,9 @@ class db_mysql:
 
     '''get the insert statement for a target table'''
     '''it retrieves all the columns of a table, and generate the sql insertion string'''
-    def prepareInsertStatement(self, strTargetTable):
-        lstColumns = self.getColumnsList(strTargetTable)
+    def prepareInsertStatement(self, strTargetTable, lstColumns = None):
+        if lstColumns is None:
+            lstColumns = self.getColumnsList(strTargetTable)
         columnsList = reduce((lambda x, y: x + ', ' + y) , lstColumns)
         valueList = ["%s"]* len(lstColumns)
         valueList1 = reduce((lambda x,y: x + ', ' +y), valueList)
@@ -38,8 +40,9 @@ class db_mysql:
     '''
         prepare the update statement
     '''
-    def prepareUpdateStatement(self, strTargetTable, keyColumns):
-        lstColumns = self.getColumnsList(strTargetTable)
+    def prepareUpdateStatement(self, strTargetTable, lstColumns = None, keyColumns):
+        if lstColumns is None:
+            lstColumns = self.getColumnsList(strTargetTable)
         for item in keyColumns:
             lstColumns.remove(item)
         lstValClause = '=?, '.join(lstColumns) + '=?'
@@ -96,16 +99,51 @@ class db_mysql:
     '''
 
     def transferOneRecord(self, strTargetTable, dataRow, whereClauseColumns, bAutocommit = True):
-        self.prepareInsertStatement(strTargetTable)
+        #self.prepareInsertStatement(strTargetTable)
         try:
             result = self._cur.execute(self._InsertSql, dataRow)
-
-            self._conn.commit()
+            if bAutocommit:
+                self._conn.commit()
             #print('1 row updated to mysql')
             return 1
         except:
             print(sys.exc_info())
             return 0
+
+    '''
+        insert the csv as sIO into AllPropertyRecords table
+        the first row is the column names
+    '''
+    def insertHarTempoAllRecords(self, sIO):
+        strTargetTable = 'HarTempo_AllRecords'
+        nRowProcessed = 0
+        lines = sIO.readlines()
+        nRowCount = len(lines) - 1
+        lines = [x.rstrip('\n') for x in lines]
+        lstColumns = lines[0].split(sep='\t')
+        self._ColumnsList = lstColumns
+        self._InsertSql = self.prepareInsertStatement(strTargetTable, lstColumns)
+
+        for line in lines[1:]:
+            dataRow = line.split(sep='\t')
+            for idx, item in enumerate(dataRow):
+                if len(item) == 0:
+                    dataRow[idx] = None
+                else:
+                    #test if the item is a date type, if so, convert the format
+                    try:
+                        dt = dparser.parse(item, fuzzy=True)
+                        if len(item) <= 10:
+                            #this is a date
+                            dataRow[idx] = dt.strftime("%Y-%m-%d")
+                        elif len(item) <= 30:
+                            #this is a date time
+                            dataRow[idx] = dt.strftime("%Y-%m-%d %H:%M:%S")
+                    except:
+                        continue
+            rToInsert = tuple(dataRow)
+            nRowProcessed += self.transferOneRecord(strTargetTable, rToInsert, ["MLSNum"])
+        return nRowProcessed
 
     def WriteHistoryData(self, sIO, strType):
         #dateParse = lambda x: pd.datetime.strptime(x, '%m/%d/%Y %I:%M:%S %p') if len(x) > 10 else pd.datetime.strptime(x, '%m/%d/%Y')
