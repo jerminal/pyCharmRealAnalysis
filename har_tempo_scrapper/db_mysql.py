@@ -28,7 +28,8 @@ class db_mysql:
     '''it retrieves all the columns of a table, and generate the sql insertion string'''
     def prepareInsertStatement(self, strTargetTable, lstColumns = None):
         if lstColumns is None:
-            lstColumns = self.getColumnsList(strTargetTable)
+            #lstColumns = self.getColumnsList(strTargetTable)
+            lstColumns = self._ColumnsList
         columnsList = reduce((lambda x, y: x + ', ' + y) , lstColumns)
         valueList = ["%s"]* len(lstColumns)
         valueList1 = reduce((lambda x,y: x + ', ' +y), valueList)
@@ -40,7 +41,7 @@ class db_mysql:
     '''
         prepare the update statement
     '''
-    def prepareUpdateStatement(self, strTargetTable, lstColumns = None, keyColumns):
+    def prepareUpdateStatement(self, strTargetTable, lstColumns = None, keyColumns=None):
         if lstColumns is None:
             lstColumns = self.getColumnsList(strTargetTable)
         for item in keyColumns:
@@ -101,6 +102,7 @@ class db_mysql:
     def transferOneRecord(self, strTargetTable, dataRow, whereClauseColumns, bAutocommit = True):
         #self.prepareInsertStatement(strTargetTable)
         try:
+            #first will try to insert the record
             result = self._cur.execute(self._InsertSql, dataRow)
             if bAutocommit:
                 self._conn.commit()
@@ -108,6 +110,8 @@ class db_mysql:
             return 1
         except:
             print(sys.exc_info())
+            #TODO: test it's a primary key error
+
             return 0
 
     '''
@@ -120,9 +124,8 @@ class db_mysql:
         lines = sIO.readlines()
         nRowCount = len(lines) - 1
         lines = [x.rstrip('\n') for x in lines]
-        lstColumns = lines[0].split(sep='\t')
-        self._ColumnsList = lstColumns
-        self._InsertSql = self.prepareInsertStatement(strTargetTable, lstColumns)
+        self._ColumnsList = lines[0]
+        self._InsertSql = self.prepareInsertStatement(strTargetTable)
 
         for line in lines[1:]:
             dataRow = line.split(sep='\t')
@@ -145,7 +148,7 @@ class db_mysql:
             nRowProcessed += self.transferOneRecord(strTargetTable, rToInsert, ["MLSNum"])
         return nRowProcessed
 
-    def WriteHistoryData(self, sIO, strType):
+    def obselete_WriteHistoryData(self, sIO, strType):
         #dateParse = lambda x: pd.datetime.strptime(x, '%m/%d/%Y %I:%M:%S %p') if len(x) > 10 else pd.datetime.strptime(x, '%m/%d/%Y')
         nTotRow = 0
         if strType == 'res':
@@ -205,14 +208,14 @@ class db_mysql:
 
 if __name__ == "__main__":
     #test the code
-    #host = '73.136.184.214'
-    host = 'localhost'
+    host = '73.136.184.214'
+    #host = 'localhost'
     usr = 'xiaowei'
     pwd = 'Hhxxttxs2017'
     port = 3306
-    DBName = 'HARHistory'
+    DBName = 'RealAnalysis_DEV'
     db = db_mysql(host, port, usr, pwd, DBName)
-    column_list = db.getColumnsList("joblog")
-    print(column_list)
-    column_list = db.getColumnsList("ZipCodeList")
-    print(column_list)
+    #column_list = db.getColumnsList("joblog")
+    #print(column_list)
+    #column_list = db.getColumnsList("ZipCodeList")
+    #print(column_list)
