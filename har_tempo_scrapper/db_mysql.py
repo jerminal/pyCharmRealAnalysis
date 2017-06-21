@@ -108,9 +108,10 @@ class db_mysql:
                 self._conn.commit()
             #print('1 row updated to mysql')
             return 1
-        except:
-            print(sys.exc_info())
-            #TODO: test it's a primary key error
+        except pymysql.err.IntegrityError as e:
+            if e.args[] == 1062: #it's a primary key error
+                print(sys.exc_info())
+                #   TODO: test it's a primary key error
 
             return 0
 
