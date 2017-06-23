@@ -28,8 +28,10 @@ class db_mysql:
     '''it retrieves all the columns of a table, and generate the sql insertion string'''
     def prepareInsertStatement(self, strTargetTable, lstColumns = None):
         if lstColumns is None:
-            #lstColumns = self.getColumnsList(strTargetTable)
+            lstColumns = self.getColumnsList(strTargetTable)
             lstColumns = self._ColumnsList
+        else:
+            self._ColumnsList = lstColumns
         columnsList = reduce((lambda x, y: x + ', ' + y) , lstColumns)
         valueList = ["%s"]* len(lstColumns)
         valueList1 = reduce((lambda x,y: x + ', ' +y), valueList)
@@ -43,13 +45,14 @@ class db_mysql:
     '''
     def prepareUpdateStatement(self, strTargetTable, lstColumns = None, keyColumns=None):
         if lstColumns is None:
-            lstColumns = self.getColumnsList(strTargetTable)
+            lstColumns = self.getColumnsList(strTargetTable)[:]
         for item in keyColumns:
             lstColumns.remove(item)
-        lstValClause = '=?, '.join(lstColumns) + '=?'
-        lstWhereClause = '=? and '.join(keyColumns) + '=?'
+        lstValClause = '=%s, '.join(lstColumns) + '=%s'
+        lstWhereClause = '=%s and '.join(keyColumns) + '=%s'
         sql = "UPDATE {0} SET {1} WHERE {2}".format(strTargetTable, lstValClause, lstWhereClause)
         self._updateSql = sql
+        print(self._updateSql)
 
     '''params is a tuple that contains the values to insert'''
     def insertOneRecord(self, params, bAutoCommit = True):
@@ -81,11 +84,12 @@ class db_mysql:
         whereData = []
         if type(data) is tuple or type(data) is list:
             for item in whereClauseColumns:
-                idx = self._ColumnsList[item]
+                idx = self._ColumnsList.index(item)
                 if type(data) is tuple:
                     data = list(data)
                 whereData.append(data.pop(idx))
-                self._cur.execute(self._updateSql,data + whereData)
+            print(data + whereData)
+            self._cur.execute(self._updateSql,data + whereData)
         else:
             #it's a dictionary
             dict = {}
@@ -94,6 +98,7 @@ class db_mysql:
 
         if bAutoCommit:
             self._conn.commit()
+        return 1
     '''transfers one record contained in data row to target table
     difference between transfer and insert is transfer wraps around the insert, prepares the insert sql 
     and switch to update if insert causes a primary key violation
@@ -109,11 +114,12 @@ class db_mysql:
             #print('1 row updated to mysql')
             return 1
         except pymysql.err.IntegrityError as e:
-            if e.args[] == 1062: #it's a primary key error
+            if e.args[0] == 1062: #it's a primary key error
                 print(sys.exc_info())
-                #   TODO: test it's a primary key error
-
-            return 0
+                result = self.updateRecord(strTargetTable, dataRow, whereClauseColumns, bAutocommit)
+                return result
+            else:
+                return 0
 
     '''
         insert the csv as sIO into AllPropertyRecords table
@@ -206,7 +212,7 @@ class db_mysql:
         print("{0}/{1} records updated".format(nTotRow, nRowCount))
         return (True, "{0}/{1} records updated".format(nTotRow, nRowCount))
 
-
+'''
 if __name__ == "__main__":
     #test the code
     host = '73.136.184.214'
@@ -216,7 +222,12 @@ if __name__ == "__main__":
     port = 3306
     DBName = 'RealAnalysis_DEV'
     db = db_mysql(host, port, usr, pwd, DBName)
+    db.prepareInsertStatement("test")
+    db.prepareUpdateStatement("test", None, ['keyCol'])
+    db.transferOneRecord("test",[2,'abc','2017-1-1'], ['keyCol'])
+    db.transferOneRecord("test", [2, 'abc', '2017-1-1'], ['keyCol'])
     #column_list = db.getColumnsList("joblog")
     #print(column_list)
     #column_list = db.getColumnsList("ZipCodeList")
     #print(column_list)
+'''

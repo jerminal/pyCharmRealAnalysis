@@ -4,13 +4,11 @@ from urllib.error import URLError, HTTPError
 import os
 from io import StringIO
 import sys
-import binascii
 import time
 import datetime
-#import SQLite_Module as db
-import MySql_Module as oMySql
 import calendar
 import random
+import DBLib
 
 def scrapZip(zip, propertyType, dateRangeStart, dateRangeEnd):
     nMonthSpan = 12 #the default number of months span
@@ -48,6 +46,79 @@ def scrapZip(zip, propertyType, dateRangeStart, dateRangeEnd):
             break
         time.sleep(random.randint(5,15))
     return(True)
+
+def scrap_tempo_history(property_type, startDate, endDate, zip):
+    fakeTimeStamp = datetime.datetime.now() - datetime.timedelta(seconds=10)
+    print(fakeTimeStamp.strftime("%m/%d/%Y %I:%M:%S %p"))
+    cookiestr = "TempoCookie=Theme=Tempo; ASPSESSIONIDQCRASASB=NIMHDNLBKPDHCPFCGPHJAADD; ASPSESSIONIDCSQBTCRB=MCJCPOLBCDDKNCHPJODLJNAC; ASPSESSIONIDSQSDRBRA=NODALAMBJPBCGLGECJOJEEFL; ASPSESSIONIDQQQQTTBB=MNCODDCCGACGIKMMMAEFADLH; ASPSESSIONIDSCBDSACT=AFGEKMMCGBFLNJNIEOLEFAIE; ASPSESSIONIDQCDCQACQ=KHCAHLMCEJAALMIBOFCLHMDC; ASPSESSIONIDSSACDTTS=PLPAEFHDLABKBEIKALIJIIFM; ASPSESSIONIDQQADSDAD=HNPPKHAAHLEPMMNAJJLHDNJO; ASPSESSIONIDSQCSCABS=LMCFEJKBHBGLLIJPBGOPILFF; MLPData=MLPTicket=&IsMLPPassKey=false; testcookies=nothing; LastUser=xtan; .TAuth=B40EA55F39A8C16D98E2BBA2F439590928A264618150A746E1FC0F239D6FC9F517F2FFDBE845BD9B8FFA66022160F13635BBDCA01C2A9E6958A0941ADE031D2FDA66E790F38519C74559C1BE52C7CCA2EC97477944BAC388CD06E4ACB2E60AAB944EFDD5; ASPSESSIONIDSCDRCTAT=FELMOADCDLFAAAEEEAFOKKFG; ASPSESSIONIDCCDSCRCT=CNNAGPCCFEMKOBNFLPIONIJM; Sidebar_Collapsed=1; LastActivity={0}".format(
+        fakeTimeStamp.strftime("%m/%d/%Y %I:%M:%S %p"))
+    url = 'http://www.harmls.com/thirdparty/Scripts/GetData.asp'
+    query_string = "((liststatus='closd'%20and%20ClosedDate%3E=convert(datetime,'{0}')%20AND%20ClosedDate%3C=convert(datetime,'{1}')))%20AND%20(ZipCode%20Like%20'{2}%25'%20)".format(
+        startDate.strftime("%m/%d/%Y"), endDate.strftime("%m/%d/%Y"), zip)
+    print(query_string)
+    temp_data_file_path = "Files"
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Accept-Encoding': 'gzip, deflate',
+        'Accept-Language': 'en-US,en;q=0.8',
+        'Cache-Control': 'max-age=0',
+        'Connection': 'keep-alive',
+        'Content-Length': '734',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Cookie': cookiestr,
+        'Host': 'www.harmls.com',
+        'Upgrade-Insecure-Requests': '1'
+    }
+    data = {
+        "appMinorVersion": "5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36",
+        "appVersion": "5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36",
+        "Name": "3RDPARTY",
+        "Pass": "DHA0ATFA",
+        "Custom": "ALL",
+        "Num": "1500",
+        "Join": "",
+        "Tbl": property_type,
+        "Where": query_string,
+        "ColumnHeader": "Y",
+        "ItemList": "",
+        "Format": "0",
+        "Tax": "undefined",
+        "DownloadDecodeOverride": "",
+        "preventDecodeList": "",
+        "D1SelectedIndex": "0",
+        "NumberOfProperties": "1500",
+        "D1": "ALL"
+    }
+    data = urllib.parse.urlencode(data)
+    data = data.encode('ascii')
+    req = urllib.request.Request(url, data=data, headers=headers)
+    try:
+        print("Start request")
+        response = urllib.request.urlopen(req)
+        print("Response received")
+        responseBody = response.read()
+        # now need to analyze if response is in bytes or not.
+        # if it's in bytes, it's good data, otherwise there is something wrong in the request
+        strResponse = responseBody.decode('utf_8', 'backslashreplace')
+        #here test if the response is legimite
+        if len(strResponse) < 200:
+            if (strResponse.find('BAD USERNAME or PASSWORD') > 0):
+                return (False, "Bad username/password", -1)
+            else:
+                return (False, strResponse, -1)
+        # if success, write result to a stringIO object
+        nRecCnt = strResponse.count("\n")
+        print("{0} records are stripped".format(nRecCnt - 1))
+        if nRecCnt >= 1500:
+            return (True, "Record count over 1500", nRecCnt)
+        strIO = StringIO(strResponse)
+        db = DBLib.db_mysql('73.136.184.214', 3306, 'xiaowei', 'Hhxxttxs2017', 'HARHistory')
+        db.insertHarTempoRecords(strIO)
+    except:
+        print(sys.exc_info())
+
+
 '''
 zip: zip code (string)
 property_type: type of property, (string) e.g. "rnt" for rent, "res" for normal sales
@@ -166,3 +237,8 @@ def add_months(sourcedate,months):
     month = month % 12 + 1
     day = min(sourcedate.day, calendar.monthrange(year,month)[1])
     return datetime.date(year,month,day)
+
+if __name__== "__main__":
+    datStart = datetime.date(2015,1,1)
+    datEnd=datetime.date(2015, 2,1)
+    scrap_tempo_history('res', datStart, datEnd, '77007')
