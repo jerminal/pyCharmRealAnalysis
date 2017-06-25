@@ -113,7 +113,20 @@ def scrap_tempo_history(property_type, startDate, endDate, zip):
         if nRecCnt >= 1500:
             return (True, "Record count over 1500", nRecCnt)
         strIO = StringIO(strResponse)
-        db = DBLib.db_mysql('73.136.184.214', 3306, 'xiaowei', 'Hhxxttxs2017', 'HARHistory')
+        temp_data_file_path = 'c:\\temp'
+        targetFilePath = temp_data_file_path + "\{0}_{1}.dat".format(zip, startDate.strftime("%Y_%m_%d"))
+        try:
+            os.remove(targetFilePath)
+        except OSError:
+            pass
+        f = open(targetFilePath, "w")
+        # strResponseBody = byteResponseBody.decode('utf_8')
+        # strResponseBody = binascii.
+        f.write(strResponse)
+        f.close()
+
+        #db = DBLib.db_mysql('73.136.184.214', 3306, 'xiaowei', 'Hhxxttxs2017', 'HARHistory')
+        db = DBLib.db_mysql('10.10.1.48', 3306, 'xiaowei', 'Hhxxttxs2017', 'RealAnalysis')
         db.insertHarTempoRecords(strIO)
     except:
         print(sys.exc_info())

@@ -2,6 +2,8 @@
 
 import traceback
 import pyodbc
+from functools import reduce
+
 import pymysql
 import dateutil.parser as dparser
 import datetime
@@ -244,13 +246,13 @@ class db_mysql:
         the first row is the column names
     '''
     def insertHarTempoRecords(self, sIO):
-        strTargetTable = 'HarTempo_AllRecords'
+        strTargetTable = 'HARTempo_AllRecords'
         nRowProcessed = 0
         lines = sIO.readlines()
         nRowCount = len(lines) - 1
         lines = [x.rstrip('\n') for x in lines]
-        self._ColumnsList = lines[0]
-        self._InsertSql = self.prepareInsertStatement(strTargetTable)
+        self._ColumnsList = lines[0].split(sep='\t')
+        self._InsertSql = self.prepareInsertStatement(strTargetTable, self._ColumnsList)
 
         for line in lines[1:]:
             dataRow = line.split(sep='\t')
@@ -260,15 +262,29 @@ class db_mysql:
                 else:
                     #test if the item is a date type, if so, convert the format
                     try:
-                        dt = dparser.parse(item, fuzzy=True)
-                        if len(item) <= 10:
-                            #this is a date
-                            dataRow[idx] = dt.strftime("%Y-%m-%d")
-                        elif len(item) <= 30:
-                            #this is a date time
+                        dt = datetime.datetime.strptime(item, '%m/%d/%Y')
+                        dataRow[idx] = dt.strftime("%Y-%m-%d %H:%M:%S")
+                    except:
+                        #test if the item is a datetime type:
+                        try:
+                            dt = datetime.datetime.strptime(item, '%m/%d/%Y %I:%M:%S %p')
                             dataRow[idx] = dt.strftime("%Y-%m-%d %H:%M:%S")
+                        except:
+                            continue
+'''
+                    try:
+                        dt = datetime.datetime.strptime(item, '%m/%d/%Y %I:%M:%S %p')
+                        if self.isFloat(item) == False:
+                            dt = dparser.parse(item, fuzzy=True)
+                            if len(item) <= 10:
+                                #this is a date
+                                dataRow[idx] = dt.strftime("%Y-%m-%d")
+                            elif len(item) <= 30:
+                                #this is a date time
+                                dataRow[idx] = dt.strftime("%Y-%m-%d %H:%M:%S")
                     except:
                         continue
+ '''
             rToInsert = tuple(dataRow)
             nRowProcessed += self.transferOneRecord(strTargetTable, rToInsert, ["MLSNum"])
         return nRowProcessed
