@@ -166,9 +166,10 @@ class db_mysql:
     def prepareUpdateStatement(self, strTargetTable, lstColumns = None, keyColumns=None):
         if lstColumns is None:
             lstColumns = self.getColumnsList(strTargetTable)[:]
+        tmpColumns = list(lstColumns)
         for item in keyColumns:
-            lstColumns.remove(item)
-        lstValClause = '=%s, '.join(lstColumns) + '=%s'
+            tmpColumns.remove(item)
+        lstValClause = '=%s, '.join(tmpColumns) + '=%s'
         lstWhereClause = '=%s and '.join(keyColumns) + '=%s'
         sql = "UPDATE {0} SET {1} WHERE {2}".format(strTargetTable, lstValClause, lstWhereClause)
         self._updateSql = sql
@@ -226,6 +227,7 @@ class db_mysql:
 
     def transferOneRecord(self, strTargetTable, dataRow, whereClauseColumns, bAutocommit = True):
         #self.prepareInsertStatement(strTargetTable)
+        self.prepareUpdateStatement(strTargetTable, self._ColumnsList, ['MLSNum'])
         try:
             #first will try to insert the record
             result = self._cur.execute(self._InsertSql, dataRow)
@@ -271,23 +273,23 @@ class db_mysql:
                             dataRow[idx] = dt.strftime("%Y-%m-%d %H:%M:%S")
                         except:
                             continue
-'''
-                    try:
-                        dt = datetime.datetime.strptime(item, '%m/%d/%Y %I:%M:%S %p')
-                        if self.isFloat(item) == False:
-                            dt = dparser.parse(item, fuzzy=True)
-                            if len(item) <= 10:
-                                #this is a date
-                                dataRow[idx] = dt.strftime("%Y-%m-%d")
-                            elif len(item) <= 30:
-                                #this is a date time
-                                dataRow[idx] = dt.strftime("%Y-%m-%d %H:%M:%S")
-                    except:
-                        continue
- '''
+
             rToInsert = tuple(dataRow)
-            nRowProcessed += self.transferOneRecord(strTargetTable, rToInsert, ["MLSNum"])
+            nRslt = self.transferOneRecord(strTargetTable, rToInsert, ["MLSNum"])
+            if nRslt == 1:
+                #update the last update column
+                idx = self._ColumnsList.index("MLSNum")
+                nMLSNum = rToInsert[idx]
+                self.updateLastUpdateTime(strTargetTable, ["MLSNum"], [nMLSNum])
+            nRowProcessed += nRslt
         return nRowProcessed
+
+    def updateLastUpdateTime(self, strTableName, lstWhereColumns, keys):
+        lstWhereClause = '=%s and '.join(lstWhereColumns) + '=%s'
+        sql = "UPDATE {0} SET {1} WHERE {2}".format(strTableName, "LastUpdate = %s", lstWhereClause)
+        strTS = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        self._cur.execute(self._updateSql,[strTS] + keys)
+        self._conn.commit()
 
     def obselete_WriteHistoryData(self, sIO, strType):
         #dateParse = lambda x: pd.datetime.strptime(x, '%m/%d/%Y %I:%M:%S %p') if len(x) > 10 else pd.datetime.strptime(x, '%m/%d/%Y')

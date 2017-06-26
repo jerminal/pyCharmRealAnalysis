@@ -253,5 +253,5 @@ def add_months(sourcedate,months):
 
 if __name__== "__main__":
     datStart = datetime.date(2015,1,1)
-    datEnd=datetime.date(2015, 2,1)
+    datEnd=datetime.date(2015, 4,1)
     scrap_tempo_history('res', datStart, datEnd, '77007')
