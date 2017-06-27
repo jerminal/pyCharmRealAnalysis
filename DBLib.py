@@ -231,18 +231,23 @@ class db_mysql:
         try:
             #first will try to insert the record
             result = self._cur.execute(self._InsertSql, dataRow)
+            print("1 new record inserted")
             if bAutocommit:
                 self._conn.commit()
             #print('1 row updated to mysql')
             return 1
         except pymysql.err.IntegrityError as e:
             if e.args[0] == 1062: #it's a primary key error
-                print(sys.exc_info())
+                #print(sys.exc_info())
                 result = self.updateRecord(strTargetTable, dataRow, whereClauseColumns, bAutocommit)
+                print('1 record updated')
                 return result
             else:
                 return 0
-
+        except pymysql.err.DatabaseError as eD:
+            self.appendToLogFile(str(eD.args[0] + ' ' + eD.args[1]))
+        except:
+            self.appendToLogFile(traceback.print_exc())
     '''
         insert the csv as sIO into AllPropertyRecords table
         the first row is the column names
@@ -288,8 +293,11 @@ class db_mysql:
         lstWhereClause = '=%s and '.join(lstWhereColumns) + '=%s'
         sql = "UPDATE {0} SET {1} WHERE {2}".format(strTableName, "LastUpdate = %s", lstWhereClause)
         strTS = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        self._cur.execute(self._updateSql,[strTS] + keys)
+        self._cur.execute(sql,[strTS] + keys)
         self._conn.commit()
+    def appendToLogFile(self, msg):
+        with open("c:\temp\realanalysis.log", "a") as myfile:
+            myfile.write(datetime.date.now().strptime("%Y-%m-%d %H:%M:%S") + '\t' + msg)
 
     def obselete_WriteHistoryData(self, sIO, strType):
         #dateParse = lambda x: pd.datetime.strptime(x, '%m/%d/%Y %I:%M:%S %p') if len(x) > 10 else pd.datetime.strptime(x, '%m/%d/%Y')

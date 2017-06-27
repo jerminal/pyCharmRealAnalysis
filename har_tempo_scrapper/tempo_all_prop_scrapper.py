@@ -126,7 +126,8 @@ def scrap_tempo_history(property_type, startDate, endDate, zip):
         f.close()
 
         #db = DBLib.db_mysql('73.136.184.214', 3306, 'xiaowei', 'Hhxxttxs2017', 'HARHistory')
-        db = DBLib.db_mysql('10.10.1.48', 3306, 'xiaowei', 'Hhxxttxs2017', 'RealAnalysis')
+        #db = DBLib.db_mysql('10.10.1.48', 3306, 'xiaowei', 'Hhxxttxs2017', 'RealAnalysis')
+        db = DBLib.db_mysql('localhost', 3306, 'root', 'thinkpad', 'RealAnalysis')
         db.insertHarTempoRecords(strIO)
     except:
         print(sys.exc_info())
@@ -253,5 +254,5 @@ def add_months(sourcedate,months):
 
 if __name__== "__main__":
     datStart = datetime.date(2015,1,1)
-    datEnd=datetime.date(2015, 4,1)
-    scrap_tempo_history('res', datStart, datEnd, '77007')
+    datEnd=datetime.date(2015, 5,1)
+    scrap_tempo_history('cbo', datStart, datEnd, '77007')
