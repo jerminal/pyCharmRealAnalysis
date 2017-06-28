@@ -13,6 +13,8 @@ import DBLib
 def scrapZip(zip, propertyType, dateRangeStart, dateRangeEnd):
     nMonthSpan = 12 #the default number of months span
     datTo = dateRangeStart - datetime.timedelta(days=1)
+    nTotalRetry = 5
+    nRetryCnt =0
     bRollback = False
     while True:
         if bRollback == False:
@@ -22,13 +24,20 @@ def scrapZip(zip, propertyType, dateRangeStart, dateRangeEnd):
             datTo = min(add_months(datFrom, nMonthSpan) - datetime.timedelta(days=1), dateRangeEnd)
             bRollback = False
         print("Working on {0} between {1} and {2}".format(zip, datFrom, datTo))
-        scrapResult = scrap_history(zip, propertyType, datFrom.strftime("%m/%d/%Y"), datTo.strftime("%m/%d/%Y"))#, "Both" )
+        #scrapResult = scrap_history(zip, propertyType, datFrom.strftime("%m/%d/%Y"), datTo.strftime("%m/%d/%Y"))#, "Both" )
+        scrapResult = scrap_tempo_history(propertyType, datFrom, datTo, zip)
         nRetVal = scrapResult[2]
         if scrapResult[0] == False:
-            return False;
+            if nRetryCnt > nTotalRetry:
+                return False
+            nRetryCnt +=1
+            bRollback = True
+            #return False;
+        else:
+            nRetryCnt = 0
         if nRetVal == -1:
             return False
-        if nRetVal < 10 and nRetVal >=0:
+        elif nRetVal < 10 and nRetVal >=0:
             nMonthSpan  = 100
         elif nRetVal <=50 and nRetVal >=0:
             nMonthSpan = 60
@@ -46,7 +55,12 @@ def scrapZip(zip, propertyType, dateRangeStart, dateRangeEnd):
             break
         time.sleep(random.randint(5,15))
     return(True)
-
+'''
+    return values:
+    1: normal
+    0: http error, the program will wait a few seconds and try again
+    -1: other error, in that case the program will quit
+'''
 def scrap_tempo_history(property_type, startDate, endDate, zip):
     fakeTimeStamp = datetime.datetime.now() - datetime.timedelta(seconds=10)
     print(fakeTimeStamp.strftime("%m/%d/%Y %I:%M:%S %p"))
@@ -106,7 +120,7 @@ def scrap_tempo_history(property_type, startDate, endDate, zip):
             if (strResponse.find('BAD USERNAME or PASSWORD') > 0):
                 return (False, "Bad username/password", -1)
             else:
-                return (False, strResponse, -1)
+                return (False, -1, -1)
         # if success, write result to a stringIO object
         nRecCnt = strResponse.count("\n")
         print("{0} records are stripped".format(nRecCnt - 1))
@@ -128,9 +142,11 @@ def scrap_tempo_history(property_type, startDate, endDate, zip):
         #db = DBLib.db_mysql('73.136.184.214', 3306, 'xiaowei', 'Hhxxttxs2017', 'HARHistory')
         #db = DBLib.db_mysql('10.10.1.48', 3306, 'xiaowei', 'Hhxxttxs2017', 'RealAnalysis')
         db = DBLib.db_mysql('localhost', 3306, 'root', 'thinkpad', 'RealAnalysis')
-        db.insertHarTempoRecords(strIO)
+        nRecProcessed = db.insertHarTempoRecords(strIO)
+        return (True, nRecProcessed, nRecCnt)
     except:
         print(sys.exc_info())
+        return (False, 0, 0)
 
 
 '''
@@ -253,6 +269,7 @@ def add_months(sourcedate,months):
     return datetime.date(year,month,day)
 
 if __name__== "__main__":
-    datStart = datetime.date(2015,1,1)
-    datEnd=datetime.date(2015, 5,1)
-    scrap_tempo_history('cbo', datStart, datEnd, '77007')
+    datStart = datetime.date(2001,1,1)
+    datEnd=datetime.date(2017, 6, 1)
+    #scrap_tempo_history('lnd', datStart, datEnd, '77096')
+    scrapZip('77096', 'res', datStart, datEnd)

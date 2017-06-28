@@ -220,6 +220,10 @@ class db_mysql:
         if bAutoCommit:
             self._conn.commit()
         return 1
+
+    def getColumnValue(self,strColumnName, dataRow):
+        idx = self._ColumnsList.index(strColumnName)
+        return dataRow[idx]
     '''transfers one record contained in data row to target table
     difference between transfer and insert is transfer wraps around the insert, prepares the insert sql 
     and switch to update if insert causes a primary key violation
@@ -227,7 +231,7 @@ class db_mysql:
 
     def transferOneRecord(self, strTargetTable, dataRow, whereClauseColumns, bAutocommit = True):
         #self.prepareInsertStatement(strTargetTable)
-        self.prepareUpdateStatement(strTargetTable, self._ColumnsList, ['MLSNum'])
+        self.prepareUpdateStatement(strTargetTable, self._ColumnsList, whereClauseColumns)
         try:
             #first will try to insert the record
             result = self._cur.execute(self._InsertSql, dataRow)
@@ -245,9 +249,13 @@ class db_mysql:
             else:
                 return 0
         except pymysql.err.DatabaseError as eD:
-            self.appendToLogFile(str(eD.args[0] + ' ' + eD.args[1]))
+            nMLSNum = self.getColumnValue("MLSNum", dataRow)
+            self.appendToLogFile(nMLSNum, str(eD.args[0]) + ' ' + eD.args[1])
+            return 0
         except:
-            self.appendToLogFile(traceback.print_exc())
+            nMLSNum = self.getColumnValue("MLSNum", dataRow)
+            self.appendToLogFile(nMLSNum, traceback.print_exc())
+            return 0
     '''
         insert the csv as sIO into AllPropertyRecords table
         the first row is the column names
@@ -295,9 +303,9 @@ class db_mysql:
         strTS = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self._cur.execute(sql,[strTS] + keys)
         self._conn.commit()
-    def appendToLogFile(self, msg):
-        with open("c:\temp\realanalysis.log", "a") as myfile:
-            myfile.write(datetime.date.now().strptime("%Y-%m-%d %H:%M:%S") + '\t' + msg)
+    def appendToLogFile(self, nMLS, msg):
+        with open("c:\\temp\\realanalysis.log", "a") as myfile:
+            myfile.write(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + '\t' + str(nMLS) + '\t' + msg)
 
     def obselete_WriteHistoryData(self, sIO, strType):
         #dateParse = lambda x: pd.datetime.strptime(x, '%m/%d/%Y %I:%M:%S %p') if len(x) > 10 else pd.datetime.strptime(x, '%m/%d/%Y')
