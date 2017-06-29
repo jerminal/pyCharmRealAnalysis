@@ -26,26 +26,26 @@ def scrapZip(zip, propertyType, dateRangeStart, dateRangeEnd):
         print("Working on {0} between {1} and {2}".format(zip, datFrom, datTo))
         #scrapResult = scrap_history(zip, propertyType, datFrom.strftime("%m/%d/%Y"), datTo.strftime("%m/%d/%Y"))#, "Both" )
         scrapResult = scrap_tempo_history(propertyType, datFrom, datTo, zip)
-        nRetVal = scrapResult[2]
-        if scrapResult[0] == False:
+        nTotRec = scrapResult[2]
+        if scrapResult[0] == 0:
             if nRetryCnt > nTotalRetry:
                 return False
             nRetryCnt +=1
             bRollback = True
             #return False;
-        else:
+        elif scrapResult[0] == 1:
             nRetryCnt = 0
-        if nRetVal == -1:
+        elif scrapResult[0] < 0:
             return False
-        elif nRetVal < 10 and nRetVal >=0:
+        if nTotRec < 10 and nTotRec >=0:
             nMonthSpan  = 100
-        elif nRetVal <=50 and nRetVal >=0:
+        elif nTotRec <=50 and nTotRec >=0:
             nMonthSpan = 60
-        elif nRetVal >= 1500:
+        elif nTotRec >= 1500:
             nMonthSpan = int(nMonthSpan / 2)
             bRollback = True
-        elif nRetVal <=600:
-            nMonthSpan = int(1200/nRetVal*nMonthSpan)
+        elif nTotRec <=600:
+            nMonthSpan = int(1200/nTotRec*nMonthSpan)
         if nMonthSpan<3:
             nMonthSpan = 3
         if nMonthSpan > 120:
@@ -53,13 +53,16 @@ def scrapZip(zip, propertyType, dateRangeStart, dateRangeEnd):
 
         if bRollback == False and datTo == dateRangeEnd:
             break
-        time.sleep(random.randint(5,15))
+        time.sleep(random.randint(3,10))
     return(True)
 '''
     return values:
-    1: normal
+    2: too many records >1500 returned, need to reduce the range
+    1: success
     0: http error, the program will wait a few seconds and try again
-    -1: other error, in that case the program will quit
+    -1: database error, will quit
+    -10: bad user name error, will quit
+    
 '''
 def scrap_tempo_history(property_type, startDate, endDate, zip):
     fakeTimeStamp = datetime.datetime.now() - datetime.timedelta(seconds=10)
@@ -110,43 +113,50 @@ def scrap_tempo_history(property_type, startDate, endDate, zip):
     try:
         print("Start request")
         response = urllib.request.urlopen(req)
-        print("Response received")
-        responseBody = response.read()
-        # now need to analyze if response is in bytes or not.
-        # if it's in bytes, it's good data, otherwise there is something wrong in the request
-        strResponse = responseBody.decode('utf_8', 'backslashreplace')
-        #here test if the response is legimite
-        if len(strResponse) < 200:
-            if (strResponse.find('BAD USERNAME or PASSWORD') > 0):
-                return (False, "Bad username/password", -1)
-            else:
-                return (False, -1, -1)
-        # if success, write result to a stringIO object
-        nRecCnt = strResponse.count("\n")
-        print("{0} records are stripped".format(nRecCnt - 1))
-        if nRecCnt >= 1500:
-            return (True, "Record count over 1500", nRecCnt)
-        strIO = StringIO(strResponse)
-        temp_data_file_path = 'c:\\temp'
-        targetFilePath = temp_data_file_path + "\{0}_{1}.dat".format(zip, startDate.strftime("%Y_%m_%d"))
-        try:
-            os.remove(targetFilePath)
-        except OSError:
-            pass
-        f = open(targetFilePath, "w")
-        # strResponseBody = byteResponseBody.decode('utf_8')
-        # strResponseBody = binascii.
-        f.write(strResponse)
-        f.close()
-
-        #db = DBLib.db_mysql('73.136.184.214', 3306, 'xiaowei', 'Hhxxttxs2017', 'HARHistory')
-        #db = DBLib.db_mysql('10.10.1.48', 3306, 'xiaowei', 'Hhxxttxs2017', 'RealAnalysis')
-        db = DBLib.db_mysql('localhost', 3306, 'root', 'thinkpad', 'RealAnalysis')
-        nRecProcessed = db.insertHarTempoRecords(strIO)
-        return (True, nRecProcessed, nRecCnt)
     except:
-        print(sys.exc_info())
-        return (False, 0, 0)
+        #hit a http error, will try again
+        return (0,0,0)
+    print("Response received")
+    responseBody = response.read()
+    # now need to analyze if response is in bytes or not.
+    # if it's in bytes, it's good data, otherwise there is something wrong in the request
+    strResponse = responseBody.decode('utf_8', 'backslashreplace')
+    #here test if the response is legimite
+    if len(strResponse) < 200:
+        if (strResponse.find('BAD USERNAME or PASSWORD') > 0):
+            print("Bad user name/ password")
+            return (-10, 0, 0)
+        else:
+            return (0, 0, 0)
+    # if success, write result to a stringIO object
+    nRecCnt = strResponse.count("\n")
+    print("{0} records are stripped".format(nRecCnt - 1))
+    if nRecCnt >= 1500:
+        return (2, 0, nRecCnt)
+    strIO = StringIO(strResponse)
+    temp_data_file_path = 'c:\\temp'
+    targetFilePath = temp_data_file_path + "\{0}_{1}.dat".format(zip, startDate.strftime("%Y_%m_%d"))
+    try:
+        os.remove(targetFilePath)
+    except OSError:
+        pass
+    f = open(targetFilePath, "w")
+    # strResponseBody = byteResponseBody.decode('utf_8')
+    # strResponseBody = binascii.
+    f.write(strResponse)
+    f.close()
+
+    try:
+        print("connecting to db")
+        db = DBLib.db_mysql('73.136.184.214', 3306, 'xiaowei', 'Hhxxttxs2017', 'RealAnalysis')
+        print("db connected")
+        # db = DBLib.db_mysql('10.10.1.48', 3306, 'xiaowei', 'Hhxxttxs2017', 'RealAnalysis')
+        #db = DBLib.db_mysql('localhost', 3306, 'root', 'thinkpad', 'RealAnalysis')
+    except:
+        print(traceback.print_exc())
+        return (-1, 0, 0)
+    nRecProcessed = db.insertHarTempoRecords(strIO)
+    return (1, nRecProcessed, nRecCnt)
 
 
 '''

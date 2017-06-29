@@ -156,7 +156,7 @@ class db_mysql:
         valueList = ["%s"]* len(lstColumns)
         valueList1 = reduce((lambda x,y: x + ', ' +y), valueList)
         sql = "INSERT INTO {0} ({1}) VALUES ({2})".format(strTargetTable, columnsList, valueList1)
-        print(sql)
+        #print(sql)
         self._InsertSql = sql
         return sql
 
@@ -173,7 +173,7 @@ class db_mysql:
         lstWhereClause = '=%s and '.join(keyColumns) + '=%s'
         sql = "UPDATE {0} SET {1} WHERE {2}".format(strTargetTable, lstValClause, lstWhereClause)
         self._updateSql = sql
-        print(self._updateSql)
+        #print(self._updateSql)
 
     '''params is a tuple that contains the values to insert'''
     def insertOneRecord(self, params, bAutoCommit = True):
@@ -209,7 +209,7 @@ class db_mysql:
                 if type(data) is tuple:
                     data = list(data)
                 whereData.append(data.pop(idx))
-            print(data + whereData)
+            #print(data + whereData)
             self._cur.execute(self._updateSql,data + whereData)
         else:
             #it's a dictionary
@@ -294,7 +294,7 @@ class db_mysql:
                 idx = self._ColumnsList.index("MLSNum")
                 nMLSNum = rToInsert[idx]
                 self.updateLastUpdateTime(strTargetTable, ["MLSNum"], [nMLSNum])
-            nRowProcessed += nRslt
+                nRowProcessed += nRslt
         return nRowProcessed
 
     def updateLastUpdateTime(self, strTableName, lstWhereColumns, keys):
