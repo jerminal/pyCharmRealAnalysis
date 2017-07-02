@@ -261,7 +261,8 @@ class db_mysql:
         the first row is the column names
     '''
     def insertHarTempoRecords(self, sIO):
-        strTargetTable = 'HARTempo_AllRecords'
+        #strTargetTable = 'HARTempo_AllRecords'
+        strTargetTable = 'hartempo_allrecords'
         nRowProcessed = 0
         lines = sIO.readlines()
         nRowCount = len(lines) - 1
@@ -295,6 +296,7 @@ class db_mysql:
                 nMLSNum = rToInsert[idx]
                 self.updateLastUpdateTime(strTargetTable, ["MLSNum"], [nMLSNum])
                 nRowProcessed += nRslt
+                print("Total count: {0}".format(nRowProcessed))
         return nRowProcessed
 
     def updateLastUpdateTime(self, strTableName, lstWhereColumns, keys):

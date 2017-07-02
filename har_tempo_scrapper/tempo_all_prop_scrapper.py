@@ -9,6 +9,7 @@ import datetime
 import calendar
 import random
 import DBLib
+import traceback
 
 def scrapZip(zip, propertyType, dateRangeStart, dateRangeEnd):
     nMonthSpan = 12 #the default number of months span
@@ -28,11 +29,17 @@ def scrapZip(zip, propertyType, dateRangeStart, dateRangeEnd):
         scrapResult = scrap_tempo_history(propertyType, datFrom, datTo, zip)
         nTotRec = scrapResult[2]
         if scrapResult[0] == 0:
+            #it's an http error, will retry for a few times before giving up
             if nRetryCnt > nTotalRetry:
+                print("retried a few times against http error, quit")
                 return False
             nRetryCnt +=1
             bRollback = True
             #return False;
+        elif scrapResult[0] == -1:
+            #it's database connection error, will quit
+            print('Cannot connect to mysql database')
+            return False
         elif scrapResult[0] == 1:
             nRetryCnt = 0
         elif scrapResult[0] < 0:
@@ -135,7 +142,7 @@ def scrap_tempo_history(property_type, startDate, endDate, zip):
         return (2, 0, nRecCnt)
     strIO = StringIO(strResponse)
     temp_data_file_path = 'c:\\temp'
-    targetFilePath = temp_data_file_path + "\{0}_{1}.dat".format(zip, startDate.strftime("%Y_%m_%d"))
+    targetFilePath = temp_data_file_path + "\{0}_{1}_{2}.dat".format(property_type, zip, startDate.strftime("%Y_%m_%d"))
     try:
         os.remove(targetFilePath)
     except OSError:
@@ -282,4 +289,7 @@ if __name__== "__main__":
     datStart = datetime.date(2001,1,1)
     datEnd=datetime.date(2017, 6, 1)
     #scrap_tempo_history('lnd', datStart, datEnd, '77096')
-    scrapZip('77096', 'res', datStart, datEnd)
+    scrapZip('7700  7', 'res', datStart, datEnd)
+    scrapZip('77007', 'rnt', datStart, datEnd)
+    scrapZip('77007', 'cnd', datStart, datEnd)
+    scrapZip('77007', 'lnd', datStart, datEnd)
