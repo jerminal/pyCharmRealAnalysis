@@ -315,6 +315,7 @@ class db_mysql:
         with open("c:\\temp\\realanalysisLog.log", "a") as myfile:
             myfile.write(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + '\t' + str(nMLS) + '\t' + msg + '\n')
 
+
     def InsertDictionary(self, strTableName, dict, bAutoCommit = True):
         lstColumns = list(dict.keys())
         lstValues = list(dict.values())
@@ -325,6 +326,7 @@ class db_mysql:
             if e.args[0] == 1062: #it's a primary key error
                 #print(sys.exc_info())
                 print('duplicate MLSNum found, will try to update instead')
+                self.updateRecord(strTableName, )
 
             else:
                 print(sys.exc_info())
