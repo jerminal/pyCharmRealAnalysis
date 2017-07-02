@@ -8,6 +8,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 import csv
 import DBMSAccess
+import DBLib
 import XmlConfigReader
 import NewPropertyDetailPageScrapper as PropScrap
 import datetime
@@ -118,6 +119,7 @@ if __name__ == "__main__":
     lstScrapResults = []
     nTotalCount = 0
     db = DBMSAccess.MSAccess(r"c:\temp\NewListings.accdb")
+    db = DBLib.db_mysql('10.10.1.48', 3306, 'xiaowei', 'Hhxxttxs2017', 'RealAnalysis')
     while nTotalCount < nRecCnt-1:
         try:
             rslt = None

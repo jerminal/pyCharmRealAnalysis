@@ -155,7 +155,8 @@ def scrap_tempo_history(property_type, startDate, endDate, zip):
 
     try:
         print("connecting to db")
-        db = DBLib.db_mysql('73.136.184.214', 3306, 'xiaowei', 'Hhxxttxs2017', 'RealAnalysis')
+        #db = DBLib.db_mysql('73.136.184.214', 3306, 'xiaowei', 'Hhxxttxs2017', 'RealAnalysis')
+        db = DBLib.db_mysql('10.10.1.48', 3306, 'xiaowei', 'Hhxxttxs2017', 'RealAnalysis')
         print("db connected")
         # db = DBLib.db_mysql('10.10.1.48', 3306, 'xiaowei', 'Hhxxttxs2017', 'RealAnalysis')
         #db = DBLib.db_mysql('localhost', 3306, 'root', 'thinkpad', 'RealAnalysis')
@@ -289,7 +290,7 @@ if __name__== "__main__":
     datStart = datetime.date(2001,1,1)
     datEnd=datetime.date(2017, 6, 1)
     #scrap_tempo_history('lnd', datStart, datEnd, '77096')
-    scrapZip('7700  7', 'res', datStart, datEnd)
+    scrapZip('77007', 'res', datStart, datEnd)
     scrapZip('77007', 'rnt', datStart, datEnd)
     scrapZip('77007', 'cnd', datStart, datEnd)
     scrapZip('77007', 'lnd', datStart, datEnd)

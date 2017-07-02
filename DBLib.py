@@ -147,6 +147,8 @@ class db_mysql:
     '''get the insert statement for a target table'''
     '''it retrieves all the columns of a table, and generate the sql insertion string'''
     def prepareInsertStatement(self, strTargetTable, lstColumns = None):
+        #sql = "INSERT INTO {0} ({1}) VALUES ({2})".format(strTable, ",".join(lstColumns),",".join(['?'] * len(lstColumns)))
+        #return sql
         if lstColumns is None:
             lstColumns = self.getColumnsList(strTargetTable)
             lstColumns = self._ColumnsList
@@ -243,16 +245,20 @@ class db_mysql:
         except pymysql.err.IntegrityError as e:
             if e.args[0] == 1062: #it's a primary key error
                 #print(sys.exc_info())
+                print('duplicate MLSNum found, will try to update instead')
                 result = self.updateRecord(strTargetTable, dataRow, whereClauseColumns, bAutocommit)
                 print('1 record updated')
                 return result
             else:
+                print(sys.exc_info())
                 return 0
         except pymysql.err.DatabaseError as eD:
+            print(sys.exc_info())
             nMLSNum = self.getColumnValue("MLSNum", dataRow)
             self.appendToLogFile(nMLSNum, str(eD.args[0]) + ' ' + eD.args[1])
             return 0
         except:
+            print(sys.exc_info())
             nMLSNum = self.getColumnValue("MLSNum", dataRow)
             self.appendToLogFile(nMLSNum, traceback.print_exc())
             return 0
@@ -261,8 +267,8 @@ class db_mysql:
         the first row is the column names
     '''
     def insertHarTempoRecords(self, sIO):
-        #strTargetTable = 'HARTempo_AllRecords'
-        strTargetTable = 'hartempo_allrecords'
+        strTargetTable = 'HARTempo_AllRecords'
+        #strTargetTable = 'hartempo_allrecords'
         nRowProcessed = 0
         lines = sIO.readlines()
         nRowCount = len(lines) - 1
@@ -306,8 +312,62 @@ class db_mysql:
         self._cur.execute(sql,[strTS] + keys)
         self._conn.commit()
     def appendToLogFile(self, nMLS, msg):
-        with open("c:\\temp\\realanalysis.log", "a") as myfile:
-            myfile.write(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + '\t' + str(nMLS) + '\t' + msg)
+        with open("c:\\temp\\realanalysisLog.log", "a") as myfile:
+            myfile.write(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + '\t' + str(nMLS) + '\t' + msg + '\n')
+
+    def InsertDictionary(self, strTableName, dict, bAutoCommit = True):
+        lstColumns = list(dict.keys())
+        lstValues = list(dict.values())
+        try:
+            nRows = self.InsertOne(strTableName, lstColumns, lstValues)
+            return nRows
+        except pymysql.err.IntegrityError as e:
+            if e.args[0] == 1062: #it's a primary key error
+                #print(sys.exc_info())
+                print('duplicate MLSNum found, will try to update instead')
+
+            else:
+                print(sys.exc_info())
+                return 0
+        except pymysql.err.DatabaseError as eD:
+            print(sys.exc_info())
+            return 0
+        except:
+            print(sys.exc_info())
+            return 0
+
+    '''
+       here keys is a list of keys used in where statement 
+       '''
+
+    def UpdateDictionary(self, strTableName, dict, keys, bAutoCommit=True):
+        # first pop the elements from the keys
+        dictKeyColumns = {}
+        for key in keys:
+            dictKeyColumns[key] = dict.pop(key)
+        lstColumnsToUpdate = list(dict.keys())
+        lstValuesToUpdate = list(dict.values())
+        lstKeys = list(dictKeyColumns.keys())
+        lstKeyValues = list(dictKeyColumns.values())
+        a = '=%s,'.join(lstColumnsToUpdate) + '=%s'
+        b = '=%s and '.join(lstKeys) + '=%s'
+        sql = "UPDATE {0} SET {1} WHERE {2}".format(strTableName, a, b)
+        # print (sql)
+        try:
+            rslt = self._cur.execute(sql, lstValuesToUpdate + lstKeyValues)
+            if bAutoCommit:
+                self._conn.commit()
+            return rslt.rowcount
+        except:
+            print(traceback.print_exc())
+            return 0
+
+    def InsertOne(self, strTable, lstColumns, lstValues, bAutoCommit = True):
+        sql = self.prepareInsertStatement(strTable, lstColumns)
+        rslt = self._cur.execute(sql, lstValues)
+        if bAutoCommit:
+            self._conn.commit()
+        return rslt.rowcount
 
     def obselete_WriteHistoryData(self, sIO, strType):
         #dateParse = lambda x: pd.datetime.strptime(x, '%m/%d/%Y %I:%M:%S %p') if len(x) > 10 else pd.datetime.strptime(x, '%m/%d/%Y')
