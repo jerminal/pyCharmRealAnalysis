@@ -10,6 +10,22 @@ import calendar
 import random
 import DBLib
 import traceback
+'''
+cases:
+http
+error --> try again for a few times
+data
+base
+connection
+error --> quit
+program
+too
+many
+records --> reduce
+time
+span and
+try again
+'''
 
 def scrapZip(zip, propertyType, dateRangeStart, dateRangeEnd):
     nMonthSpan = 12 #the default number of months span
@@ -44,6 +60,9 @@ def scrapZip(zip, propertyType, dateRangeStart, dateRangeEnd):
             nRetryCnt = 0
         elif scrapResult[0] < 0:
             return False
+        elif scrapResult[0] > 0:
+            #it's a successful operation, write the result into history log
+
         if nTotRec < 10 and nTotRec >=0:
             nMonthSpan  = 100
         elif nTotRec <=50 and nTotRec >=0:
