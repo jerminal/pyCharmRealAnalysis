@@ -274,7 +274,8 @@ class db_mysql:
         lines = sIO.readlines()
         nRowCount = len(lines) - 1
         lines = [x.rstrip('\n') for x in lines]
-        self._ColumnsList = lines[0].split(sep='\t')
+        tempColumns = lines[0].split(sep='\t')
+        self._ColumnsList = ['OfficeName' if x == 'o1.OfficeName' else x for x in tempColumns]
         self._InsertSql = self.prepareInsertStatement(strTargetTable, self._ColumnsList)
 
         for line in lines[1:]:
@@ -369,62 +370,6 @@ class db_mysql:
             self._conn.commit()
         return rslt
 
-    def obselete_WriteHistoryData(self, sIO, strType):
-        #dateParse = lambda x: pd.datetime.strptime(x, '%m/%d/%Y %I:%M:%S %p') if len(x) > 10 else pd.datetime.strptime(x, '%m/%d/%Y')
-        nTotRow = 0
-        if strType == 'res':
-            dateColumns = ['AuctionDate','BonusEndDate','ClosedDate','CompletedConstructionDate','CompletionDate','EstClosedDate','Modified','ListDate','OffMarketDate','OnlineBiddingDate','PendingDate','RemovalOptDate','TerminationDate','WithdrawnDate']
-            strTableName = "residentialsaleshistory"
-        elif strType == 'rnt':
-            dateColumns=['BonusEndDate','ClosedDate','CompletionDate','DateAvail','EstClosedDate','ListDate','OffMarketDate','Modified','PendingDate','RemovalOptDate','TerminationDate','WithdrawnDate']
-            strTableName = "rentalsaleshistory"
-        else:
-            return (False, "Type {0} is not recognized".format(strType))
-        self.prepareInsertStatement(strTableName)
-
-        lines = sIO.readlines()
-        nRowCount = len(lines)
-        lines = [x.rstrip('\n') for x in lines]
-        for line in lines[1:]:
-            data = line.split(sep='\t')
-            for idx, item in enumerate(data):
-                if item.count("/") == 2 and item[:4] != 'http':
-                    if len(item) <= 10:
-                        # it is a date
-                        try:
-                            data[idx] = datetime.datetime.strptime(item, "%m/%d/%Y").strftime("%Y-%m-%d")
-                        except:
-                            # do nothing here
-                            print("fail to convert to date: {0}".format(item))
-                    elif len(item) <= 30:
-                        try:
-                            # it is a datetime
-                            data[idx] = datetime.datetime.strptime(item, "%m/%d/%Y %I:%M:%S %p").strftime(
-                                "%Y-%m-%d %H:%M:%S")
-                        except:
-                            print("fail to convert to datetime: {0}".format(item))
-                elif item == '':
-                    data[idx] = None
-            #print(data)
-            dataRow = tuple(data)
-            nTotRow += self.transferOneRecord(dataRow)
-
-        '''
-        dataF = pd.read_table(sIO, error_bad_lines=False, parse_dates=dateColumns, infer_datetime_format=True, warn_bad_lines=True)
-        dataF1 = dataF.where((pd.notnull(dataF)), None)
-        nRowCount = len(dataF1.index)
-        # print(dataF.columns)
-        for id, row in dataF1.iterrows():
-            try:
-                dataRow = tuple(dataF1.ix[id])
-                self.transferOneRecord(dataRow)
-                nTotRow +=1
-            except:
-                print(sys.exc_info())
-                return (False, traceback.format_exc())
-        '''
-        print("{0}/{1} records updated".format(nTotRow, nRowCount))
-        return (True, "{0}/{1} records updated".format(nTotRow, nRowCount))
 
 '''
 if __name__ == "__main__":

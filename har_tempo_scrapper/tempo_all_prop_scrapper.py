@@ -49,6 +49,10 @@ def scrapZip(db, zip, propertyType, dateRangeStart, dateRangeEnd):
                 bTryAgain = False
                 nMonthSpan = int(nMonthSpan / 2)
                 bRollback = True
+            elif strErrMsg == "UnicodeDecodeError":
+                nRetryCnt = 0
+                bTryAgain = False
+
             else:
                 bTryAgain = True
                 nRetryCnt +=1
@@ -139,10 +143,20 @@ def scrap_tempo_history(db, property_type, startDate, endDate, zip):
         #hit a http error, will try again
         return ("Error",0,0, "Http request failed")
     print("Response received")
+    #charSet = req.info().get_content_charset()
     responseBody = response.read()
     # now need to analyze if response is in bytes or not.
     # if it's in bytes, it's good data, otherwise there is something wrong in the request
-    strResponse = responseBody.decode('utf_8', 'backslashreplace')
+    #strResponse = responseBody
+
+    try:
+        strResponse = responseBody.decode('utf_8', 'backslashreplace', errors='ignore')
+    except:
+        #print(responseBody)
+        #Logger.dumpToFile("c:\\temp\\{0}_response.Log".format(datetime.datetime.now().strftime("%Y%m%d%I%M")), responseBody.decode('utf-8','backslashreplace', errors='ignore'))
+        traceback.print_exc()
+        return ("Error",0,0, "UnicodeDecodeError")
+
     #here test if the response is legimite
     if len(strResponse) < 200:
         if (strResponse.find('BAD USERNAME or PASSWORD') > 0):
@@ -234,7 +248,7 @@ def obselete_scrap_history(zip, property_type, startDate, endDate, WriteToFile="
         responseBody = response.read()
         #now need to analyze if response is in bytes or not.
         #if it's in bytes, it's good data, otherwise there is something wrong in the request
-        strResponse = responseBody.decode('utf_8', 'backslashreplace')
+        strResponse = responseBody.decode('utf_8', 'backslashreplace', errors='ignore')
 
         if len(strResponse) < 200:
             if (strResponse.find( 'BAD USERNAME or PASSWORD')>0):
@@ -305,10 +319,10 @@ if __name__== "__main__":
         # db = DBLib.db_mysql('10.10.1.48', 3306, 'xiaowei', 'Hhxxttxs2017', 'RealAnalysis')
         #db = DBLib.db_mysql('localhost', 3306, 'root', 'thinkpad', 'RealAnalysis')
         # db = DBLib.db_mysql("10.10.1.48", 3306, 'xiaowei', 'Hhxxttxs2017', 'RealAnalysis')
-        #scrapZip(db, '77007', 'res', datStart, datEnd)
-        #scrapZip(db, '77007', 'rnt', datStart, datEnd)
-        scrapZip(db, '77007', 'cnd', datStart, datEnd)
-        scrapZip(db, '77007', 'lnd', datStart, datEnd)
+        scrapZip(db, '77096', 'res', datStart, datEnd)
+        scrapZip(db, '77096', 'rnt', datStart, datEnd)
+        scrapZip(db, '77096', 'cnd', datStart, datEnd)
+        scrapZip(db, '77096', 'lnd', datStart, datEnd)
     except:
         print(traceback.print_exc())
 
