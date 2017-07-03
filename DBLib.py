@@ -9,6 +9,7 @@ import dateutil.parser as dparser
 import datetime
 import sys
 from io import StringIO
+import Logger
 
 class DBAccess:
     def __init__(self, db_type = "msacccess", ms_access_path = "", host=None, port=0, db_name = "", user_id = "", pwd = ""):
@@ -255,12 +256,12 @@ class db_mysql:
         except pymysql.err.DatabaseError as eD:
             print(sys.exc_info())
             nMLSNum = self.getColumnValue("MLSNum", dataRow)
-            self.appendToLogFile(nMLSNum, str(eD.args[0]) + ' ' + eD.args[1])
+            Logger.appendToLogFile(nMLSNum, str(eD.args[0]) + ' ' + eD.args[1])
             return 0
         except:
             print(sys.exc_info())
             nMLSNum = self.getColumnValue("MLSNum", dataRow)
-            self.appendToLogFile(nMLSNum, traceback.print_exc())
+            Logger.appendToLogFile(nMLSNum, traceback.print_exc())
             return 0
     '''
         insert the csv as sIO into AllPropertyRecords table
@@ -311,9 +312,6 @@ class db_mysql:
         strTS = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self._cur.execute(sql,[strTS] + keys)
         self._conn.commit()
-    def appendToLogFile(self, nMLS, msg):
-        with open("c:\\temp\\realanalysisLog.log", "a") as myfile:
-            myfile.write(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + '\t' + str(nMLS) + '\t' + msg + '\n')
 
 
     def InsertDictionary(self, strTableName, dict, bAutoCommit = True):
@@ -369,7 +367,7 @@ class db_mysql:
         rslt = self._cur.execute(sql, lstValues)
         if bAutoCommit:
             self._conn.commit()
-        return rslt.rowcount
+        return rslt
 
     def obselete_WriteHistoryData(self, sIO, strType):
         #dateParse = lambda x: pd.datetime.strptime(x, '%m/%d/%Y %I:%M:%S %p') if len(x) > 10 else pd.datetime.strptime(x, '%m/%d/%Y')

@@ -10,87 +10,82 @@ import calendar
 import random
 import DBLib
 import traceback
+import Logger
 '''
 cases:
-http
-error --> try again for a few times
-data
-base
-connection
-error --> quit
-program
-too
-many
-records --> reduce
-time
-span and
-try again
+http error --> try again for a few times
+data base connection error --> quit
+program too many records --> reduce time span and try again
 '''
 
-def scrapZip(zip, propertyType, dateRangeStart, dateRangeEnd):
+def scrapZip(db, zip, propertyType, dateRangeStart, dateRangeEnd):
     nMonthSpan = 12 #the default number of months span
     datTo = dateRangeStart - datetime.timedelta(days=1)
     nTotalRetry = 5
     nRetryCnt =0
     bRollback = False
+    bTryAgain = False
     while True:
-        if bRollback == False:
-            datFrom = datTo + datetime.timedelta(days=1)
-            datTo = min(add_months(datFrom, nMonthSpan) - datetime.timedelta(days=1), dateRangeEnd)
-        else:
-            datTo = min(add_months(datFrom, nMonthSpan) - datetime.timedelta(days=1), dateRangeEnd)
-            bRollback = False
+        if bTryAgain == False:
+            if bRollback == False:
+                datFrom = datTo + datetime.timedelta(days=1)
+                datTo = min(add_months(datFrom, nMonthSpan) - datetime.timedelta(days=1), dateRangeEnd)
+            else:
+                datTo = min(add_months(datFrom, nMonthSpan) - datetime.timedelta(days=1), dateRangeEnd)
+                bRollback = False
         print("Working on {0} between {1} and {2}".format(zip, datFrom, datTo))
         #scrapResult = scrap_history(zip, propertyType, datFrom.strftime("%m/%d/%Y"), datTo.strftime("%m/%d/%Y"))#, "Both" )
-        scrapResult = scrap_tempo_history(propertyType, datFrom, datTo, zip)
+        scrapResult = scrap_tempo_history(db, propertyType, datFrom, datTo, zip)
         nTotRec = scrapResult[2]
-        if scrapResult[0] == 0:
-            #it's an http error, will retry for a few times before giving up
-            if nRetryCnt > nTotalRetry:
-                print("retried a few times against http error, quit")
-                return False
-            nRetryCnt +=1
-            bRollback = True
-            #return False;
-        elif scrapResult[0] == -1:
-            #it's database connection error, will quit
-            print('Cannot connect to mysql database')
-            return False
-        elif scrapResult[0] == 1:
+        strResult = scrapResult[0]
+        strErrMsg = scrapResult[3]
+        if strResult == "Fail":
+            #quit the program
+            Logger.appendToLogFile(0, strErrMsg)
+            exit(-1)
+        elif strResult == "Error":
+            if strErrMsg == "Too many records returned":
+                nRetryCnt = 0
+                bTryAgain = False
+                nMonthSpan = int(nMonthSpan / 2)
+                bRollback = True
+            else:
+                bTryAgain = True
+                nRetryCnt +=1
+                if nRetryCnt > nTotalRetry:
+                    print('retried a few times with no luck. Quit')
+                    exit (-1)
+        elif strResult == "Success":
+            bTryAgain = False
             nRetryCnt = 0
-        elif scrapResult[0] < 0:
-            return False
-        elif scrapResult[0] > 0:
-            #it's a successful operation, write the result into history log
+            if nTotRec >=0 and nTotRec   < 10:
+                # increase the month span to a large number
+                nMonthSpan = 100
+            elif nTotRec<=50 and nTotRec >=0:
+                nMonthSpan = 60
+            elif nTotRec <=600:
+                nMonthSpan = int(1200/nTotRec*nMonthSpan)
+            if nMonthSpan < 3:
+                nMOnthSpan=3
+            if nMonthSpan > 120:
+                nMonthSpan = 120
 
-        if nTotRec < 10 and nTotRec >=0:
-            nMonthSpan  = 100
-        elif nTotRec <=50 and nTotRec >=0:
-            nMonthSpan = 60
-        elif nTotRec >= 1500:
-            nMonthSpan = int(nMonthSpan / 2)
-            bRollback = True
-        elif nTotRec <=600:
-            nMonthSpan = int(1200/nTotRec*nMonthSpan)
-        if nMonthSpan<3:
-            nMonthSpan = 3
-        if nMonthSpan > 120:
-            nMonthSpan = 120
+            if bRollback == False and datTo == dateRangeEnd:
+                break
 
-        if bRollback == False and datTo == dateRangeEnd:
-            break
         time.sleep(random.randint(3,10))
     return(True)
 '''
-    return values:
-    2: too many records >1500 returned, need to reduce the range
-    1: success
-    0: http error, the program will wait a few seconds and try again
-    -1: database error, will quit
-    -10: bad user name error, will quit
+    return value tuple: (Result,  Processed records, total records, (optional) ErrorMessage)
+    Result: 
+    "Fail": an error that deems quitting the program
+    "Error": Encountered error, but remediable
+    "Success" Successful 
     
 '''
-def scrap_tempo_history(property_type, startDate, endDate, zip):
+def scrap_tempo_history(db, property_type, startDate, endDate, zip):
+
+
     fakeTimeStamp = datetime.datetime.now() - datetime.timedelta(seconds=10)
     print(fakeTimeStamp.strftime("%m/%d/%Y %I:%M:%S %p"))
     cookiestr = "TempoCookie=Theme=Tempo; ASPSESSIONIDQCRASASB=NIMHDNLBKPDHCPFCGPHJAADD; ASPSESSIONIDCSQBTCRB=MCJCPOLBCDDKNCHPJODLJNAC; ASPSESSIONIDSQSDRBRA=NODALAMBJPBCGLGECJOJEEFL; ASPSESSIONIDQQQQTTBB=MNCODDCCGACGIKMMMAEFADLH; ASPSESSIONIDSCBDSACT=AFGEKMMCGBFLNJNIEOLEFAIE; ASPSESSIONIDQCDCQACQ=KHCAHLMCEJAALMIBOFCLHMDC; ASPSESSIONIDSSACDTTS=PLPAEFHDLABKBEIKALIJIIFM; ASPSESSIONIDQQADSDAD=HNPPKHAAHLEPMMNAJJLHDNJO; ASPSESSIONIDSQCSCABS=LMCFEJKBHBGLLIJPBGOPILFF; MLPData=MLPTicket=&IsMLPPassKey=false; testcookies=nothing; LastUser=xtan; .TAuth=B40EA55F39A8C16D98E2BBA2F439590928A264618150A746E1FC0F239D6FC9F517F2FFDBE845BD9B8FFA66022160F13635BBDCA01C2A9E6958A0941ADE031D2FDA66E790F38519C74559C1BE52C7CCA2EC97477944BAC388CD06E4ACB2E60AAB944EFDD5; ASPSESSIONIDSCDRCTAT=FELMOADCDLFAAAEEEAFOKKFG; ASPSESSIONIDCCDSCRCT=CNNAGPCCFEMKOBNFLPIONIJM; Sidebar_Collapsed=1; LastActivity={0}".format(
@@ -136,12 +131,13 @@ def scrap_tempo_history(property_type, startDate, endDate, zip):
     data = urllib.parse.urlencode(data)
     data = data.encode('ascii')
     req = urllib.request.Request(url, data=data, headers=headers)
+    datS = datetime.datetime.now()
     try:
         print("Start request")
         response = urllib.request.urlopen(req)
     except:
         #hit a http error, will try again
-        return (0,0,0)
+        return ("Error",0,0, "Http request failed")
     print("Response received")
     responseBody = response.read()
     # now need to analyze if response is in bytes or not.
@@ -151,14 +147,14 @@ def scrap_tempo_history(property_type, startDate, endDate, zip):
     if len(strResponse) < 200:
         if (strResponse.find('BAD USERNAME or PASSWORD') > 0):
             print("Bad user name/ password")
-            return (-10, 0, 0)
+            return ("Fail", 0, 0, 'Bad user name/ password')
         else:
-            return (0, 0, 0)
+            return ("Fail", 0, 0, 'Unknown http error')
     # if success, write result to a stringIO object
     nRecCnt = strResponse.count("\n")
     print("{0} records are stripped".format(nRecCnt - 1))
     if nRecCnt >= 1500:
-        return (2, 0, nRecCnt)
+        return ("Error", 0, nRecCnt, "Too many records returned")
     strIO = StringIO(strResponse)
     temp_data_file_path = 'c:\\temp'
     targetFilePath = temp_data_file_path + "\{0}_{1}_{2}.dat".format(property_type, zip, startDate.strftime("%Y_%m_%d"))
@@ -172,18 +168,10 @@ def scrap_tempo_history(property_type, startDate, endDate, zip):
     f.write(strResponse)
     f.close()
 
-    try:
-        print("connecting to db")
-        #db = DBLib.db_mysql('73.136.184.214', 3306, 'xiaowei', 'Hhxxttxs2017', 'RealAnalysis')
-        db = DBLib.db_mysql('10.10.1.48', 3306, 'xiaowei', 'Hhxxttxs2017', 'RealAnalysis')
-        print("db connected")
-        # db = DBLib.db_mysql('10.10.1.48', 3306, 'xiaowei', 'Hhxxttxs2017', 'RealAnalysis')
-        #db = DBLib.db_mysql('localhost', 3306, 'root', 'thinkpad', 'RealAnalysis')
-    except:
-        print(traceback.print_exc())
-        return (-1, 0, 0)
     nRecProcessed = db.insertHarTempoRecords(strIO)
-    return (1, nRecProcessed, nRecCnt)
+    datE = datetime.datetime.now()
+    db.InsertOne("JobLog", ["zip", "PropType", "DateFrom", "DateTo", "TotalRec", "RecCnt", "JobStartTime", "JobEndTime", "Result"], [zip, property_type, startDate, endDate, nRecCnt, nRecProcessed, datS, datE, "Success"])
+    return ("Success", nRecProcessed, nRecCnt, None)
 
 
 '''
@@ -192,7 +180,7 @@ property_type: type of property, (string) e.g. "rnt" for rent, "res" for normal 
 startDate: start date mm/dd/yyyy, (string)
 endDate: end date mm/dd/yyyy, (string)
 '''
-def scrap_history(zip, property_type, startDate, endDate, WriteToFile="" ):
+def obselete_scrap_history(zip, property_type, startDate, endDate, WriteToFile="" ):
     db = oMySql.ModuleMySql('73.136.184.214', 3306, 'xiaowei', 'Hhxxttxs2017', 'HARHistory')
     JobStartTime = datetime.datetime.now()
     tStart = datetime.datetime.now()
@@ -309,7 +297,18 @@ if __name__== "__main__":
     datStart = datetime.date(2001,1,1)
     datEnd=datetime.date(2017, 6, 1)
     #scrap_tempo_history('lnd', datStart, datEnd, '77096')
-    scrapZip('77007', 'res', datStart, datEnd)
-    scrapZip('77007', 'rnt', datStart, datEnd)
-    scrapZip('77007', 'cnd', datStart, datEnd)
-    scrapZip('77007', 'lnd', datStart, datEnd)
+    try:
+        print("connecting to db")
+        #db = DBLib.db_mysql('73.136.184.214', 3306, 'xiaowei', 'Hhxxttxs2017', 'RealAnalysis')
+        db = DBLib.db_mysql('10.10.1.48', 3306, 'xiaowei', 'Hhxxttxs2017', 'RealAnalysis')
+        print("db connected")
+        # db = DBLib.db_mysql('10.10.1.48', 3306, 'xiaowei', 'Hhxxttxs2017', 'RealAnalysis')
+        #db = DBLib.db_mysql('localhost', 3306, 'root', 'thinkpad', 'RealAnalysis')
+        # db = DBLib.db_mysql("10.10.1.48", 3306, 'xiaowei', 'Hhxxttxs2017', 'RealAnalysis')
+        scrapZip(db, '77007', 'res', datStart, datEnd)
+        scrapZip(db, '77007', 'rnt', datStart, datEnd)
+        scrapZip(db, '77007', 'cnd', datStart, datEnd)
+        scrapZip(db, '77007', 'lnd', datStart, datEnd)
+    except:
+        print(traceback.print_exc())
+
