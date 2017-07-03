@@ -305,8 +305,8 @@ if __name__== "__main__":
         # db = DBLib.db_mysql('10.10.1.48', 3306, 'xiaowei', 'Hhxxttxs2017', 'RealAnalysis')
         #db = DBLib.db_mysql('localhost', 3306, 'root', 'thinkpad', 'RealAnalysis')
         # db = DBLib.db_mysql("10.10.1.48", 3306, 'xiaowei', 'Hhxxttxs2017', 'RealAnalysis')
-        scrapZip(db, '77007', 'res', datStart, datEnd)
-        scrapZip(db, '77007', 'rnt', datStart, datEnd)
+        #scrapZip(db, '77007', 'res', datStart, datEnd)
+        #scrapZip(db, '77007', 'rnt', datStart, datEnd)
         scrapZip(db, '77007', 'cnd', datStart, datEnd)
         scrapZip(db, '77007', 'lnd', datStart, datEnd)
     except:
