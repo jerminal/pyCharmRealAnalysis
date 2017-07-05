@@ -118,7 +118,7 @@ if __name__ == "__main__":
     nExceptionCount = 0
     lstScrapResults = []
     nTotalCount = 0
-    db = DBMSAccess.MSAccess(r"c:\temp\NewListings.accdb")
+    #db = DBMSAccess.MSAccess(r"c:\temp\NewListings.accdb")
     db = DBLib.db_mysql('10.10.1.48', 3306, 'xiaowei', 'Hhxxttxs2017', 'RealAnalysis')
     while nTotalCount < nRecCnt-1:
         try:
@@ -145,7 +145,7 @@ if __name__ == "__main__":
                     pageSource = driver.page_source
                     rslt = PropScrap.parsePropertyDetails(pageSource)
                     db.InsertDictionary("NewListings", rslt)
-                    db.Committ()
+                    #db.Committ()
                     elemNextLnk.click()
                 except:
                     print("second level 2 error trapping failed, will try a few more times")

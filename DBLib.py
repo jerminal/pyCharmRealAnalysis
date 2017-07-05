@@ -155,6 +155,7 @@ class db_mysql:
             lstColumns = self._ColumnsList
         else:
             self._ColumnsList = lstColumns
+        lstColumns = ['`Range`' if x=='Range' else x for x in lstColumns]
         columnsList = reduce((lambda x, y: x + ', ' + y) , lstColumns)
         valueList = ["%s"]* len(lstColumns)
         valueList1 = reduce((lambda x,y: x + ', ' +y), valueList)
@@ -318,10 +319,13 @@ class db_mysql:
         self._cur.execute(sql,[strTS] + keys)
         self._conn.commit()
 
+    def ConvertDateTimeValues(self, lstValues):
+        #TODO: need to convert MM/DD/YYYY and MM/DD/YYYY HH:MM values to formats MySQL can take
 
     def InsertDictionary(self, strTableName, dict, bAutoCommit = True):
         lstColumns = list(dict.keys())
         lstValues = list(dict.values())
+
         try:
             nRows = self.InsertOne(strTableName, lstColumns, lstValues)
             return nRows
@@ -329,7 +333,7 @@ class db_mysql:
             if e.args[0] == 1062: #it's a primary key error
                 #print(sys.exc_info())
                 print('duplicate MLSNum found, will try to update instead')
-                self.updateRecord(strTableName, )
+                self.UpdateDictionary(strTableName, dict, ['MLSNum'], True)
 
             else:
                 print(sys.exc_info())
