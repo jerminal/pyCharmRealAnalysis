@@ -150,7 +150,7 @@ def scrap_tempo_history(db, property_type, startDate, endDate, zip):
     #strResponse = responseBody
 
     try:
-        strResponse = responseBody.decode('utf_8', 'backslashreplace', errors='ignore')
+        strResponse = responseBody.decode('utf_8', 'backslashreplace')
     except:
         #print(responseBody)
         #Logger.dumpToFile("c:\\temp\\{0}_response.Log".format(datetime.datetime.now().strftime("%Y%m%d%I%M")), responseBody.decode('utf-8','backslashreplace', errors='ignore'))
@@ -319,10 +319,9 @@ if __name__== "__main__":
         # db = DBLib.db_mysql('10.10.1.48', 3306, 'xiaowei', 'Hhxxttxs2017', 'RealAnalysis')
         #db = DBLib.db_mysql('localhost', 3306, 'root', 'thinkpad', 'RealAnalysis')
         # db = DBLib.db_mysql("10.10.1.48", 3306, 'xiaowei', 'Hhxxttxs2017', 'RealAnalysis')
-        scrapZip(db, '77096', 'res', datStart, datEnd)
-        scrapZip(db, '77096', 'rnt', datStart, datEnd)
-        scrapZip(db, '77096', 'cnd', datStart, datEnd)
-        scrapZip(db, '77096', 'lnd', datStart, datEnd)
+        db._cur.execute("SELECT * FROM MasterZipCodes WHERE Process='Y'")
+        for row in db._cur.fetchall():
+            scrapZip(db, row[0], row[1], row[2], row[3])
     except:
         print(traceback.print_exc())
 

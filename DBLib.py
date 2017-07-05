@@ -238,7 +238,7 @@ class db_mysql:
         try:
             #first will try to insert the record
             result = self._cur.execute(self._InsertSql, dataRow)
-            print("1 new record inserted")
+            #print("1 new record inserted")
             if bAutocommit:
                 self._conn.commit()
             #print('1 row updated to mysql')
@@ -248,7 +248,7 @@ class db_mysql:
                 #print(sys.exc_info())
                 print('duplicate MLSNum found, will try to update instead')
                 result = self.updateRecord(strTargetTable, dataRow, whereClauseColumns, bAutocommit)
-                print('1 record updated')
+                #print('1 record updated')
                 return result
             else:
                 print(sys.exc_info())
@@ -260,6 +260,8 @@ class db_mysql:
             return 0
         except:
             print(sys.exc_info())
+            print(self._InsertSql)
+            print(dataRow)
             nMLSNum = self.getColumnValue("MLSNum", dataRow)
             Logger.appendToLogFile(nMLSNum, traceback.print_exc())
             return 0
@@ -283,6 +285,8 @@ class db_mysql:
             for idx, item in enumerate(dataRow):
                 if len(item) == 0:
                     dataRow[idx] = None
+                elif len(item) > 150:
+                    dataRow[idx] = dataRow[idx][:150]
                 else:
                     #test if the item is a date type, if so, convert the format
                     try:
