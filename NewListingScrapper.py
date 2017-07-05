@@ -128,7 +128,7 @@ if __name__ == "__main__":
             #lstScrapResults.append(PropScrap.parsePropertyDetails(pageSource))
             rslt = PropScrap.parsePropertyDetails(pageSource)
             db.InsertDictionary("NewListings", rslt)
-            db.Committ()
+            #db.Committ()
             elemNextLnk.click()
             time.sleep(1)
             nTotalCount += 1

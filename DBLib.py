@@ -141,7 +141,7 @@ class db_mysql:
         self._cur = self._conn.cursor()
         self._cur.execute("SELECT * FROM {0} LIMIT 1".format(strTableName))
         temp = [x[0] for x in self._cur.description]
-        self._ColumnsList = temp
+        self._ColumnsList = ['`Range`' if x=='Range' else x for x in temp]
         #print( temp)
         return temp
 
@@ -154,9 +154,9 @@ class db_mysql:
             lstColumns = self.getColumnsList(strTargetTable)
             lstColumns = self._ColumnsList
         else:
-            self._ColumnsList = lstColumns
-        lstColumns = ['`Range`' if x=='Range' else x for x in lstColumns]
-        columnsList = reduce((lambda x, y: x + ', ' + y) , lstColumns)
+            self._ColumnsList = ['`Range`' if x=='Range' else x for x in lstColumns]
+        #lstColumns =
+        columnsList = reduce((lambda x, y: x + ', ' + y) , self._ColumnsList)
         valueList = ["%s"]* len(lstColumns)
         valueList1 = reduce((lambda x,y: x + ', ' +y), valueList)
         sql = "INSERT INTO {0} ({1}) VALUES ({2})".format(strTargetTable, columnsList, valueList1)
@@ -312,29 +312,47 @@ class db_mysql:
                 print("Total count: {0}".format(nRowProcessed))
         return nRowProcessed
 
-    def updateLastUpdateTime(self, strTableName, lstWhereColumns, keys):
+    def updateLastUpdateTime(self, strTableName, lstWhereColumns, keys, strColumnName = 'LastUpdate'):
         lstWhereClause = '=%s and '.join(lstWhereColumns) + '=%s'
-        sql = "UPDATE {0} SET {1} WHERE {2}".format(strTableName, "LastUpdate = %s", lstWhereClause)
+        sql = "UPDATE {0} SET {1}{2} WHERE {3}".format(strTableName, strColumnName, " = %s", lstWhereClause)
         strTS = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self._cur.execute(sql,[strTS] + keys)
         self._conn.commit()
 
+    '''
+    it converts elements in a list of values, to date and datetime values if they satisfies the format: M/D/YYYY HH:MM:SS 
+    to a mysql date or datetime format
+    '''
     def ConvertDateTimeValues(self, lstValues):
-        #TODO: need to convert MM/DD/YYYY and MM/DD/YYYY HH:MM values to formats MySQL can take
+        for idx, item in enumerate(lstValues):
+            try:
+                dt = datetime.datetime.strptime(item, '%m/%d/%Y')
+                lstValues[idx] = dt.strftime("%Y-%m-%d %H:%M:%S")
+            except:
+                # test if the item is a datetime type:
+                try:
+                    dt = datetime.datetime.strptime(item, '%m/%d/%Y %I:%M:%S %p')
+                    lstValues[idx] = dt.strftime("%Y-%m-%d %H:%M:%S")
+                except:
+                    continue
 
     def InsertDictionary(self, strTableName, dict, bAutoCommit = True):
         lstColumns = list(dict.keys())
         lstValues = list(dict.values())
+        self.ConvertDateTimeValues(lstValues)
 
         try:
             nRows = self.InsertOne(strTableName, lstColumns, lstValues)
+            nMLSNum = self.getColumnValue("MLSNum", lstValues)
+            self.updateLastUpdateTime(strTableName, ['MLSNum'], [nMLSNum], 'OriginalTS')
             return nRows
         except pymysql.err.IntegrityError as e:
             if e.args[0] == 1062: #it's a primary key error
                 #print(sys.exc_info())
                 print('duplicate MLSNum found, will try to update instead')
                 self.UpdateDictionary(strTableName, dict, ['MLSNum'], True)
-
+                nMLSNum = self.getColumnValue("MLSNum", lstValues)
+                self.updateLastUpdateTime(strTableName, ['MLSNum'], [nMLSNum], 'LastUpdateTS')
             else:
                 print(sys.exc_info())
                 return 0
@@ -355,20 +373,23 @@ class db_mysql:
         for key in keys:
             dictKeyColumns[key] = dict.pop(key)
         lstColumnsToUpdate = list(dict.keys())
+        lstColumnsToUpdate = ['`Range`' if x == 'Range' else x for x in lstColumnsToUpdate]
         lstValuesToUpdate = list(dict.values())
+        self.ConvertDateTimeValues(lstValuesToUpdate)
         lstKeys = list(dictKeyColumns.keys())
         lstKeyValues = list(dictKeyColumns.values())
         a = '=%s,'.join(lstColumnsToUpdate) + '=%s'
         b = '=%s and '.join(lstKeys) + '=%s'
         sql = "UPDATE {0} SET {1} WHERE {2}".format(strTableName, a, b)
-        # print (sql)
+        #print (sql)
         try:
             rslt = self._cur.execute(sql, lstValuesToUpdate + lstKeyValues)
             if bAutoCommit:
                 self._conn.commit()
-            return rslt.rowcount
+            return rslt
         except:
             print(traceback.print_exc())
+            print (lstValuesToUpdate + lstKeyValues)
             return 0
 
     def InsertOne(self, strTable, lstColumns, lstValues, bAutoCommit = True):
