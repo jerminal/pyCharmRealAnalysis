@@ -194,6 +194,23 @@ def scrapAllProperties(datFrom, datTo, strPropType, strPropStat, nJobId):
     elemResultLnk = driver.find_element_by_xpath(xpResultLnk)
     elemResultLnk.click()
 
+    #now the result page loads
+    xpRecordCount = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSubHeader']/div[@id='m_pnlSubHeader']/div/table/tbody/tr/td[@class='css_innerLeft hideOnMap hideOnSearch hideNoResults']/span[@id='m_lblPagingSummary']/b[3]"
+    elemTotRecCnt = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, xpRecordCount)))
+    try:
+        nRecCnt = int(elemTotRecCnt.text)
+    except:
+        # TODO: some work to do when the number of records returned >5000
+        print('exception!')
+
+    # now click the first listing in the list
+    xpathFirstMLS = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[3]/div[@id='m_upDisplay']/div[@id='m_pnlDisplayTab']/div[@id='m_divContent']/div[@id='m_pnlDisplay']/table[@class='displayGrid nonresponsive ajax_display d1m_show']/tbody/tr[@id='wrapperTable'][1]/td[@class='d1m5']/span[@class='d1m1']/a"
+    nCntTries = 0
+    (elemFirstMLS, nFailureCnt) = find_wait_get_element(driver, "xpath", xpathFirstMLS)
+    sMLS = elemFirstMLS.text
+
+
+
 if __name__ == "__main__":
     cfg = XmlConfigReader.Config("AllPropScrapper", "DEV")
     host = cfg.getConfigValue(r'MySQL/host')
