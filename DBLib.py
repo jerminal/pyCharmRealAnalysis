@@ -214,7 +214,14 @@ class db_mysql:
                     data = list(data)
                 whereData.append(data.pop(idx))
             #print(data + whereData)
-            self._cur.execute(self._updateSql,data + whereData)
+            try:
+                self._cur.execute(self._updateSql,data + whereData)
+            except:
+                print(sys.exc_info())
+                print(self._updateSql)
+                print(data)
+                nMLSNum = self.getColumnValue("MLSNum", data)
+                Logger.appendToLogFile(nMLSNum, traceback.print_exc())
         else:
             #it's a dictionary
             dict = {}
@@ -236,6 +243,9 @@ class db_mysql:
     def transferOneRecord(self, strTargetTable, dataRow, whereClauseColumns, bAutocommit = True):
         #self.prepareInsertStatement(strTargetTable)
         self.prepareUpdateStatement(strTargetTable, self._ColumnsList, whereClauseColumns)
+        if len(dataRow) != len(self._ColumnsList):
+            Logger.appendToLogFile('NA', 'Error: Inconsistent data column count spotted.')
+            return 0
         try:
             #first will try to insert the record
             result = self._cur.execute(self._InsertSql, dataRow)
