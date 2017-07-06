@@ -78,7 +78,7 @@ def scrapZip(db, zip, propertyType, dateRangeStart, dateRangeEnd):
                 break
 
         time.sleep(random.randint(3,10))
-    return(True)
+    return True
 '''
     return value tuple: (Result,  Processed records, total records, (optional) ErrorMessage)
     Result: 
@@ -321,7 +321,10 @@ if __name__== "__main__":
         # db = DBLib.db_mysql("10.10.1.48", 3306, 'xiaowei', 'Hhxxttxs2017', 'RealAnalysis')
         db._cur.execute("SELECT * FROM MasterZipCodes WHERE Process='Y'")
         for row in db._cur.fetchall():
-            scrapZip(db, row[0], row[1], row[2], row[3])
+            if( scrapZip(db, row[0], row[1], row[2], row[3])) :
+                #if successful, record the item in db as complete
+                db._cur.execute("update MasterZipCodes set Process='C'where ZipCode=%s and PropType=%s and FromDate=%s and ToDate=%s", (row[0], row[1], row[2], row[3]))
+                db._conn.commit()
     except:
         print(traceback.print_exc())
 
