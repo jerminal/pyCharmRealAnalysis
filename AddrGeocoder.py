@@ -3,8 +3,7 @@ import pymysql
 import traceback
 import datetime
 import XmlConfigReader
-
-
+from censusgeocode import CensusGeocode
 
 cfg = XmlConfigReader.Config("AddrGeocoder", 'DEV')
 
@@ -24,6 +23,10 @@ def GeoCode(GeoCoder, strAddr):
         elif GeoCoder == 'bing':
             g = geocoder.bing(strAddr, key=strBingMapKey)
             return (g.lat, g.lng, g.address, GeoCoder, g.neighborhood, g.quality, g.accuracy, g.confidence)
+        elif GeoCoder == 'census':
+            cg = CensusGeocode()
+            j = cg.onelineaddress(strAddr)
+            return (j[0]['coordinates']['y'], j[0]['coordinates']['x'], GeoCoder, None, None, None, None)
         else:
             g = geocoder.yahoo(strAddr)
             return (g.lat, g.lng, g.json['address'], GeoCoder, g.neighborhood, g.quality, g.accuracy, None)
@@ -36,16 +39,15 @@ def GeoCode(GeoCoder, strAddr):
 
 '''
     description: it runs through pptid_geo_lkup table and geocode un-geocoded, and badly geocoded items
-
 '''
-
-
-def runGeoUpdate(geoEngine='google'):
+def runGeoUpdate(geoEngine='google', limit = 2500):
     # first look for entries without any lat/lon
     if geoEngine == 'google':
-        sql = "select propertyid, strnum, strname, strdir, strsfx, city, state, zip from pptid_geo_lkup where geolat is null and geolon is null and geogooglemapused is null limit 2490"
+        sql = "select propertyid, strnum, strname, strdir, strsfx, city, state, zip from pptid_geo_lkup where geolat is null and geolon is null and strnum <> 0 and geogooglemapused is null limit 2500"
     elif geoEngine == 'bing':
-        sql = "select propertyid, strnum, strname, strdir, strsfx, city, state, zip from pptid_geo_lkup where geolat is null and geolon is null and geobingmapused is null limit 2500"
+        sql = "select propertyid, strnum, strname, strdir, strsfx, city, state, zip from pptid_geo_lkup where geolat is null and geolon is null and strnum <> 0 and geobingmapused is null limit 2500"
+    elif geoEngine == 'census':
+        sql = "select propertyid, strnum, strname, strdir, strsfx, city, state, zip from pptid_geo_lkup where geolat is null and geolon is null and strnum <> 0 and geocensusmapused is null limit 5000"
     else:
         exit
     host = cfg.getConfigValue(r'MySQL/host')
@@ -83,6 +85,8 @@ def runGeoUpdate(geoEngine='google'):
             sqlUpdate = "UPDATE pptid_geo_lkup SET geolat=%s, geolon=%s, geoaddress=%s, geogooglemapused=1, geosource=%s, geoneighborhood=%s, geoquality=%s, geoaccuracy=%s, geoconfidence=%s, lastupdate=%s where propertyid=%s"
         elif geoEngine == 'bing':
             sqlUpdate = "UPDATE pptid_geo_lkup SET geolat=%s, geolon=%s, geoaddress=%s, geobingmapused=1, geosource=%s, geoneighborhood=%s, geoquality=%s, geoaccuracy=%s, geoconfidence=%s, lastupdate=%s where propertyid=%s"
+        elif geoEngine == 'census':
+            sqlUpdate = "UPDATE pptid_geo_lkup SET geolat=%s, geolon=%s, geoaddress=%s, geocensusmapused=1, geosource=%s, geoneighborhood=%s, geoquality=%s, geoaccuracy=%s, geoconfidence=%s, lastupdate=%s where propertyid=%s"
         else:
             sqlUpdate = "UPDATE pptid_geo_lkup SET geolat=%s, geolon=%s, geoaddress=%s, geosource=%s, geoneighborhood=%s, geoquality=%s, geoaccuracy=%s, geoconfidence=%s, lastupdate=%s where propertyid=%s"
         for cnt, item in enumerate(resultSet):
@@ -187,6 +191,7 @@ def replaceNone(str):
 if __name__ == "__main__":
     # main()
     # run()
-    runGeoUpdate('google')
-    runGeoUpdate('bing')
+    #runGeoUpdate('google')
+    #runGeoUpdate('bing')
+    runGeoUpdate('census')
     # copyFromSqliteToMySql()
