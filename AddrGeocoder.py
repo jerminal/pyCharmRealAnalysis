@@ -75,7 +75,7 @@ def runGeoUpdate(geoEngine='google', limit = 2500):
         sqlUpdate = "UPDATE pptid_geo_lkup SET geolat=%s, geolon=%s, geoaddress=%s, geocensusmapused=1, geosource=%s, geoneighborhood=%s, geoquality=%s, geoaccuracy=%s, geoconfidence=%s, lastupdate=%s where propertyid=%s"
     else:
         sqlUpdate = "UPDATE pptid_geo_lkup SET geolat=%s, geolon=%s, geoaddress=%s, geosource=%s, geoneighborhood=%s, geoquality=%s, geoaccuracy=%s, geoconfidence=%s, lastupdate=%s where propertyid=%s"
-
+    nCnt = 0
     if len(rwsToGeocode) > 0:
         for cnt, row in enumerate(rwsToGeocode):
             idx = row[0]  # property id
@@ -94,12 +94,15 @@ def runGeoUpdate(geoEngine='google', limit = 2500):
                 #resultSet.append(item)
                 try:
                     cur.execute(sqlUpdate, item)
-                    cnn.commit()
+
                     print("{0}: property id:{1} updated".format(cnt, item[9]))
+                    nCnt += 1
                 except:
                     print('error encountered updating property'.format(strAddr))
                     traceback.print_exc()
-
+                if nCnt == 100:
+                    cnn.commit()
+                    nCnt = 0
             except:
                 print('error encountered when geocoding address: {0}'.format(strAddr))
                 traceback.print_exc()
