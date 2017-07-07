@@ -26,7 +26,10 @@ def GeoCode(GeoCoder, strAddr):
         elif GeoCoder == 'census':
             cg = CensusGeocode()
             j = cg.onelineaddress(strAddr)
-            return (j[0]['coordinates']['y'], j[0]['coordinates']['x'], GeoCoder, None, None, None, None)
+            try:
+                return (j[0]['coordinates']['y'], j[0]['coordinates']['x'], GeoCoder, None, None, None, None, None)
+            except:
+                return (None, None, GeoCoder, None, None, None, None, None)
         else:
             g = geocoder.yahoo(strAddr)
             return (g.lat, g.lng, g.json['address'], GeoCoder, g.neighborhood, g.quality, g.accuracy, None)
@@ -62,6 +65,17 @@ def runGeoUpdate(geoEngine='google', limit = 2500):
     cur.execute(sql)
     rwsToGeocode = cur.fetchall()
     resultSet = []
+
+    # now prepare to update the record
+    if geoEngine == 'google':
+        sqlUpdate = "UPDATE pptid_geo_lkup SET geolat=%s, geolon=%s, geoaddress=%s, geogooglemapused=1, geosource=%s, geoneighborhood=%s, geoquality=%s, geoaccuracy=%s, geoconfidence=%s, lastupdate=%s where propertyid=%s"
+    elif geoEngine == 'bing':
+        sqlUpdate = "UPDATE pptid_geo_lkup SET geolat=%s, geolon=%s, geoaddress=%s, geobingmapused=1, geosource=%s, geoneighborhood=%s, geoquality=%s, geoaccuracy=%s, geoconfidence=%s, lastupdate=%s where propertyid=%s"
+    elif geoEngine == 'census':
+        sqlUpdate = "UPDATE pptid_geo_lkup SET geolat=%s, geolon=%s, geoaddress=%s, geocensusmapused=1, geosource=%s, geoneighborhood=%s, geoquality=%s, geoaccuracy=%s, geoconfidence=%s, lastupdate=%s where propertyid=%s"
+    else:
+        sqlUpdate = "UPDATE pptid_geo_lkup SET geolat=%s, geolon=%s, geoaddress=%s, geosource=%s, geoneighborhood=%s, geoquality=%s, geoaccuracy=%s, geoconfidence=%s, lastupdate=%s where propertyid=%s"
+
     if len(rwsToGeocode) > 0:
         for cnt, row in enumerate(rwsToGeocode):
             idx = row[0]  # property id
@@ -75,31 +89,20 @@ def runGeoUpdate(geoEngine='google', limit = 2500):
             try:
                 rsltGeo = GeoCode(geoEngine, strAddr)
                 print("Address geocoded: {0}".format(strAddr))
-                resultSet.append(rsltGeo + (idx,))
+                ts = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                item = rsltGeo + (ts, idx)
+                #resultSet.append(item)
+                try:
+                    cur.execute(sqlUpdate, item)
+                    cnn.commit()
+                    print("{0}: property id:{1} updated".format(cnt, item[9]))
+                except:
+                    print('error encountered updating property'.format(strAddr))
+                    traceback.print_exc()
+
             except:
                 print('error encountered when geocoding address: {0}'.format(strAddr))
                 traceback.print_exc()
-
-        # now prepare to update the record
-        if geoEngine == 'google':
-            sqlUpdate = "UPDATE pptid_geo_lkup SET geolat=%s, geolon=%s, geoaddress=%s, geogooglemapused=1, geosource=%s, geoneighborhood=%s, geoquality=%s, geoaccuracy=%s, geoconfidence=%s, lastupdate=%s where propertyid=%s"
-        elif geoEngine == 'bing':
-            sqlUpdate = "UPDATE pptid_geo_lkup SET geolat=%s, geolon=%s, geoaddress=%s, geobingmapused=1, geosource=%s, geoneighborhood=%s, geoquality=%s, geoaccuracy=%s, geoconfidence=%s, lastupdate=%s where propertyid=%s"
-        elif geoEngine == 'census':
-            sqlUpdate = "UPDATE pptid_geo_lkup SET geolat=%s, geolon=%s, geoaddress=%s, geocensusmapused=1, geosource=%s, geoneighborhood=%s, geoquality=%s, geoaccuracy=%s, geoconfidence=%s, lastupdate=%s where propertyid=%s"
-        else:
-            sqlUpdate = "UPDATE pptid_geo_lkup SET geolat=%s, geolon=%s, geoaddress=%s, geosource=%s, geoneighborhood=%s, geoquality=%s, geoaccuracy=%s, geoconfidence=%s, lastupdate=%s where propertyid=%s"
-        for cnt, item in enumerate(resultSet):
-            try:
-                cur.execute(sqlUpdate, (
-                item[0], item[1], item[2], item[3], item[4], item[5], item[6], item[7], datetime.datetime.now(),
-                item[8]))
-                cnn.commit()
-            except:
-                print('error encountered updating property'.format(strAddr))
-                traceback.print_exc()
-            print("{0}: property id:{1} updated".format(cnt, item[8]))
-
     else:
         # now try other geocoding methods
         print('Todo: nothing is implemented yet')
@@ -191,7 +194,8 @@ def replaceNone(str):
 if __name__ == "__main__":
     # main()
     # run()
-    #runGeoUpdate('google')
+    runGeoUpdate('google')
     #runGeoUpdate('bing')
+
     runGeoUpdate('census')
     # copyFromSqliteToMySql()
