@@ -13,7 +13,7 @@ import XmlConfigReader
 import AllPropDetailPageScrapper as PropScrap
 import traceback
 import DBLib
-
+import time
 
 import os
 
@@ -119,7 +119,8 @@ def scrapAllProperties(db, datFrom, datTo, strPropType, strPropStat, nJobId):
     window_before = driver.window_handles[0]
     xpath = "/html[@class='wf-effra-n4-active wf-effra-n7-active wf-effra-n3-active wf-effra-n5-active wf-effra-n9-active wf-active']/body/div[@class='content overlay']/div[@class='container']/div[@class='rightPane']/div[@class='box_simple gray agentbox newhar']/div[@class='box_content grid_view']/a[1]"
     (elemNextLnk, nFailureCnt) = find_wait_get_element(driver, "xpath", xpath, True)
-    # switch to the new window, and click on "new listing"
+    time.sleep(3)
+
     wait_for_new_window(driver)
     window_after = driver.window_handles[1]
     driver.close()
@@ -127,6 +128,7 @@ def scrapAllProperties(db, datFrom, datTo, strPropType, strPropStat, nJobId):
     #load all property search/classic screen
     lnkAllPropSearch='http://matrix.harmls.com/Matrix/Search/AllProperties/Classic'
     driver.get(lnkAllPropSearch)
+    time.sleep(3)
     #now check/uncheck the property status boxes, and set start/end date values
     xpChkActive = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content']/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[2]/td[1]/div/input[@class='checkbox']"
     xpChkOP = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content']/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[3]/td[1]/div/input[@class='checkbox']"
@@ -194,7 +196,7 @@ def scrapAllProperties(db, datFrom, datTo, strPropType, strPropStat, nJobId):
     xpResultLnk = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content']/div[@id='ctl12']/table[@class='buttonBar']/tbody/tr/td[@class='link important barleft'][2]/a[@id='m_ucSearchButtons_m_lbSearch']/span[@class='linkIcon icon_default']"
     elemResultLnk = driver.find_element_by_xpath(xpResultLnk)
     elemResultLnk.click()
-
+    time.sleep(2)
     #now the result page loads
     xpRecordCount = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSubHeader']/div[@id='m_pnlSubHeader']/div/table/tbody/tr/td[@class='css_innerLeft hideOnMap hideOnSearch hideNoResults']/span[@id='m_lblPagingSummary']/b[3]"
     elemTotRecCnt = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, xpRecordCount)))
@@ -252,23 +254,27 @@ def scrapAllProperties(db, datFrom, datTo, strPropType, strPropStat, nJobId):
             nMLSNum = dictPageResult['MLSNum']
             if nMLSNum is not None:
                 lstScrapResults.append(dictPageResult)
-                if db.InsertDictionary("Matrix_AllPropRecords", dictPageResult) == 0:
+                if db.TransferDictionary("Matrix_AllPropRecords", dictPageResult) == 1:
+                    nTotalCount += 1
+                else:
                     # if insertion fails:
                     print("insertion failed. record: {0}".format(str(dictPageResult)))
                     appendToCSV(nJobId, nMLSNum, str(dictPageResult))
-                else:
-                    db.updateRecord("Matrix_AllPropRecords", ["LastUpdate", "FK_JobId"],[datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), nJobId], ["MLSNum"],[int(nMLSNum)], True)
+                    nTotalCount += 1
+
+                    #db.updateRecord("Matrix_AllPropRecords", ["FK_JobId"],[nJobId], ["MLSNum"],[int(nMLSNum)], True)
                     #db.Committ()
         # if bNeedToRefreshNext or nFailureCnt>0:
         #    elemNextLnk = find_wait_get_element(driver, "id", NextLinkId)
 
         # elemNextLnk.click()
-        (elemNextLnk, nFailureCnt) = find_wait_get_element(driver, "id", NextLinkId, True)
-        nTotalCount += 1
+        #(elemNextLnk, nFailureCnt) = find_wait_get_element(driver, "id", NextLinkId, True)
+
 
 if __name__ == "__main__":
     cfg = XmlConfigReader.Config("AllPropScrapper", "DEV")
     host = cfg.getConfigValue(r'MySQL/host')
+    host = '10.10.1.48'
     port = int(cfg.getConfigValue(r"MySQL/port"))
     user = cfg.getConfigValue(r"MySQL/user")
     passwd = cfg.getConfigValue(r"MySQL/password")

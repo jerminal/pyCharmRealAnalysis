@@ -346,7 +346,7 @@ class db_mysql:
                 except:
                     continue
 
-    def InsertDictionary(self, strTableName, dict, bAutoCommit = True):
+    def TransferDictionary(self, strTableName, dict, bAutoCommit = True):
         lstColumns = list(dict.keys())
         lstValues = list(dict.values())
         self.ConvertDateTimeValues(lstValues)
@@ -363,6 +363,7 @@ class db_mysql:
                 self.UpdateDictionary(strTableName, dict, ['MLSNum'], True)
                 nMLSNum = self.getColumnValue("MLSNum", lstValues)
                 self.updateLastUpdateTime(strTableName, ['MLSNum'], [nMLSNum], 'LastUpdateTS')
+                return 1
             else:
                 print(sys.exc_info())
                 return 0
