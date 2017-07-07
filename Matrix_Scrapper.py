@@ -94,7 +94,7 @@ def find_wait_get_element(driver, elementType, val, bClick = False):
 strPropType: res, lnd, cnd, rnt
 strPropStat: active, or, sold 
 '''
-def scrapAllProperties(datFrom, datTo, strPropType, strPropStat, nJobId):
+def scrapAllProperties(db, datFrom, datTo, strPropType, strPropStat, nJobId):
     cfg = XmlConfigReader.Config("AllPropScrapper", "DEV")
     strUserName = cfg.getConfigValue("HARUserName")
     strPwd = cfg.getConfigValue("HARPassword")
@@ -114,6 +114,7 @@ def scrapAllProperties(datFrom, datTo, strPropType, strPropStat, nJobId):
     elemPwd = driver.find_element_by_id("member_pass")
     elemPwd.send_keys(strPwd)
     elemPwd.send_keys(Keys.RETURN)
+
     (elemNextLnk, nFailureCnt) = find_wait_get_element(driver, "link_text", "Enter Matrix MLS")
     window_before = driver.window_handles[0]
     xpath = "/html[@class='wf-effra-n4-active wf-effra-n7-active wf-effra-n3-active wf-effra-n5-active wf-effra-n9-active wf-active']/body/div[@class='content overlay']/div[@class='container']/div[@class='rightPane']/div[@class='box_simple gray agentbox newhar']/div[@class='box_content grid_view']/a[1]"
@@ -208,8 +209,62 @@ def scrapAllProperties(datFrom, datTo, strPropType, strPropStat, nJobId):
     nCntTries = 0
     (elemFirstMLS, nFailureCnt) = find_wait_get_element(driver, "xpath", xpathFirstMLS)
     sMLS = elemFirstMLS.text
+    elemFirstMLS.click()
+    NextLinkId = 'm_DisplayCore_dpy3'
+    nTotalCount = 0
+    lstScrapResults = []
+    while nTotalCount < nRecCnt :
+        print("Rec {0} of {1}".format(nTotalCount+1, nRecCnt))
+        (elemNextLnk, nFailureCnt) = find_wait_get_element(driver, "id", NextLinkId, True)
+        if elemNextLnk is None:
+            return (0,0)
+        pageSource = driver.page_source
+        # now get the lat/lon:
+        # first the the current window handle
+        mainWindow = driver.window_handles[0]
+        # next trigger the new map view window
+        # elemViewMap = driver.find_element_by_xpath('//*[@title="View Map"]')
+        (elemViewMap, temp) = find_wait_get_element(driver, "xpath", '//*[@title="View Map"]', True)
+        if not elemViewMap is None:
+            # switch to the map view window
+            wait_for_new_window(driver)
+            mapWindow = driver.window_handles[1]
+            driver.switch_to.window(mapWindow)
+            # look for the tag with id: m_ucStreetViewService_m_hfParams
+            tagId = "m_ucStreetViewService_m_hfParams"
+            # elemLatLon = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.ID, tagId)))
+            (elemLatLon, temp) = find_wait_get_element(driver, "id", tagId)
+            # elemLatLon = driver.find_element_by_id(tagId)
+            # strip lat/lon:
+            tagText = str(elemLatLon.get_attribute("value"))
+            (lat, lon) = tagText.split("$")[1:3]
+            driver.close()
+            driver.switch_to.window(mainWindow)
+            bNeedToRefreshNext = False
+        else:
+            (lat, lon) = (None, None)
+            bNeedToRefreshNext = True
+        # switch back to the original window
+        dictPageResult = PropScrap.parseDetails(pageSource)
+        if dictPageResult is not None:
+            dictPageResult["Latitude"] = lat
+            dictPageResult["Longitude"] = lon
+            nMLSNum = dictPageResult['MLSNum']
+            if nMLSNum is not None:
+                lstScrapResults.append(dictPageResult)
+                if db.InsertDictionary("Matrix_AllPropRecords", dictPageResult) == 0:
+                    # if insertion fails:
+                    print("insertion failed. record: {0}".format(str(dictPageResult)))
+                    appendToCSV(nJobId, nMLSNum, str(dictPageResult))
+                else:
+                    db.updateRecord("Matrix_AllPropRecords", ["LastUpdate", "FK_JobId"],[datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), nJobId], ["MLSNum"],[int(nMLSNum)], True)
+                    #db.Committ()
+        # if bNeedToRefreshNext or nFailureCnt>0:
+        #    elemNextLnk = find_wait_get_element(driver, "id", NextLinkId)
 
-
+        # elemNextLnk.click()
+        (elemNextLnk, nFailureCnt) = find_wait_get_element(driver, "id", NextLinkId, True)
+        nTotalCount += 1
 
 if __name__ == "__main__":
     cfg = XmlConfigReader.Config("AllPropScrapper", "DEV")
@@ -217,18 +272,18 @@ if __name__ == "__main__":
     port = int(cfg.getConfigValue(r"MySQL/port"))
     user = cfg.getConfigValue(r"MySQL/user")
     passwd = cfg.getConfigValue(r"MySQL/password")
-    '''
+
     db = cfg.getConfigValue(r"MySQL/DB")
     #db = DBAccess('mysql', host=host, port=port, db_name =db, user_id = user, pwd = passwd)
     #db = DBMSAccess.MSAccess(r"c:/temp/RealAnalysis.accdb")
     db = DBLib.db_mysql(host, port, user, passwd, "RealAnalysis")
-    sql = "SELECT JobId, DateFrom, DateTo FROM JobLog WHERE Status is null"
-    db._cursor.execute(sql)
-    '''
+    #sql = "SELECT JobId, DateFrom, DateTo FROM JobLog WHERE Status is null"
+    #db._cursor.execute(sql)
+
     datStart = datetime.date.today()
     datEnd = datetime.date.today()
     nJobId = 0
-    (nProcessed, nTotal) = scrapAllProperties(datStart, datEnd, 'res', 'active', nJobId)
+    (nProcessed, nTotal) = scrapAllProperties(db, datStart, datEnd, 'res', 'active', nJobId)
     '''    
     rows = db._cursor.fetchall()
     for rToProcess in rows:
