@@ -312,7 +312,7 @@ class db_mysql:
                             continue
 
             rToInsert = tuple(dataRow)
-            nRslt = self.transferOneRecord(strTargetTable, rToInsert, ["MLSNum"])
+            nRslt = self.transferOneRecord(strTargetTable, rToInsert, ["MLSNum"], False)
             if nRslt == 1:
                 #update the last update column
                 idx = self._ColumnsList.index("MLSNum")
@@ -320,6 +320,7 @@ class db_mysql:
                 self.updateLastUpdateTime(strTargetTable, ["MLSNum"], [nMLSNum])
                 nRowProcessed += nRslt
                 print("Total count: {0}".format(nRowProcessed))
+        self._conn.commit()
         return nRowProcessed
 
     def updateLastUpdateTime(self, strTableName, lstWhereColumns, keys, strColumnName = 'LastUpdate'):
