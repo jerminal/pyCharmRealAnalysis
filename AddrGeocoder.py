@@ -201,4 +201,12 @@ if __name__ == "__main__":
     #runGeoUpdate('bing')
 
     runGeoUpdate('census')
+    runGeoUpdate('census')
+    runGeoUpdate('census')
+    runGeoUpdate('census')
+    runGeoUpdate('census')
+    runGeoUpdate('census')
+    runGeoUpdate('census')
+    runGeoUpdate('census')
+
     # copyFromSqliteToMySql()

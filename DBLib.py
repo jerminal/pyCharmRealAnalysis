@@ -274,7 +274,7 @@ class db_mysql:
             print(self._InsertSql)
             print(dataRow)
             nMLSNum = self.getColumnValue("MLSNum", dataRow)
-            Logger.appendToLogFile(nMLSNum, traceback.print_exc())
+            Logger.appendToLogFile(nMLSNum, traceback.print_exc(), dataRow)
             return 0
     '''
         insert the csv as sIO into AllPropertyRecords table
