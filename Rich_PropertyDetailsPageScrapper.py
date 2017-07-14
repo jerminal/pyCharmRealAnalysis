@@ -22,19 +22,69 @@ def parseDetails(sHtml):
     xpWebsite = "/html[@class='whatinput-types-initial whatinput-types-mouse whatinput-types-keyboard']/body/form[@id='form1']/div[@class='body-wrap']/section[@class='properties']/div[@id='contentBody_panelData']/div[@class='row']/div[@class='small-12 medium-8 large-8 columns']/article/div[@class='row']/div[@class='small-12 medium-6 large-6 columns'][2]/p[3]/a[@id='contentBody_lnkMoreInfo']"
     '''
     soup = BeautifulSoup(sHtml)
+    dict = {}
     tgAddr = soup.find('span',{"id":"contentBody_lblPropertyAddress"})
-    print(tgAddr.text)
+    dict['address'] = tgAddr.text
+
     tgBedsBathStyle = soup.find('span',{"id":"contentBody_lblBedsBathsStyle"})
+    dict['bedroom'] = int(tgBedsBathStyle.text.split('/')[0].strip().split(' ')[0])
+    dict['bath'] = int(tgBedsBathStyle.text.split('/')[1].strip().split(' ')[0])
+    dict['propertytype'] = tgBedsBathStyle.text.split('/')[2].strip()
+
     tgSaleOrRentAndPrice = soup.find('span', {"id": "contentBody_lblSaleOrRent"})
-    tgListingStatusId = soup.find('span', {"id": "contenBody_lblListingStatusID"})
+    dict['transtype'] = tgSaleOrRentAndPrice.text.split(':')[0]
+    dict['price'] = float(tgSaleOrRentAndPrice.text.split(' ')[-1].replace('$','').replace(',',''))
+
+    tgListingStatusId = soup.find('span', {"id": "contentBody_lblListingStatusID"})
 
     tgPropertyDetails = soup.find('div', {"id": "contentBody_divPropertyDetails"})
+    #now look for year built:
+    lstSubTags = tgPropertyDetails.findChildren()
+    for idx, tag in enumerate(lstSubTags):
+        if tag.text == 'Year Built:':
+            nYearBuilt = int(lstSubTags[idx+1].text)
+            dict['yearbuilt'] = nYearBuilt
+
+        if tag.text == 'Finished Sq Ft:':
+            nBldgSqft = int(lstSubTags[idx+1].text.replace(',',''))
+            dict['bldgsqft'] = nBldgSqft
+
+        if tag.text == 'Property Style:':
+            strPropStyle = lstSubTags[idx+1].text
+            dict['propertystyle'] = strPropStyle
+        if tag.text == 'Monthly HOA:':
+            str = lstSubTags[idx+1].text
+            dict['monthlyhoa'] = str
+        if tag.text == 'Garage:':
+            str = lstSubTags[idx+1].text
+            dict['garage'] = str
 
     tgContactInfo = soup.find('div', {"id": "contentBody_divContactInfo"})
-    strContactPhone = tgContactInfo.text
 
+    strContactPhone = tgContactInfo.text
+    dict['listingcompany'] = strContactPhone.split('Phone ')[0]
+    dict['contactphone'] = strContactPhone.split('Phone ')[1]
+
+    return dict
+
+
+def getPropList(url):
+    r = requests.get(url)
+    soup = BeautifulSoup(r.text)
+    tgs = soup.find_all('a')
+    lstPropIds = []
+    for tg in tgs:
+        if tg.has_attr('href'):
+            strHref = tg.attrs['href']
+            if strHref[:31] == 'PropertyDetails.aspx?ListingID=':
+                lstPropIds.append(strHref.split('ListingID=')[1])
+    print(lstPropIds)
 
 if __name__ == "__main__":
+    '''
     url = "https://www.richclub.org/PropertyDetails.aspx?ListingID=14346"
     r = requests.get(url)
-    parseDetails(r.text)
+    print( parseDetails(r.text))
+    '''
+    url = "https://www.richclub.org/PropertyList.aspx?search=searchsfall"
+    getPropList(url)
