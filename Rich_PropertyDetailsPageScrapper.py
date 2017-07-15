@@ -4,7 +4,7 @@ import ast
 import XmlConfigReader
 import traceback
 
-def parseDetails(sHtml):
+def parseDetails(propertyId):
     '''
     #single
     xpPropertyType = "/html[@class='whatinput-types-initial whatinput-types-mouse']/body/form[@id='form1']/div[@class='body-wrap']/section[@class='properties']/div[@id='contentBody_panelData']/div[@class='row']/div[@class='small-12 medium-8 large-8 columns']/article/div[@class='row']/div[@class='small-12 medium-6 large-6 columns'][2]/h4[1]/span[@id='contentBody_lblBedsBathsStyle']"
@@ -21,21 +21,30 @@ def parseDetails(sHtml):
     xpCompanyAndPhone = "/html[@class='whatinput-types-initial whatinput-types-mouse whatinput-types-keyboard']/body/form[@id='form1']/div[@class='body-wrap']/section[@class='properties']/div[@id='contentBody_panelData']/div[@class='row']/div[@class='small-12 medium-8 large-8 columns']/article/div[@class='row']/div[@class='small-12 medium-6 large-6 columns'][2]/div[@id='contentBody_divContactInfo']/span"
     xpWebsite = "/html[@class='whatinput-types-initial whatinput-types-mouse whatinput-types-keyboard']/body/form[@id='form1']/div[@class='body-wrap']/section[@class='properties']/div[@id='contentBody_panelData']/div[@class='row']/div[@class='small-12 medium-8 large-8 columns']/article/div[@class='row']/div[@class='small-12 medium-6 large-6 columns'][2]/p[3]/a[@id='contentBody_lnkMoreInfo']"
     '''
-    soup = BeautifulSoup(sHtml)
+    url = "https://www.richclub.org/PropertyDetails.aspx?ListingID={0}"
+    r = requests.get(url.format(propertyId))
+    soup = BeautifulSoup(r.text)
     dict = {}
+    if propertyId is not None:
+        dict['propertyid'] = propertyId
     tgAddr = soup.find('span',{"id":"contentBody_lblPropertyAddress"})
     dict['address'] = tgAddr.text
 
     tgBedsBathStyle = soup.find('span',{"id":"contentBody_lblBedsBathsStyle"})
-    dict['bedroom'] = int(tgBedsBathStyle.text.split('/')[0].strip().split(' ')[0])
-    dict['bath'] = int(tgBedsBathStyle.text.split('/')[1].strip().split(' ')[0])
-    dict['propertytype'] = tgBedsBathStyle.text.split('/')[2].strip()
+    lstStrs = tgBedsBathStyle.text.split('/')
+    if len(lstStrs)  == 3:
+        dict['bedroom'] = int(lstStrs[0].strip().split(' ')[0])
+        dict['bath'] = int(lstStrs[1].strip().split(' ')[0])
+        dict['propertytype'] = lstStrs[2].strip()
+    else:
+        dict['propertytype'] = lstStrs[0].strip()
 
     tgSaleOrRentAndPrice = soup.find('span', {"id": "contentBody_lblSaleOrRent"})
     dict['transtype'] = tgSaleOrRentAndPrice.text.split(':')[0]
     dict['price'] = float(tgSaleOrRentAndPrice.text.split(' ')[-1].replace('$','').replace(',',''))
 
     tgListingStatusId = soup.find('span', {"id": "contentBody_lblListingStatusID"})
+    dict['status'] = tgListingStatusId.text
 
     tgPropertyDetails = soup.find('div', {"id": "contentBody_divPropertyDetails"})
     #now look for year built:
@@ -68,7 +77,7 @@ def parseDetails(sHtml):
     return dict
 
 
-def getPropList(url):
+def getPropIdList(url):
     r = requests.get(url)
     soup = BeautifulSoup(r.text)
     tgs = soup.find_all('a')
@@ -78,7 +87,17 @@ def getPropList(url):
             strHref = tg.attrs['href']
             if strHref[:31] == 'PropertyDetails.aspx?ListingID=':
                 lstPropIds.append(strHref.split('ListingID=')[1])
-    print(lstPropIds)
+    #print(lstPropIds)
+    return lstPropIds
+
+def scrapRichListings():
+    url = "https://www.richclub.org/PropertyList.aspx?pi={0}"
+    lstPropIds = []
+    for i in range(1,10):
+        lstPropIds +=getPropIdList(url.format(i))
+    lstScrapResults = []
+    for propId in lstPropIds:
+        lstScrapResults.append(parseDetails(propId))
 
 if __name__ == "__main__":
     '''
@@ -86,5 +105,7 @@ if __name__ == "__main__":
     r = requests.get(url)
     print( parseDetails(r.text))
     '''
-    url = "https://www.richclub.org/PropertyList.aspx?search=searchsfall"
-    getPropList(url)
+    #url="https://www.richclub.org/PropertyList.aspx?pi=1"
+    #url = "https://www.richclub.org/PropertyList.aspx?search=searchsfall"
+    #getPropList(url)
+    scrapRichListings()
