@@ -25,54 +25,77 @@ def parseDetails(propertyId):
     r = requests.get(url.format(propertyId))
     soup = BeautifulSoup(r.text)
     dict = {}
-    if propertyId is not None:
-        dict['propertyid'] = propertyId
+    dict['propertyid'] = propertyId
+
     tgAddr = soup.find('span',{"id":"contentBody_lblPropertyAddress"})
-    dict['address'] = tgAddr.text
+    if tgAddr is not None:
+        dict['address'] = tgAddr.text
 
     tgBedsBathStyle = soup.find('span',{"id":"contentBody_lblBedsBathsStyle"})
-    lstStrs = tgBedsBathStyle.text.split('/')
-    if len(lstStrs)  == 3:
-        dict['bedroom'] = int(lstStrs[0].strip().split(' ')[0])
-        dict['bath'] = int(lstStrs[1].strip().split(' ')[0])
-        dict['propertytype'] = lstStrs[2].strip()
-    else:
-        dict['propertytype'] = lstStrs[0].strip()
+    if tgBedsBathStyle is not None:
+        lstStrs = tgBedsBathStyle.text.split('/')
+        if len(lstStrs)  == 3:
+            dict['bedroom'] = int(lstStrs[0].strip().split(' ')[0])
+            dict['bath'] = int(lstStrs[1].strip().split(' ')[0])
+            dict['propertytype'] = lstStrs[2].strip()
+        else:
+            dict['propertytype'] = lstStrs[0].strip()
 
     tgSaleOrRentAndPrice = soup.find('span', {"id": "contentBody_lblSaleOrRent"})
-    dict['transtype'] = tgSaleOrRentAndPrice.text.split(':')[0]
-    dict['price'] = float(tgSaleOrRentAndPrice.text.split(' ')[-1].replace('$','').replace(',',''))
+    if tgSaleOrRentAndPrice is not None:
+        try:
+            dict['transtype'] = tgSaleOrRentAndPrice.text.split(':')[0]
+            dict['price'] = float(tgSaleOrRentAndPrice.text.split(' ')[-1].replace('$','').replace(',',''))
+        except:
+            traceback.print_exc()
 
     tgListingStatusId = soup.find('span', {"id": "contentBody_lblListingStatusID"})
     dict['status'] = tgListingStatusId.text
 
     tgPropertyDetails = soup.find('div', {"id": "contentBody_divPropertyDetails"})
-    #now look for year built:
-    lstSubTags = tgPropertyDetails.findChildren()
-    for idx, tag in enumerate(lstSubTags):
-        if tag.text == 'Year Built:':
-            nYearBuilt = int(lstSubTags[idx+1].text)
-            dict['yearbuilt'] = nYearBuilt
+    if tgPropertyDetails is not None:
+        #now look for year built:
+        lstSubTags = tgPropertyDetails.findChildren()
+        for idx, tag in enumerate(lstSubTags):
+            if tag.text == 'Year Built:':
+                try:
+                    nYearBuilt = int(lstSubTags[idx+1].text)
+                    dict['yearbuilt'] = nYearBuilt
+                except:
+                    traceback.print_exc()
 
-        if tag.text == 'Finished Sq Ft:':
-            nBldgSqft = int(lstSubTags[idx+1].text.replace(',',''))
-            dict['bldgsqft'] = nBldgSqft
+            if tag.text == 'Finished Sq Ft:':
+                try:
+                    nBldgSqft = int(lstSubTags[idx+1].text.replace(',',''))
+                    dict['bldgsqft'] = nBldgSqft
+                except:
+                    traceback.print_exc()
 
-        if tag.text == 'Property Style:':
-            strPropStyle = lstSubTags[idx+1].text
-            dict['propertystyle'] = strPropStyle
-        if tag.text == 'Monthly HOA:':
-            str = lstSubTags[idx+1].text
-            dict['monthlyhoa'] = str
-        if tag.text == 'Garage:':
-            str = lstSubTags[idx+1].text
-            dict['garage'] = str
+            if tag.text == 'Property Style:':
+                try:
+                    strPropStyle = lstSubTags[idx+1].text
+                    dict['propertystyle'] = strPropStyle
+                except:
+                    traceback.print_exc()
+            if tag.text == 'Monthly HOA:':
+                try:
+                    str = lstSubTags[idx+1].text
+                    dict['monthlyhoa'] = str
+                except:
+                    traceback.print_exc()
+
+            if tag.text == 'Garage:':
+                try:
+                    str = lstSubTags[idx+1].text
+                    dict['garage'] = str
+                except:
+                    traceback.print_exc()
 
     tgContactInfo = soup.find('div', {"id": "contentBody_divContactInfo"})
-
-    strContactPhone = tgContactInfo.text
-    dict['listingcompany'] = strContactPhone.split('Phone ')[0]
-    dict['contactphone'] = strContactPhone.split('Phone ')[1]
+    if tgContactInfo is not None:
+        strContactPhone = tgContactInfo.text
+        dict['listingcompany'] = strContactPhone.split('Phone ')[0]
+        dict['contactphone'] = strContactPhone.split('Phone ')[1]
 
     return dict
 
