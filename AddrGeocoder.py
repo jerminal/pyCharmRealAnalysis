@@ -27,9 +27,9 @@ def GeoCode(GeoCoder, strAddr):
             cg = CensusGeocode()
             j = cg.onelineaddress(strAddr)
             try:
-                return (j[0]['coordinates']['y'], j[0]['coordinates']['x'], GeoCoder, None, None, None, None, None)
+                return (j[0]['coordinates']['y'], j[0]['coordinates']['x'], j[0]['matchedAddress'], GeoCoder, None, None, None, None)
             except:
-                return (None, None, GeoCoder, None, None, None, None, None)
+                return (None, None, None, GeoCoder, None, None, None, None)
         else:
             g = geocoder.yahoo(strAddr)
             return (g.lat, g.lng, g.json['address'], GeoCoder, g.neighborhood, g.quality, g.accuracy, None)
@@ -37,7 +37,7 @@ def GeoCode(GeoCoder, strAddr):
     except:
         print('error encountered when geocoding address: {0}'.format(strAddr))
         traceback.print_exc()
-        return (None, None, None, GeoCoder, None, None, None)
+        return (None, None, None, GeoCoder, None, None, None, None)
 
 
 '''
@@ -46,7 +46,7 @@ def GeoCode(GeoCoder, strAddr):
 def runGeoUpdate(geoEngine='google', limit = 2500):
     # first look for entries without any lat/lon
     if geoEngine == 'google':
-        sql = "select propertyid, strnum, strname, strdir, strsfx, city, state, zip from pptid_geo_lkup where geolat is null and geolon is null and strnum <> 0 and geogooglemapused is null limit 2500"
+        sql = "select propertyid, strnum, strname, strdir, strsfx, city, state, zip from pptid_geo_lkup where geolat is null and geolon is null and strnum <> 0 and geogooglemapused is null and tax_zip = 77055 limit 2500"
     elif geoEngine == 'bing':
         sql = "select propertyid, strnum, strname, strdir, strsfx, city, state, zip from pptid_geo_lkup where geolat is null and geolon is null and strnum <> 0 and geobingmapused is null limit 2500"
     elif geoEngine == 'census':
@@ -92,13 +92,15 @@ def runGeoUpdate(geoEngine='google', limit = 2500):
                 ts = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 item = rsltGeo + (ts, idx)
                 #resultSet.append(item)
+                print(item)
                 try:
                     cur.execute(sqlUpdate, item)
 
                     print("{0}: property id:{1} updated".format(cnt, item[9]))
                     nCnt += 1
                 except:
-                    print('error encountered updating property'.format(strAddr))
+                    print('error encountered updating property. Address:{0} '.format(strAddr))
+                    print('The arguments:{0}, sql: {1}'.format(item, sqlUpdate))
                     traceback.print_exc()
                 if nCnt == 100:
                     cnn.commit()
@@ -197,14 +199,10 @@ def replaceNone(str):
 if __name__ == "__main__":
     # main()
     # run()
-    runGeoUpdate('google')
+    #runGeoUpdate('google')
     #runGeoUpdate('bing')
 
-    runGeoUpdate('census')
-    runGeoUpdate('census')
-    runGeoUpdate('census')
-    runGeoUpdate('census')
-    runGeoUpdate('census')
+
     runGeoUpdate('census')
     runGeoUpdate('census')
     runGeoUpdate('census')
