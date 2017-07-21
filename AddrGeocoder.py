@@ -46,11 +46,11 @@ def GeoCode(GeoCoder, strAddr):
 def runGeoUpdate(geoEngine='google', limit = 2500):
     # first look for entries without any lat/lon
     if geoEngine == 'google':
-        sql = "select propertyid, strnum, strname, strdir, strsfx, city, state, zip from pptid_geo_lkup where geolat is null and geolon is null and strnum <> 0 and geogooglemapused is null and tax_zip = 77055 limit 2500"
+        sql = "select propertyid, strnum, strname, strdir, strsfx, city, state, zip from pptid_geo_lkup where geolat is null and geolon is null and strnum <> 0 and geogooglemapused is null  and (lastupdate is null or lastupdate < date_add(now(), interval -1 day)) limit 2500"
     elif geoEngine == 'bing':
-        sql = "select propertyid, strnum, strname, strdir, strsfx, city, state, zip from pptid_geo_lkup where geolat is null and geolon is null and strnum <> 0 and geobingmapused is null limit 2500"
+        sql = "select propertyid, strnum, strname, strdir, strsfx, city, state, zip from pptid_geo_lkup where geolat is null and geolon is null and strnum <> 0 and geobingmapused is null  and (lastupdate is null or lastupdate < date_add(now(), interval -1 day)) limit 2500"
     elif geoEngine == 'census':
-        sql = "select propertyid, strnum, strname, strdir, strsfx, city, state, zip from pptid_geo_lkup where geolat is null and geolon is null and strnum <> 0 and geocensusmapused is null limit 5000"
+        sql = "select propertyid, strnum, strname, strdir, strsfx, city, state, zip from pptid_geo_lkup where geolat is null and geolon is null and strnum <> 0 and geocensusmapused is null  and (lastupdate is null or lastupdate < date_add(now(), interval -1 day)) limit 5000"
     else:
         exit
     host = cfg.getConfigValue(r'MySQL/host')
@@ -76,7 +76,15 @@ def runGeoUpdate(geoEngine='google', limit = 2500):
     else:
         sqlUpdate = "UPDATE pptid_geo_lkup SET geolat=%s, geolon=%s, geoaddress=%s, geosource=%s, geoneighborhood=%s, geoquality=%s, geoaccuracy=%s, geoconfidence=%s, lastupdate=%s where propertyid=%s"
     nCnt = 0
+    #first need to update lastupdate to current time, so that other jobs to step over them
+    sqlUpdateLastUpdate = "UPDATE pptid_geo_lkup SET lastupdate=now() where propertyid=%s"
+
+
     if len(rwsToGeocode) > 0:
+        for row in rwsToGeocode:
+            cur.execute(sqlUpdateLastUpdate, row[0])
+        cnn.commit()
+
         for cnt, row in enumerate(rwsToGeocode):
             idx = row[0]  # property id
             # strAddr = row[1] + " " + row[3] + " " + row[2] + " " + row[4] + ", " + row[5] + " " + row[6] + " " + row[7];
