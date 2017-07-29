@@ -17,6 +17,8 @@ import time
 
 import os
 
+
+
 def appendToCSV(nJObId, nMLS, msg):
     strLogFilePath = os.getcwd() + r'\errorLog.csv'
     with open(strLogFilePath, 'a') as f:
@@ -90,26 +92,11 @@ def find_wait_get_element(driver, elementType, val, bClick = False):
             driver.refresh()
     return (None, nFailureCount)
 
-def queryllPropClassicPage(driver, dictParams):
+def queryAllPropClassicPage(driver, dictParams):
     #load all property search/classic screen
     lnkAllPropSearch='http://matrix.harmls.com/Matrix/Search/AllProperties/Classic'
     driver.get(lnkAllPropSearch)
     time.sleep(3)
-    lstFormInputs = []
-
-    #now check/uncheck the property status boxes, and set start/end date values
-    xpChkActive = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content']/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[2]/td[1]/div/input[@class='checkbox']"
-    xpChkOP = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content']/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[3]/td[1]/div/input[@class='checkbox']"
-    xpChkPCS = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content']/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[4]/td[1]/div/input[@class='checkbox']"
-    xpChkPending = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content']/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[5]/td[1]/div/input[@class='checkbox']"
-    xpChkSold = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content']/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[6]/td[1]/div/input[@class='checkbox']"
-    xpInputActive = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content']/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[2]/td[2]/input[@id='FmFm1_Ctrl16_20915_Ctrl16_TB']"
-    xpInputSold = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content']/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[6]/td[2]/input[@id='FmFm1_Ctrl16_20916_Ctrl16_TB']"
-
-    lstFormInputs.append((xpChkActive, 'CheckBox', True))
-    lsttFormInputs.append((xpChkOp, 'CheckBox', True))
-    lstFormInputs.append((xpChkPCS, 'CheckBox', True))
-    lstFormInputs.append((xpChkPending,'CheckBox', True))
 
     elemActive = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, xpChkActive)))
     elemOptionPending = driver.find_element_by_xpath(xpChkOP)
@@ -119,7 +106,6 @@ def queryllPropClassicPage(driver, dictParams):
     elemInputActive = driver.find_element_by_xpath(xpInputActive)
     elemInputSold = driver.find_element_by_xpath(xpInputSold)
 
-    strDtRange = datFrom.strftime("%m/%d/%Y") + '-' + datTo.strftime("%m/%d/%Y")
 
     #now uncheck Active, Optionpending, etc, and only check Sold Check box
     #first uncheck everything
@@ -144,11 +130,6 @@ def queryllPropClassicPage(driver, dictParams):
             elemInputSold.clear()
             elemInputSold.send_keys(strDtRange)
 
-    #now select the property type
-    xpPropTypeRes = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content']/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[5]/td/table/tbody/tr[2]/td[2]/table/tbody/tr[1]/td[2]/select[@id='Fm1_Ctrl129_LB']/option[1]"
-    xpPropTypeCnd = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content']/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[5]/td/table/tbody/tr[2]/td[2]/table/tbody/tr[1]/td[2]/select[@id='Fm1_Ctrl129_LB']/option[2]"
-    xpPropTypeLnd = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content']/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[5]/td/table/tbody/tr[2]/td[2]/table/tbody/tr[1]/td[2]/select[@id='Fm1_Ctrl129_LB']/option[3]"
-    xpPropTypeRnt = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content']/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[5]/td/table/tbody/tr[2]/td[2]/table/tbody/tr[1]/td[2]/select[@id='Fm1_Ctrl129_LB']/option[5]"
     elemPTRes = driver.find_element_by_xpath(xpPropTypeRes)
     elemPTCnd = driver.find_element_by_xpath(xpPropTypeCnd)
     elemPTLnd = driver.find_element_by_xpath(xpPropTypeLnd)
@@ -208,8 +189,38 @@ def scrapAllProperties(db, datFrom, datTo, strPropType, strPropStat, nJobId):
     driver.close()
     driver.switch_to.window(window_after)
 
+    lstFormInputs = []
 
-    queryllPropClassicPage(driver, dictFormInputs)
+    # now check/uncheck the property status boxes, and set start/end date values
+    xpChkActive = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content']/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[2]/td[1]/div/input[@class='checkbox']"
+    xpChkOP = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content']/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[3]/td[1]/div/input[@class='checkbox']"
+    xpChkPCS = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content']/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[4]/td[1]/div/input[@class='checkbox']"
+    xpChkPending = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content']/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[5]/td[1]/div/input[@class='checkbox']"
+    xpChkSold = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content']/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[6]/td[1]/div/input[@class='checkbox']"
+    xpInputActive = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content']/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[2]/td[2]/input[@id='FmFm1_Ctrl16_20915_Ctrl16_TB']"
+    xpInputSold = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content']/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[6]/td[2]/input[@id='FmFm1_Ctrl16_20916_Ctrl16_TB']"
+
+    # now select the property type
+    xpPropTypeRes = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content']/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[5]/td/table/tbody/tr[2]/td[2]/table/tbody/tr[1]/td[2]/select[@id='Fm1_Ctrl129_LB']/option[1]"
+    xpPropTypeCnd = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content']/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[5]/td/table/tbody/tr[2]/td[2]/table/tbody/tr[1]/td[2]/select[@id='Fm1_Ctrl129_LB']/option[2]"
+    xpPropTypeLnd = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content']/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[5]/td/table/tbody/tr[2]/td[2]/table/tbody/tr[1]/td[2]/select[@id='Fm1_Ctrl129_LB']/option[3]"
+    xpPropTypeRnt = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content']/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[5]/td/table/tbody/tr[2]/td[2]/table/tbody/tr[1]/td[2]/select[@id='Fm1_Ctrl129_LB']/option[5]"
+
+    strDtRange = datFrom.strftime("%m/%d/%Y") + '-' + datTo.strftime("%m/%d/%Y")
+
+    lstFormInputs.append((xpChkActive, 'CheckBox', True))
+    lstFormInputs.append((xpChkOP, 'CheckBox', True))
+    lstFormInputs.append((xpChkPCS, 'CheckBox', True))
+    lstFormInputs.append((xpChkPending, 'CheckBox', True))
+    lstFormInputs.append((xpChkSold, 'CheckBox', True))
+    lstFormInputs.append((xpInputActive, 'TextBox', strDtRange))
+    lstFormInputs.append((xpChkSold, 'TextBox', ''))
+    lstFormInputs.append((xpPropTypeRes, 'ListItem', True))
+    lstFormInputs.append((xpPropTypeCnd, 'ListItem', True))
+    lstFormInputs.append((xpPropTypeLnd, 'ListItem', True))
+    lstFormInputs.append((xpPropTypeRnt, 'ListItem', True))
+
+    queryAllPropClassicPage(driver, lstFormInputs)
 
     #now the result page loads
     xpRecordCount = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSubHeader']/div[@id='m_pnlSubHeader']/div/table/tbody/tr/td[@class='css_innerLeft hideOnMap hideOnSearch hideNoResults']/span[@id='m_lblPagingSummary']/b[3]"
