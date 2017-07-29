@@ -90,45 +90,13 @@ def find_wait_get_element(driver, elementType, val, bClick = False):
             driver.refresh()
     return (None, nFailureCount)
 
-'''
-strPropType: res, lnd, cnd, rnt
-strPropStat: active, or, sold 
-'''
-def scrapAllProperties(db, datFrom, datTo, strPropType, strPropStat, nJobId):
-    cfg = XmlConfigReader.Config("AllPropScrapper", "DEV")
-    strUserName = cfg.getConfigValue("HARUserName")
-    strPwd = cfg.getConfigValue("HARPassword")
-    strEntryUrl = cfg.getConfigValue("EntryUrl")
-    # strUrl = str(cfg.getConfigValue("EntryUrl"))
-
-    executable_path = r'C:\Python35\selenium\webdriver\firefox\x86\geckodriver.exe'
-    binary = FirefoxBinary('C:/Program Files (x86)/Mozilla Firefox/firefox.exe')
-    driver = webdriver.Firefox(executable_path=executable_path)
-    # driver = webdriver.Firefox(firefox_binary=binary)
-    print(cfg.getConfigValue("EntryUrl"))
-    driver.get(cfg.getConfigValue("StartingUrl"))  # load the web page
-
-    # look for user name log in:
-    elemUsr = driver.find_element_by_id("member_email")
-    elemUsr.send_keys(strUserName)
-    elemPwd = driver.find_element_by_id("member_pass")
-    elemPwd.send_keys(strPwd)
-    elemPwd.send_keys(Keys.RETURN)
-
-    (elemNextLnk, nFailureCnt) = find_wait_get_element(driver, "link_text", "Enter Matrix MLS")
-    window_before = driver.window_handles[0]
-    xpath = "/html[@class='wf-effra-n4-active wf-effra-n7-active wf-effra-n3-active wf-effra-n5-active wf-effra-n9-active wf-active']/body/div[@class='content overlay']/div[@class='container']/div[@class='rightPane']/div[@class='box_simple gray agentbox newhar']/div[@class='box_content grid_view']/a[1]"
-    (elemNextLnk, nFailureCnt) = find_wait_get_element(driver, "xpath", xpath, True)
-    time.sleep(3)
-
-    wait_for_new_window(driver)
-    window_after = driver.window_handles[1]
-    driver.close()
-    driver.switch_to.window(window_after)
+def queryllPropClassicPage(driver, dictParams):
     #load all property search/classic screen
     lnkAllPropSearch='http://matrix.harmls.com/Matrix/Search/AllProperties/Classic'
     driver.get(lnkAllPropSearch)
     time.sleep(3)
+    lstFormInputs = []
+
     #now check/uncheck the property status boxes, and set start/end date values
     xpChkActive = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content']/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[2]/td[1]/div/input[@class='checkbox']"
     xpChkOP = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content']/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[3]/td[1]/div/input[@class='checkbox']"
@@ -137,6 +105,11 @@ def scrapAllProperties(db, datFrom, datTo, strPropType, strPropStat, nJobId):
     xpChkSold = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content']/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[6]/td[1]/div/input[@class='checkbox']"
     xpInputActive = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content']/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[2]/td[2]/input[@id='FmFm1_Ctrl16_20915_Ctrl16_TB']"
     xpInputSold = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content']/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[6]/td[2]/input[@id='FmFm1_Ctrl16_20916_Ctrl16_TB']"
+
+    lstFormInputs.append((xpChkActive, 'CheckBox', True))
+    lsttFormInputs.append((xpChkOp, 'CheckBox', True))
+    lstFormInputs.append((xpChkPCS, 'CheckBox', True))
+    lstFormInputs.append((xpChkPending,'CheckBox', True))
 
     elemActive = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, xpChkActive)))
     elemOptionPending = driver.find_element_by_xpath(xpChkOP)
@@ -197,6 +170,47 @@ def scrapAllProperties(db, datFrom, datTo, strPropType, strPropStat, nJobId):
     elemResultLnk = driver.find_element_by_xpath(xpResultLnk)
     elemResultLnk.click()
     time.sleep(2)
+
+
+'''
+strPropType: res, lnd, cnd, rnt
+strPropStat: active, or, sold 
+'''
+def scrapAllProperties(db, datFrom, datTo, strPropType, strPropStat, nJobId):
+    cfg = XmlConfigReader.Config("AllPropScrapper", "DEV")
+    strUserName = cfg.getConfigValue("HARUserName")
+    strPwd = cfg.getConfigValue("HARPassword")
+    strEntryUrl = cfg.getConfigValue("EntryUrl")
+    # strUrl = str(cfg.getConfigValue("EntryUrl"))
+
+    executable_path = r'C:\Python35\selenium\webdriver\firefox\x86\geckodriver.exe'
+    binary = FirefoxBinary('C:/Program Files (x86)/Mozilla Firefox/firefox.exe')
+    driver = webdriver.Firefox(executable_path=executable_path)
+    # driver = webdriver.Firefox(firefox_binary=binary)
+    print(cfg.getConfigValue("EntryUrl"))
+    driver.get(cfg.getConfigValue("StartingUrl"))  # load the web page
+
+    # look for user name log in:
+    elemUsr = driver.find_element_by_id("member_email")
+    elemUsr.send_keys(strUserName)
+    elemPwd = driver.find_element_by_id("member_pass")
+    elemPwd.send_keys(strPwd)
+    elemPwd.send_keys(Keys.RETURN)
+
+    (elemNextLnk, nFailureCnt) = find_wait_get_element(driver, "link_text", "Enter Matrix MLS")
+    window_before = driver.window_handles[0]
+    xpath = "/html[@class='wf-effra-n4-active wf-effra-n7-active wf-effra-n3-active wf-effra-n5-active wf-effra-n9-active wf-active']/body/div[@class='content overlay']/div[@class='container']/div[@class='rightPane']/div[@class='box_simple gray agentbox newhar']/div[@class='box_content grid_view']/a[1]"
+    (elemNextLnk, nFailureCnt) = find_wait_get_element(driver, "xpath", xpath, True)
+    time.sleep(3)
+
+    wait_for_new_window(driver)
+    window_after = driver.window_handles[1]
+    driver.close()
+    driver.switch_to.window(window_after)
+
+
+    queryllPropClassicPage(driver, dictFormInputs)
+
     #now the result page loads
     xpRecordCount = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSubHeader']/div[@id='m_pnlSubHeader']/div/table/tbody/tr/td[@class='css_innerLeft hideOnMap hideOnSearch hideNoResults']/span[@id='m_lblPagingSummary']/b[3]"
     elemTotRecCnt = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, xpRecordCount)))
@@ -274,7 +288,7 @@ def scrapAllProperties(db, datFrom, datTo, strPropType, strPropStat, nJobId):
 if __name__ == "__main__":
     cfg = XmlConfigReader.Config("AllPropScrapper", "DEV")
     host = cfg.getConfigValue(r'MySQL/host')
-    host = '10.10.1.48'
+    #host = '73.136.184.214'
     port = int(cfg.getConfigValue(r"MySQL/port"))
     user = cfg.getConfigValue(r"MySQL/user")
     passwd = cfg.getConfigValue(r"MySQL/password")
