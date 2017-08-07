@@ -13,6 +13,7 @@ from datetime import date
 from datetime import datetime, timedelta
 import traceback
 from selenium.webdriver.support.select import Select
+from bs4 import BeautifulSoup
 
 class MatrixScrapper:
     '''
@@ -164,6 +165,32 @@ class MatrixScrapper:
     scraps the property search result page, and get the mls list
     nRecCnt is hte count of records it supposed to return
     '''
+    def ScrapSearchResultPage_New(self, nRecCnt):
+        xPathTable = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[3]/div[@id='m_upDisplay']/div[@id='m_pnlDisplayTab']/div[@id='m_divContent']/div[@id='m_pnlDisplay']/table[@class='displayGrid nonresponsive ajax_display d1m_show']"
+        try:
+            elem = WebDriverWait(self._driver, 10).until(EC.presence_of_element_located((By.XPATH, xPathTable)))
+        except:
+            print("Error getting Table element containing search results")
+            print( traceback.print_exc() )
+            return []
+        sHtml = elem.get_attribute('innerHTML')
+        soup = BeautifulSoup(sHtml, 'lxml')
+        strTrigger = "javascript:__doPostBack('m_DisplayCore','Redisplay"
+        mlsSearchResults = soup.find_all("a", href=lambda href: href and strTrigger in href)
+        lstMLS = []
+        for item in mlsSearchResults:
+            if item.text.isdigit():
+                nMLS = int(item.text)
+                if nMLS/1000>1:
+                    lstMLS.append(nMLS)
+        return lstMLS
+
+
+
+    '''
+    scraps the property search result page, and get the mls list
+    nRecCnt is hte count of records it supposed to return
+    '''
     def ScrapSearchResultPage(self, nRecCnt):
         try:
             xpResultsPerPage = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSubHeader']/div[@id='m_pnlSubHeader']/div/table/tbody/tr/td[@class='css_innerRight hideOnSearch hideOnMap'][1]/div/span[@id='m_ucDisplayPicker_m_spnPageSize']/select[@id='m_ucDisplayPicker_m_ddlPageSize']"
@@ -268,4 +295,11 @@ if __name__ == "__main__":
     if nFoundCount > 5000:
         print("more than 5000 results returned. quit....")
     else:
-        o.ScrapSearchResultPage(nFoundCount)
+        lstMLS = o.ScrapSearchResultPage_New(nFoundCount)
+        #now go back to the AllPropSearchClassicPage and search for MLS only
+        xpMLS = ""
+        for mls in lstMLS:
+            lstFormInputs = []
+            lstFormInputs.append((xpMLS, 'TextBox', mls, 'MLS entry'))
+            nFoundCount = o.QueryAllPropSearchClassicPage(lstFormInputs)
+
