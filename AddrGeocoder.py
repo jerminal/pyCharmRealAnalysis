@@ -50,7 +50,7 @@ def runGeoUpdate(geoEngine='google', limit = 2500):
     elif geoEngine == 'bing':
         sql = "select propertyid, strnum, strname, strdir, strsfx, city, state, zip from pptid_geo_lkup where geolat is null and geolon is null and strnum <> 0 and geobingmapused is null  and (lastupdate is null or lastupdate < date_add(now(), interval -1 day)) limit 2500"
     elif geoEngine == 'census':
-        sql = "select propertyid, strnum, strname, strdir, strsfx, city, state, zip from pptid_geo_lkup where geolat is null and geolon is null and strnum <> 0 and geocensusmapused is null  and (lastupdate is null or lastupdate < date_add(now(), interval -1 day)) limit 5000"
+        sql = "select propertyid, strnum, strname, strdir, strsfx, city, state, zip from pptid_geo_lkup where geolat is null and geolon is null and strnum <> 0 and geocensusmapused is null  and (lastupdate is null or lastupdate < date_add(now(), interval -1 day)) limit 2000"
     else:
         exit
     host = cfg.getConfigValue(r'MySQL/host')
@@ -82,7 +82,7 @@ def runGeoUpdate(geoEngine='google', limit = 2500):
 
     if len(rwsToGeocode) > 0:
         for row in rwsToGeocode:
-            cur.execute(sqlUpdateLastUpdate, row[0])
+            cur.execute( , row[0])
         cnn.commit()
 
         for cnt, row in enumerate(rwsToGeocode):
@@ -211,6 +211,8 @@ if __name__ == "__main__":
     #runGeoUpdate('bing')
 
 
+    runGeoUpdate('census')
+    runGeoUpdate('census')
     runGeoUpdate('census')
     runGeoUpdate('census')
     runGeoUpdate('census')

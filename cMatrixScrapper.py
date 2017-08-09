@@ -167,22 +167,28 @@ class MatrixScrapper:
     '''
     def ScrapSearchResultPage_New(self, nRecCnt):
         xPathTable = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[3]/div[@id='m_upDisplay']/div[@id='m_pnlDisplayTab']/div[@id='m_divContent']/div[@id='m_pnlDisplay']/table[@class='displayGrid nonresponsive ajax_display d1m_show']"
-        try:
-            elem = WebDriverWait(self._driver, 10).until(EC.presence_of_element_located((By.XPATH, xPathTable)))
-        except:
-            print("Error getting Table element containing search results")
-            print( traceback.print_exc() )
-            return []
-        sHtml = elem.get_attribute('innerHTML')
-        soup = BeautifulSoup(sHtml, 'lxml')
-        strTrigger = "javascript:__doPostBack('m_DisplayCore','Redisplay"
-        mlsSearchResults = soup.find_all("a", href=lambda href: href and strTrigger in href)
-        lstMLS = []
-        for item in mlsSearchResults:
-            if item.text.isdigit():
-                nMLS = int(item.text)
-                if nMLS/1000>1:
-                    lstMLS.append(nMLS)
+        xPathNext = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@id='m_upDisplayButtons']/div[1]/div[@id='m_pnlDisplayButtons']/div[@class='resultsMenu tabbedMenu']/div[@class='paging hideOnMap']/span[@id='m_upPaging']/span[@class='pagingLinks']/a[{0}]".format(int(nRecCnt/100)+2)
+        lstMLS=[]
+        for rep in range(int(nRecCnt/100)+1):
+
+            try:
+                elem = WebDriverWait(self._driver, 10).until(EC.presence_of_element_located((By.XPATH, xPathTable)))
+            except:
+                print("Error getting Table element containing search results")
+                print( traceback.print_exc() )
+                return []
+            sHtml = elem.get_attribute('innerHTML')
+            soup = BeautifulSoup(sHtml, 'lxml')
+            strTrigger = "javascript:__doPostBack('m_DisplayCore','Redisplay"
+            mlsSearchResults = soup.find_all("a", href=lambda href: href and strTrigger in href)
+            for item in mlsSearchResults:
+                if item.text.isdigit():
+                    nMLS = int(item.text)
+                    if nMLS/1000>1:
+                        lstMLS.append(nMLS)
+            if rep <int(nRecCnt/100):
+                elemNext = WebDriverWait(self._driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, xPathNext)))
+                elemNext[0].click()
         return lstMLS
 
 
@@ -191,7 +197,7 @@ class MatrixScrapper:
     scraps the property search result page, and get the mls list
     nRecCnt is hte count of records it supposed to return
     '''
-    def ScrapSearchResultPage(self, nRecCnt):
+    def ScrapSearchResultPage_obselete(self, nRecCnt):
         try:
             xpResultsPerPage = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSubHeader']/div[@id='m_pnlSubHeader']/div/table/tbody/tr/td[@class='css_innerRight hideOnSearch hideOnMap'][1]/div/span[@id='m_ucDisplayPicker_m_spnPageSize']/select[@id='m_ucDisplayPicker_m_ddlPageSize']"
             elem = WebDriverWait(self._driver, 10).until(EC.presence_of_element_located((By.XPATH, xpResultsPerPage)))
