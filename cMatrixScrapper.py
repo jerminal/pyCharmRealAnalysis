@@ -168,6 +168,8 @@ class MatrixScrapper:
     def ScrapSearchResultPage_New(self, nRecCnt):
         xPathTable = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[3]/div[@id='m_upDisplay']/div[@id='m_pnlDisplayTab']/div[@id='m_divContent']/div[@id='m_pnlDisplay']/table[@class='displayGrid nonresponsive ajax_display d1m_show']"
         xPathNext = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@id='m_upDisplayButtons']/div[1]/div[@id='m_pnlDisplayButtons']/div[@class='resultsMenu tabbedMenu']/div[@class='paging hideOnMap']/span[@id='m_upPaging']/span[@class='pagingLinks']/a[{0}]".format(int(nRecCnt/100)+2)
+        hrefPartialNext = "javascript:__doPostBack('m_DisplayCore','Redisplay|"
+        tagNextText = "Next"
         lstMLS=[]
         for rep in range(int(nRecCnt/100)+1):
 
@@ -187,8 +189,13 @@ class MatrixScrapper:
                     if nMLS/1000>1:
                         lstMLS.append(nMLS)
             if rep <int(nRecCnt/100):
-                elemNext = WebDriverWait(self._driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, xPathNext)))
-                elemNext[0].click()
+                nextLinks = self._driver.find_elements_by_link_text("Next")
+                for link in nextLinks:
+                    strHref = link.get_attribute("href")
+                    if hrefPartialNext in strHref:
+                        link.click()
+                #elemNext = WebDriverWait(self._driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, xPathNext)))
+                #elemNext[0].click()
         return lstMLS
 
 
@@ -247,15 +254,180 @@ class MatrixScrapper:
         scrapes a a property page and returns a dictionary containing the property details data
     '''
 
+    def wait_for_new_window(self, timeout=10):
+        handles_before = self._driver.window_handles
+        for x in range(10):
+            if len(handles_before) != len(self._driver.window_handles):
+                return
+            else:
+                time.sleep(1)
+        '''
+        yield
+        WebDriverWait(self._driver, timeout).until(
+            lambda self._driver: len(handles_before) != len(self._driver.window_handles))
+        '''
     def ScrapPropDetailsPage(self, strMLS):
         dict = {}
-        #1: go to the matrix all property classic page and fill in the mls number
+        lstFormInputs = []
+        xpMLS = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content']/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[1]/td[2]/input[@id='Fm1_Ctrl12_TextBox']"
+        lstFormInputs.append((xpMLS, 'TextBox', strMLS, 'MLS entry'))
+        nFoundCount = o.QueryAllPropSearchClassicPage(lstFormInputs)
+        #here nFoundCount should = 1
+        #now click on the only result
+        elem=WebDriverWait(self._driver, 10).until(EC.presence_of_element_located((By.XPATH, xpMLS)))
+        elem.click()
 
-        #2: choose to view details when viewing results
+        #scrap the details
+        xpSomething = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[3]/div[@id='m_upDisplay']/div[@id='m_pnlDisplayTab']/div[@id='m_divContent']/div[@id='m_pnlDisplay']/table[@class='displayGrid nonresponsive ajax_display d1m_show']/tbody/tr[@id='wrapperTable']/td[@class='d1m3']/span[@class='d1m1']"
+        elemSomething = WebDriverWait(self._driver, 30).until(EC.presence_of_element_located((By.XPATH, xpSomething)))
+        sHtml = self._driver.page_source
+        dict = self.parsePropertyDetails(sHtml)
+        #now scrap lat/lon
+        mainWindow = self._driver.window_handles[0]
+        xpMap = '//*[@title="View Map"]'
+        elemViewMap = WebDriverWait(self._driver, 10).until(EC.presence_of_element_located((By.XPATH, xpMap)))
+        if not elemViewMap is None:
+            # elemViewMap.click()
+            # switch to the map view window
+            self.wait_for_new_window()
+            mapWindow = self._driver.window_handles[1]
+            self._driver.switch_to.window(mapWindow)
+            # look for the tag with id: m_ucStreetViewService_m_hfParams
+            tagId = "m_ucStreetViewService_m_hfParams"
+            # elemLatLon = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.ID, tagId)))
+            elemLatLon = WebDriverWait(self._driver, 10).until(EC.presence_of_element_located((By.ID, tagId)))
+            # strip lat/lon:
+            tagText = str(elemLatLon.get_attribute("value"))
+            (lat, lon) = tagText.split("$")[1:3]
+            self._driver.close()
+            self._driver.switch_to.window(mainWindow)
 
-        #3: scrap the details
+        else:
+            (lat, lon) = (None, None)
+        dict["geoLat"] = lat
+        dict["geoLon"] = lon
 
         return dict
+
+    def parsePropertyDetails(self, sHtml):
+        soup = BeautifulSoup(sHtml, 'lxml')
+        # extract section 1 details- basic property info
+        dataCollect = []
+        table = soup.find_all("table", {"class": "d48m17"})
+        for tr in table[0].findAll("tr"):
+            for td in tr.findAll("td"):
+                dataCollect.append(td.find(text=True))
+        # extract section 2 details - listing agent information
+
+        tables = soup.find_all("table", {"class": "d48m7"})
+        for table in tables:
+            for tr in table.findAll("tr"):
+                for td in tr.findAll("td"):
+                    dataCollect.append(td.find(text=True))
+        print(dataCollect)
+        dictColumns = {"MLSNum": "ML#: ", "Status": "Status: ", "ListPrice": "List Price: ", "Address": "Address: ",
+                       "Area": "Area: ", "LPperSqft": "LP/SF: ", "TaxID": "Tax Acc #: ", "DaysOnMarket": "DOM: ",
+                       "City": "City: ", "State": "State: ", "County": "County: ", "MasterPlanned": "Master Planned: ",
+                       "Location": "Location:", "MarketArea": "Market Area:", "Subdivision": "Subdivision: ",
+                       "SectionNum": "Secction #:", "LotSize": "Lot Size: ", "BldgSqft": "SqFt: ",
+                       "LotValue": "Lot Value:", "LeaseAlso": "Lease Also:", "YearBuilt": "Year Built: ",
+                       "LegalDesc": "Legal Desc: ",
+                       "ListBroker": "List Broker: ", "ListAgent": "List Agent: ", "BrokerAddress": "Address: ",
+                       "LicensedSupervisor": "Licensed Supervisor:", "SchoolDistrict": "School District: ",
+                       "ElemSchool": "Elem: ",
+                       "MiddleSchool": "Middle: ", "HighSchool": "High: ", "Style": "Style: ", "Stories": "# Stories: ",
+                       "Type": "Type: ", "Access": "Access: ", "Acres": "Acres: ", "Bedrooms": "Bedrooms: ",
+                       "Baths": "Baths F/H: ",
+                       "Builder": "Builder Nm: ", "Oven": "Oven:", "Roof": "Roof: ", "Flooring": "Flooring: ",
+                       "Foundation": "Foundation: ", "Countertops": "Countertops: ", "PrvtPool": "Prvt Pool:",
+                       "WaterfrontFeat": "Waterfront Feat: ", "ListDate": "List Date: ", "MaintFee": "Maint. Fee: ",
+                       "TaxRate": "Tax Rate: ", "Zip": "Zip Code: ", "AgentEmail": "Agent Email:",
+                       "AgentPhone": "Agent Phone: ",
+                       "Connections": "Connect: ", "Interior": "Interior: ", "MasterBath": "Master Bath:",
+                       "ExteriorCons": "Exterior Constr: ", "Range": "Range:", "LotDesc": "Lot Description: ",
+                       "Heating": "Heat: ",
+                       "Cooling": "Cool: ", "BedroomsDesc": "Bedrooms: ", "ListAgentId": "ListAgentId: ",
+                       "ListAgentName": "ListAgentName:", "ListBrokerId": "ListBrokderId:",
+                       "ListBrokerName": "ListBrokerName:",
+                       "SellAgentTRECId": "TREC #: ", "SalePrice": "Sale Price: ", "CloseDate": "Close Date: ",
+                       "SalePricePerSqft": "SP$/SF: ", "DaysToClose": "Days to Close: ", "FinTerms": "Terms:",
+                       "AmortizeYears": "Amortize Years: ",
+                       "NewLoan": "New Loan: ", "PendingDate": "Pending Date: ", "EstCloseDate": "Est Close Dt: ",
+                       "CoOp": "CoOp: "
+                       }
+        dictResults = {}
+        for key in dictColumns:
+            try:
+                idx = dataCollect.index(dictColumns[key])
+                dictResults[key] = dataCollect[idx + 1]
+            except:
+                print("{0} not found".format(dictColumns[key]))
+        print(dictResults)
+        # now do some clean up
+        # BldgSqft: example: 2,705 / Appr Dist, needs to get rid of the part after /
+        try:
+            entry = dictResults["BldgSqft"]
+            dictResults["BldgSqft"] = int((entry.split(' ')[0]).replace(',', ''))
+        except:
+            print("Exception occured while trying to parse BldgSqft. Original value: {0}".format(entry))
+            dictResults["BldgSqft"] = None
+
+        # Days on market: sometimes there is an asterisk after the number
+
+        try:
+            entry = dictResults['DaysOnMarket']
+            if entry[-1:] == '*':
+                dictResults['DaysOnMarket'] = entry[:-1]
+        except:
+            print("Exception occured while trying to parse DOM. Original value: {0}".format(entry))
+            dictResults["DaysOnMarket"] = None
+        # lot size:
+        try:
+            entry = dictResults["LotSize"]
+            dictResults["LotSize"] = int((entry.split(' ')[0]).replace(',', ''))
+        except:
+            print("Exception occured while trying to parse Lotsize. Original value: {0}".format(entry))
+            dictResults["LotSize"] = None
+        # LPperSqft
+        try:
+            entry = dictResults['LPperSqft'][1:]  # pick the number part, leave out the dollar sign
+            dictResults['LPperSqft'] = float(entry.replace(',', ''))
+        except:
+            print("Exception occured while trying to parse LPperSqft. Original value: {0}".format(entry))
+            dictResults["LPperSqft"] = None
+        # ListPrice
+        try:
+            entry = dictResults['ListPrice'][1:]  # pick the number part, leave out the dollar sign
+            dictResults['ListPrice'] = float(entry.replace(',', ''))
+        except:
+            print("Exception occured while trying to parse ListPrice. Original value: {0}".format(entry))
+            dictResults["ListPrice"] = None
+        # YearBuilt
+        try:
+            entry = dictResults['YearBuilt']
+            dictResults['YearBuilt'] = int(entry.split(' ')[0])
+        except:
+            print("Exception occured while trying to parse YearBuilt. Original value: {0}".format(entry))
+            dictResults["YearBuilt"] = None
+        # now separate list agent id and name
+        try:
+            entry = dictResults['ListAgent']
+            dictResults['ListAgentId'] = entry.split('/')[0]
+            dictResults['ListAgentName'] = entry.split('/')[1]
+        except:
+            print("Error occured while trying to generate agent id and name. original value: {0}".format(entry))
+            dictResults['ListAgentId'] = entry
+            dictResults['ListAgentName'] = entry
+        # now separate broker id and name
+        try:
+            entry = dictResults['ListBroker']
+            dictResults['ListBrokerId'] = entry.split('/')[0]
+            dictResults['ListBrokerName'] = entry.split('/')[1]
+        except:
+            print("Error occured while trying to generate broker id and name. original value: {0}".format(entry))
+            dictResults['ListBrokerId'] = entry
+            dictResults['ListBrokerName'] = entry
+        return dictResults
 
     def scrapNewProperty(self, datStart, datEnd, strPropType):
         return
@@ -304,8 +476,7 @@ if __name__ == "__main__":
         lstMLS = o.ScrapSearchResultPage_New(nFoundCount)
         #now go back to the AllPropSearchClassicPage and search for MLS only
         xpMLS = ""
+        lstResults = []
         for mls in lstMLS:
-            lstFormInputs = []
-            lstFormInputs.append((xpMLS, 'TextBox', mls, 'MLS entry'))
-            nFoundCount = o.QueryAllPropSearchClassicPage(lstFormInputs)
+            lstResults.append(o.ScrapPropDetailsPage(mls))
 
