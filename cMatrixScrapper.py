@@ -14,6 +14,7 @@ from datetime import datetime, timedelta
 import traceback
 from selenium.webdriver.support.select import Select
 from bs4 import BeautifulSoup
+import json
 
 class MatrixScrapper:
     '''
@@ -172,8 +173,9 @@ class MatrixScrapper:
         tagNextText = "Next"
         lstMLS=[]
         for rep in range(int(nRecCnt/100)+1):
-
+            print("Working on page {0} of {1} records..".format(int(nRecCnt/100), nRecCnt))
             try:
+                #find the element containing the mls results table
                 elem = WebDriverWait(self._driver, 10).until(EC.presence_of_element_located((By.XPATH, xPathTable)))
             except:
                 print("Error getting Table element containing search results")
@@ -186,6 +188,7 @@ class MatrixScrapper:
             for item in mlsSearchResults:
                 if item.text.isdigit():
                     nMLS = int(item.text)
+                    print("MLS: {0} found".format(nMLS))
                     if nMLS/1000>1:
                         lstMLS.append(nMLS)
             if rep <int(nRecCnt/100):
@@ -194,8 +197,11 @@ class MatrixScrapper:
                     strHref = link.get_attribute("href")
                     if hrefPartialNext in strHref:
                         link.click()
+                        time.sleep(1)
+                        break
                 #elemNext = WebDriverWait(self._driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, xPathNext)))
                 #elemNext[0].click()
+        print("{0} MLSes scrapped".format(len(lstMLS)))
         return lstMLS
 
 
@@ -267,6 +273,7 @@ class MatrixScrapper:
             lambda self._driver: len(handles_before) != len(self._driver.window_handles))
         '''
     def ScrapPropDetailsPage(self, strMLS):
+        print('Now scrapping details of MLS#: {0}'.format(strMLS))
         dict = {}
         lstFormInputs = []
         xpMLS = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content']/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[1]/td[2]/input[@id='Fm1_Ctrl12_TextBox']"
@@ -274,12 +281,17 @@ class MatrixScrapper:
         nFoundCount = o.QueryAllPropSearchClassicPage(lstFormInputs)
         #here nFoundCount should = 1
         #now click on the only result
-        elem=WebDriverWait(self._driver, 10).until(EC.presence_of_element_located((By.XPATH, xpMLS)))
+        #first look for link with text = mls number, then click on the link
+        #elemMLS = WebDriverWait(self._driver, 10).until(EC.presence_of_element_located((By.XPATH, )))
+        #search for the link with the MLS number
+
+        elem=WebDriverWait(self._driver, 10).until(EC.presence_of_element_located((By.LINK_TEXT, strMLS)))
         elem.click()
 
         #scrap the details
-        xpSomething = "/html/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[3]/div[@id='m_upDisplay']/div[@id='m_pnlDisplayTab']/div[@id='m_divContent']/div[@id='m_pnlDisplay']/table[@class='displayGrid nonresponsive ajax_display d1m_show']/tbody/tr[@id='wrapperTable']/td[@class='d1m3']/span[@class='d1m1']"
-        elemSomething = WebDriverWait(self._driver, 30).until(EC.presence_of_element_located((By.XPATH, xpSomething)))
+        #xpMLS = "/html[@class='gr__matrix_harmls_com']/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[3]/div[@id='m_upDisplay']/div[@id='m_pnlDisplayTab']/div[@id='m_divContent']/div[@id='m_pnlDisplay']/div[@class='multiLineDisplay ajax_display d97m_show nonresponsive']/table/tbody/tr/td/table[@id='wrapperTable']/tbody/tr/td[@class='d97m1']/table[@class='d97m2']/tbody/tr[2]/td[@class='d97m4']/span[@class='formula field d97m6']/div[2]/div[@class='multiLineDisplay ajax_display d3m_show nonresponsive']/table/tbody/tr/td/table[@id='wrapperTable']/tbody/tr/td[@class='d3m1']/span[@class='display']/table[@class='d3m2']/tbody/tr[2]/td[@class='d3m3']/span[@class='formula']/div[@class='multiLineDisplay ajax_display d48m_show nonresponsive']/table[@id='wrapperTable']/tbody/tr/td[@class='d48m1']/span[@class='display']/table[@class='d48m2']/tbody/tr[3]/td[@class='d48m5']/table[@class='d48m7']/tbody/tr[@class='d48m8']/td[@class='d48m16']/table[@class='d48m17']/tbody/tr[3]/td[@class='d48m19']/span[@class='wrapped-field']"
+        xpMLS = '//span[contains(text(), {0})]'.format(strMLS)
+        elemMLS = WebDriverWait(self._driver, 30).until(EC.presence_of_element_located((By.XPATH, xpMLS)))
         sHtml = self._driver.page_source
         dict = self.parsePropertyDetails(sHtml)
         #now scrap lat/lon
@@ -287,7 +299,7 @@ class MatrixScrapper:
         xpMap = '//*[@title="View Map"]'
         elemViewMap = WebDriverWait(self._driver, 10).until(EC.presence_of_element_located((By.XPATH, xpMap)))
         if not elemViewMap is None:
-            # elemViewMap.click()
+            elemViewMap.click()
             # switch to the map view window
             self.wait_for_new_window()
             mapWindow = self._driver.window_handles[1]
@@ -306,7 +318,7 @@ class MatrixScrapper:
             (lat, lon) = (None, None)
         dict["geoLat"] = lat
         dict["geoLon"] = lon
-
+        print ("scrapping MLS#:{0} done.".format(strMLS))
         return dict
 
     def parsePropertyDetails(self, sHtml):
@@ -478,5 +490,7 @@ if __name__ == "__main__":
         xpMLS = ""
         lstResults = []
         for mls in lstMLS:
-            lstResults.append(o.ScrapPropDetailsPage(mls))
+            lstResults.append(o.ScrapPropDetailsPage(str(mls)))
 
+        with open("result.json", 'w') as fp:
+            json.dump(lstMLS, fp)
