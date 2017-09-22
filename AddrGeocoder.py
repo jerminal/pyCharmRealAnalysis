@@ -11,6 +11,12 @@ cfg = XmlConfigReader.Config("AddrGeocoder", 'DEV')
 lat, lon, strFullAddr, neighborhood, geocoderName, quality, accuracy, 
 '''
 
+def replaceNone(str):
+    if str is None:
+        return ''
+    else:
+        return str
+
 
 def GeoCode(GeoCoder, strAddr):
     strBingMapKey = cfg.getConfigValue(r"Geocoder/BingKey")
@@ -46,7 +52,7 @@ def GeoCode(GeoCoder, strAddr):
 def runGeoUpdate(geoEngine='google', limit = 2500):
     # first look for entries without any lat/lon
     if geoEngine == 'google':
-        sql = "select propertyid, strnum, strname, strdir, strsfx, city, state, zip from pptid_geo_lkup where geolat is null and geolon is null and strnum <> 0 and geogooglemapused is null  and (lastupdate is null or lastupdate < date_add(now(), interval -1 day)) limit 2500"
+        sql = "select propertyid, strnum, strname, strdir, strsfx, city, state, zip from pptid_geo_lkup where strnum<>0 and geolat is null and tax_zip = 77096"
     elif geoEngine == 'bing':
         sql = "select propertyid, strnum, strname, strdir, strsfx, city, state, zip from pptid_geo_lkup where geolat is null and geolon is null and strnum <> 0 and geobingmapused is null  and (lastupdate is null or lastupdate < date_add(now(), interval -1 day)) limit 2500"
     elif geoEngine == 'census':
@@ -81,10 +87,11 @@ def runGeoUpdate(geoEngine='google', limit = 2500):
 
 
     if len(rwsToGeocode) > 0:
+        '''
         for row in rwsToGeocode:
             cur.execute( , row[0])
         cnn.commit()
-
+        '''
         for cnt, row in enumerate(rwsToGeocode):
             idx = row[0]  # property id
             # strAddr = row[1] + " " + row[3] + " " + row[2] + " " + row[4] + ", " + row[5] + " " + row[6] + " " + row[7];
@@ -197,12 +204,6 @@ def run():
     print('end updating database')
 
 
-def replaceNone(str):
-    if str is None:
-        return ''
-    else:
-        return str
-
 
 if __name__ == "__main__":
     # main()
@@ -211,10 +212,7 @@ if __name__ == "__main__":
     #runGeoUpdate('bing')
 
 
-    runGeoUpdate('census')
-    runGeoUpdate('census')
-    runGeoUpdate('census')
-    runGeoUpdate('census')
-    runGeoUpdate('census')
+    runGeoUpdate('google')
+
 
     # copyFromSqliteToMySql()
