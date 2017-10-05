@@ -313,7 +313,7 @@ if __name__== "__main__":
     #scrap_tempo_history('lnd', datStart, datEnd, '77096')
     try:
         print("connecting to db")
-        db = DBLib.db_mysql('10.1.10.8', 3306, 'xiaowei', 'Hhxxttxs2017', 'RealAnalysis')
+        db = DBLib.db_mysql('73.136.184.214', 3306, 'xiaowei', 'Hhxxttxs2017', 'RealAnalysis')
         #db = DBLib.db_mysql('10.10.1.48', 3306, 'xiaowei', 'Hhxxttxs2017', 'RealAnalysis')
         print("db connected")
         # db = DBLib.db_mysql('10.10.1.48', 3306, 'xiaowei', 'Hhxxttxs2017', 'RealAnalysis')

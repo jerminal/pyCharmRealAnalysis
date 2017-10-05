@@ -109,11 +109,23 @@ class NuwberSearch:
         #now find address
         elemAddr = self._driver.find_element_by_xpath("//meta[@itemprop='streetAddress']")
         result_addr = elemAddr.get_attribute("content")
+        try:
+            #search for phone number
+            elemPhoneNum = self._driver.find_elements_by_css_selector("a.phone")[1]
+            strPhone = elemPhoneNum.text
+        except:
+            strPhone = "(000)000-0000"
 
+        try:
+            #search for phone carrier
+            elemCarrier = self._driver.find_elements_by_css_selector("p[class='phones-phone-info']")[0]
+            strCarrier = elemCarrier.text
+        except:
+            strCarrier = 'unknown'
         #add result to dictionary
         if (result_first_name, result_last_name, result_addr) not in self._dictRslt:
             print("Adding {0} {1} on {2}, age:{3} to dictionary".format(result_first_name, result_last_name, result_addr, age))
-            self._dictRslt[(result_first_name.strip(' '), result_last_name.strip(' '), result_addr.strip(' '))] = (age,)
+            self._dictRslt[(result_first_name.strip(' '), result_last_name.strip(' '), result_addr.strip(' '))] = (age,strPhone, strCarrier)
         else:
             print("{0} {1} on {2} already exist in dictionary. skip".format(result_first_name, result_last_name, result_addr))
         # now find the neighbors on the same street
