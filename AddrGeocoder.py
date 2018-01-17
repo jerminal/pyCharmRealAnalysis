@@ -52,7 +52,7 @@ def GeoCode(GeoCoder, strAddr):
 def runGeoUpdate(geoEngine='google', limit = 2500):
     # first look for entries without any lat/lon
     if geoEngine == 'google':
-        sql = "select propertyid, strnum, strname, strdir, strsfx, city, state, zip from pptid_geo_lkup where strnum<>0 and zip = 77401 and geogooglemapused is null limit 2500"
+        sql = "select propertyid, strnum, strname, strdir, strsfx, city, state, zip from pptid_geo_lkup where strnum<>0 and geogooglemapused is null limit 2500"
         #sql = "select propertyid, strnum, strname, strdir, strsfx, city, state, zip from pptid_geo_lkup where strnum<>0 and zip = 77096 and geogooglemapused is null and tax_subd like 'Meyerland%'"
     elif geoEngine == 'bing':
         sql = "select propertyid, strnum, strname, strdir, strsfx, city, state, zip from pptid_geo_lkup where geolat is null and geolon is null and strnum <> 0 and geobingmapused is null  and (lastupdate is null or lastupdate < date_add(now(), interval -1 day)) limit 2500"

@@ -4,7 +4,7 @@ import os
 
 class Config:
     def __init__(self, AppName, Inst):
-        self._dir = os.getcwd() + r'\RealAnalysisConfig.xml'
+        self._dir = os.getcwd() + r'/RealAnalysisConfig.xml'
         #print (self._dir)
         #self._soup = BeautifulSoup(self._dir, 'lxml')
         self._doc = lxml.etree.parse(self._dir)

@@ -164,10 +164,14 @@ def scrapAllProperties(db, datFrom, datTo, strPropType, strPropStat, nJobId):
     strEntryUrl = cfg.getConfigValue("EntryUrl")
     # strUrl = str(cfg.getConfigValue("EntryUrl"))
 
+    #only in windows:
     executable_path = r'C:\Python35\selenium\webdriver\firefox\x86\geckodriver.exe'
-    binary = FirefoxBinary('C:/Program Files (x86)/Mozilla Firefox/firefox.exe')
-    driver = webdriver.Firefox(executable_path=executable_path)
+    #binary = FirefoxBinary('C:/Program Files (x86)/Mozilla Firefox/firefox.exe')
+    #driver = webdriver.Firefox(executable_path=executable_path)
+
+    #in linux
     # driver = webdriver.Firefox(firefox_binary=binary)
+    driver = webdriver.Chrome()
     print(cfg.getConfigValue("EntryUrl"))
     driver.get(cfg.getConfigValue("StartingUrl"))  # load the web page
 
