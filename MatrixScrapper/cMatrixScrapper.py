@@ -1,30 +1,17 @@
 import XmlConfigReader
 from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+import time
 
 class cMatrixScrapper:
-
-
     def __init__(self, strConfigFilePath, strConfigSect ):
         #initialize the object, and connect to har
         self._cfg = XmlConfigReader.Config(strConfigFilePath, strConfigSect)
-        strUserName = self._cfg.getConfigValue("HARUserName")
-        strPwd = self._cfg.getConfigValue("HARPassword")
-        strEntryUrl = self._cfg.getConfigValue("EntryUrl")
         executable_path = self._cfg.getConfigValue("GeckoPath")
         strBrowser = self._cfg.getConfigValue("Browser")
         if strBrowser == "Chrome":
-            self._driver = webdriver.chrome
-        # driver = webdriver.Firefox(firefox_binary=binary)
-        print(self._cfg.getConfigValue("EntryUrl"))
-        self._driver.get(self._cfg.getConfigValue("StartingUrl"))  # load the web page
-
-        # look for user name log in:
-        elemUsr = self._driver.find_element_by_id("member_email")
-        elemUsr.send_keys(strUserName)
-        elemPwd = self._driver.find_element_by_id("member_pass")
-        elemPwd.send_keys(strPwd)
-        elemPwd.send_keys(Keys.RETURN)
-
+            self._driver = webdriver.Chrome()
+        self.SignIntoMatrix()
         (elemNextLnk, nFailureCnt) = self.find_wait_get_element("link_text", "Enter Matrix MLS")
         window_before = self._driver.window_handles[0]
         xpath = "/html[@class='wf-effra-n4-active wf-effra-n7-active wf-effra-n3-active wf-effra-n5-active wf-effra-n9-active wf-active']/body/div[@class='content overlay']/div[@class='container']/div[@class='rightPane']/div[@class='box_simple gray agentbox newhar']/div[@class='box_content grid_view']/a[1]"
@@ -38,7 +25,22 @@ class cMatrixScrapper:
 
         return
 
-    def SignInToMatrix():
+    def SignIntoMatrix(self):
+        # driver = webdriver.Firefox(firefox_binary=binary)
+        print(self._cfg.getConfigValue("EntryUrl"))
+        self._driver.get(self._cfg.getConfigValue("StartingUrl"))  # load the web page
+        strUserName = self._cfg.getConfigValue("HARUserName")
+        strPwd = self._cfg.getConfigValue("HARPassword")
+        strEntryUrl = self._cfg.getConfigValue("EntryUrl")
+
+        # look for user name log in:
+        elemUsr = self._driver.find_element_by_id("member_email")
+        elemUsr.send_keys(strUserName)
+        elemPwd = self._driver.find_element_by_id("member_pass")
+        elemPwd.send_keys(strPwd)
+        elemPwd.send_keys(Keys.RETURN)
+
+
         return True
 
     '''
@@ -79,3 +81,4 @@ class cMatrixScrapper:
 
 if __name__ == "__main__":
     print("Start scrapping")
+    o = cMatrixScrapper("AllPropScrapper", "DEV")
