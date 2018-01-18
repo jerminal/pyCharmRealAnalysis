@@ -27,6 +27,7 @@ class MatrixScrapper:
         strPwd = self._cfg.getConfigValue("HARPassword")
         strEntryUrl = self._cfg.getConfigValue("EntryUrl")
         executable_path = self._cfg.getConfigValue("GeckoPath")
+
         binary = FirefoxBinary(self._cfg.getConfigValue("FireFoxBinary"))
         self._driver = webdriver.Firefox(executable_path=executable_path)
         # driver = webdriver.Firefox(firefox_binary=binary)
