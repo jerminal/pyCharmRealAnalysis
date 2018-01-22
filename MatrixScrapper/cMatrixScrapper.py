@@ -5,6 +5,8 @@ import time
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+from bs4 import BeautifulSoup as bs
+import re
 
 class cMatrixScrapper:
     def __init__(self, strConfigFilePath, strConfigSect ):
@@ -106,23 +108,69 @@ class cMatrixScrapper:
 
 '''
      sccrape all property page based on input
-     oSearchCriteria: [(pageID, ControlType, Value)]
+     oSearchCriteria: [(by, ByType, ControlType, Value, Description)]
+     example('ID', 'idab379', 'checkbox', True, 'checkbox for blah blah')
 '''
-    def ScrapeAllPropPage(self, oSearchCriteria):
+    def ScrapeAllPropPage(self, lstSearchCriteria):
         # load the page
         strPageLink = "http://matrix.harmls.com/Matrix/Search/AllProperties/Classic"
         self._driver.get(strPageLink)
+        #verify the page load completes by checking existance of the first search creteria
 
-        # Load searh criteria
+        # Load searh criteria, if an element is not found, it returns with False and with a string explanation of the error
+        for criteria in lstSearchCriteria:
+            if criteria[2] == 'checkbox':
+                pass
+            elif criteria[2] == 'textbox':
+                pass
+
 
         # Run search
 
-        # Run through search results
+        ##get the result link and result count
+        ##click the result search
+
+        #Load the result page
+
+        #Iterate through all results
+        ##Look for the "Next" link on the bottom right of the page, if found set variable to True
+        urlNextPage = "something"
+        while urlNextPage is not None:
+            ##first iterathrough each MLS Link
+            ### Look for the next MLS Link, if found, scrape Property result page
+            ##Increase the result scrapped counter
+            ### else, look for the next page link:
+            if found:
+                urlNextPage = "something"
+            else:
+                urlNextPage = None
+        #at the end, compare scrapped results and search results count
+
+
 
 
         return True
+'''
+scrapes the contents of the property search results page
+strHtml: the html content as a string.
+'''
+    def ScrapSearchResultPropertyDetail(self, strHtml):
+        soup = bs(strHtml, 'lxml')
+        # extract all tables' contents
+        tables = soup.find_all('table',{'class':re.compile('d*m2')})
 
-    def ScrapSearchResultPage(self):
+
+        #first search for a table with class tag that's the following:
+        '''
+        Property type       Content
+        SFH                 d48m2
+        Rent                d82m2
+        Condo               D76m2
+        Multi - fam         D93m2
+        Lot                 D91m2
+        '''
+        #
+
         return True
 
 if __name__ == "__main__":
