@@ -178,6 +178,7 @@ class cMatrixScrapper:
         if len(tables) == 0:
             return False
 
+
         tag = tables[0].find('span', text = 'ML#: ')
         strMLS = tag.parent.next_sibling.next_sibling.text
         #first search for a table with class tag that's the following:
