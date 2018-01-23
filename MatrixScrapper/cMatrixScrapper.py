@@ -16,10 +16,15 @@ class cMatrixScrapper:
         executable_path = self._cfg.getConfigValue("GeckoPath")
         strBrowser = self._cfg.getConfigValue("Browser")
         print("Opening {0} browser".format(strBrowser))
-        if strBrowser == "Chrome":
-            self._driver = webdriver.Chrome()
-        self.SignIntoMatrix()
+
+        #if strBrowser == "Chrome":
+        #    self._driver = webdriver.Chrome()
+        #self.SignIntoMatrix()
         return
+
+    def __del__(self):
+        print("Destroyong Matrix scrapper")
+        self._driver.quit()
 
     def SignIntoMatrix(self):
         # driver = webdriver.Firefox(firefox_binary=binary)
@@ -106,12 +111,13 @@ class cMatrixScrapper:
         while bResult == False:
             bResult = self.ScrapeAllPropPage()
 
-'''
-     sccrape all property page based on input
-     oSearchCriteria: [(by, ByType, ControlType, Value, Description)]
-     example('ID', 'idab379', 'checkbox', True, 'checkbox for blah blah')
-'''
+
     def ScrapeAllPropPage(self, lstSearchCriteria):
+        '''
+             sccrape all property page based on input
+             oSearchCriteria: [(by, ByType, ControlType, Value, Description)]
+             example('ID', 'idab379', 'checkbox', True, 'checkbox for blah blah')
+        '''
         # load the page
         strPageLink = "http://matrix.harmls.com/Matrix/Search/AllProperties/Classic"
         self._driver.get(strPageLink)
@@ -146,16 +152,34 @@ class cMatrixScrapper:
                 urlNextPage = None
         #at the end, compare scrapped results and search results count
         return True
-'''
-scrapes the contents of the property search results page
-strHtml: the html content as a string.
-'''
-    def ScrapSearchResultPropertyDetail(self, strHtml):
+
+    def ScrapSearchResultPropertyDetail(self, strHtml, strPropType):
+        '''
+        scrapes the contents of the property search results page
+        strHtml: the html content as a string.
+        '''
         soup = bs(strHtml, 'lxml')
         # extract all tables' contents
-        tables = soup.find_all('table',{'class':re.compile('d*m2')})
+        if strPropType == 'sfh':
+            nCode = 48
 
+        elif strPropType == 'rnt':
+            nCode = 82
+        elif strPropType == 'lot':
+            nCode = 91
+        elif strPropType == 'th':
+            nCode = 76
+        elif strPropType == 'mlt':
+            nCode = 93
+        else:
+            return False
+        strProp = 'd{0}m2'.format(nCode)
+        tables = soup.find_all('table',{'class':strProp})
+        if len(tables) == 0:
+            return False
 
+        tag = tables[0].find('span', text = 'ML#: ')
+        strMLS = tag.parent.next_sibling.next_sibling.text
         #first search for a table with class tag that's the following:
         '''
         Property type       Content
@@ -175,4 +199,4 @@ if __name__ == "__main__":
     file = '..\\testData\\sfh.html'
     with open(file, 'r') as s:
         sHtml = s.read()
-    o.Scrap
+    o.ScrapSearchResultPropertyDetail(sHtml, 'sfh')

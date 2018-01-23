@@ -1,13 +1,19 @@
 import unittest
-from  MatrixScrapper import cMatrixScrapper
+from MatrixScrapper import cMatrixScrapper as MS
 
 class MSTest(unittest.TestCase):
+    def setUp(self):
+        try:
+            self._oMS = MS('AllPropScrapper', 'DEV')
+        except:
+            print(MS.__file__)
+            raise
+
     def testSFH_Result_Details_Page(self):
         file = '..\\testData\\sfh.html'
         with open(file, 'r') as s:
             sHtml = s.read()
-        oMS = cMatrixScrapper('RealAnalysisConfig.xml', 'DEV')
-
+        self._oMS.ScrapSearchResultPropertyDetail(sHtml)
 
         return
 
