@@ -140,15 +140,11 @@ class cMatrixScrapper:
             ### Look for the next MLS Link, if found, scrape Property result page
             ##Increase the result scrapped counter
             ### else, look for the next page link:
-            if found:
+            if True:
                 urlNextPage = "something"
             else:
                 urlNextPage = None
         #at the end, compare scrapped results and search results count
-
-
-
-
         return True
 '''
 scrapes the contents of the property search results page
@@ -176,3 +172,7 @@ strHtml: the html content as a string.
 if __name__ == "__main__":
     print("Start scrapping")
     o = cMatrixScrapper("AllPropScrapper", "DEV")
+    file = '..\\testData\\sfh.html'
+    with open(file, 'r') as s:
+        sHtml = s.read()
+    o.Scrap
