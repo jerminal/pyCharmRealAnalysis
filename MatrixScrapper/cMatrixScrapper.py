@@ -177,10 +177,21 @@ class cMatrixScrapper:
         tables = soup.find_all('table',{'class':strProp})
         if len(tables) == 0:
             return False
+        strPrevElem = ''
+        for td in tables[0].find_all('td'):
+            lst = td.find_all('table')
+            if len(lst) ==0:
+                strCurElem =td.text.strip()
+                if len(strCurElem) == 0: # we need to make sure there is no nested table within the td
+                    if strPrevElem != '' and strPrevElem[-1] == ':':
+                        print(strCurElem)
+                        strPrevElem = strCurElem
+                else:
+                    print(strCurElem)
+                    strPrevElem = strCurElem
 
-
-        tag = tables[0].find('span', text = 'ML#: ')
-        strMLS = tag.parent.next_sibling.next_sibling.text
+        #tag = tables[0].find('span', text = 'ML#: ')
+        #strMLS = tag.parent.next_sibling.next_sibling.text
         #first search for a table with class tag that's the following:
         '''
         Property type       Content
