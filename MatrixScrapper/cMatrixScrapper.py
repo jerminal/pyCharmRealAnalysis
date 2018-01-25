@@ -178,6 +178,7 @@ class cMatrixScrapper:
         if len(tables) == 0:
             return False
         strPrevElem = ''
+        lstScrapeResults = []
         for td in tables[0].find_all('td'):
             lst = td.find_all('table')
             if len(lst) ==0:
@@ -185,10 +186,12 @@ class cMatrixScrapper:
                 if len(strCurElem) == 0: # we need to make sure there is no nested table within the td
                     if strPrevElem != '' and strPrevElem[-1] == ':':
                         print(strCurElem)
+                        lstScrapeResults.append(strCurElem)
                         strPrevElem = strCurElem
                 else:
                     print(strCurElem)
                     strPrevElem = strCurElem
+                    lstScrapeResults.append(strCurElem)
 
         #tag = tables[0].find('span', text = 'ML#: ')
         #strMLS = tag.parent.next_sibling.next_sibling.text

@@ -10,6 +10,13 @@ class Config:
         self._doc = lxml.etree.parse(self._dir)
         self._App = AppName
         self._Inst = Inst
+    '''
+    get all the nodes under the path
+    '''
+    def getConfigValues(self, partialPath):
+        xpath = "//data/Application[@name='{0}']/{1}/{2}/text()".format(self._App, self._Inst, partialPath)
+        node = self._doc.xpath(xpath)
+        childNodes = node.iter()
     def getConfigValue(self, partialPath):
         xpath = "//data/Application[@name='{0}']/{1}/{2}/text()".format(self._App, self._Inst, partialPath)
         #print(xpath)
