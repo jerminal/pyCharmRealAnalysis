@@ -11,13 +11,15 @@ class Config:
         self._App = AppName
         self._Inst = Inst
     '''
-    get all the nodes under the path
+    get a list of the attributes dictionaries under a path
     '''
-    def getConfigValues(self, partialPath):
+    def getConfigAttributes(self, partialPath):
         xpath = "//data/Application[@name='{0}']/{1}/{2}".format(self._App, self._Inst, partialPath)
         nodes = self._doc.xpath(xpath)
-
-        return nodes
+        val = []
+        for node in nodes:
+            val.append(node.attrib)
+        return val
 
     def getConfigValue(self, partialPath):
         xpath = "//data/Application[@name='{0}']/{1}/{2}/text()".format(self._App, self._Inst, partialPath)
