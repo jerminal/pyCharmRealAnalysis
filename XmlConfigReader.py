@@ -4,7 +4,7 @@ import os
 
 class Config:
     def __init__(self, AppName, Inst):
-        self._dir = os.getcwd() + r'/RealAnalysisConfig.xml'
+        self._dir = os.getcwd() + r'\RealAnalysisConfig.xml'
         #print (self._dir)
         #self._soup = BeautifulSoup(self._dir, 'lxml')
         self._doc = lxml.etree.parse(self._dir)
@@ -14,9 +14,11 @@ class Config:
     get all the nodes under the path
     '''
     def getConfigValues(self, partialPath):
-        xpath = "//data/Application[@name='{0}']/{1}/{2}/text()".format(self._App, self._Inst, partialPath)
-        node = self._doc.xpath(xpath)
-        childNodes = node.iter()
+        xpath = "//data/Application[@name='{0}']/{1}/{2}".format(self._App, self._Inst, partialPath)
+        nodes = self._doc.xpath(xpath)
+
+        return nodes
+
     def getConfigValue(self, partialPath):
         xpath = "//data/Application[@name='{0}']/{1}/{2}/text()".format(self._App, self._Inst, partialPath)
         #print(xpath)
@@ -32,7 +34,8 @@ class Config:
             return ""
 
 if __name__ == "__main__":
-    cfg = Config("NewListingScrapper","DEV")
-    cfg.getConfigValue("UserName")
-    cfg.getConfigValue("Password")
-    cfg.getConfigValue("EntryUrl")
+    cfg = Config("AllPropScrapper","DEV")
+    #cfg.getConfigValue("UserName")
+    #cfg.getConfigValue("Password")
+    #cfg.getConfigValue("EntryUrl")
+    cfg.getConfigValues("PageContents/Section")
