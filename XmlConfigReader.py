@@ -13,12 +13,19 @@ class Config:
     '''
     get a list of the attributes dictionaries under a path
     '''
-    def getConfigAttributes(self, partialPath):
+    def getConfigValues(self, partialPath, bIncludeValue = False):
         xpath = "//data/Application[@name='{0}']/{1}/{2}".format(self._App, self._Inst, partialPath)
         nodes = self._doc.xpath(xpath)
         val = []
         for node in nodes:
-            val.append(node.attrib)
+            if bIncludeValue:
+                print(node.text)
+                dict = node.attrib
+                dict.update({'Text': node.text})
+                val.append(dict)
+            else:
+                val.append(node.attrib)
+
         return val
 
     def getConfigValue(self, partialPath):
@@ -41,3 +48,4 @@ if __name__ == "__main__":
     #cfg.getConfigValue("Password")
     #cfg.getConfigValue("EntryUrl")
     cfg.getConfigValues("PageContents/Section")
+    cfg.getConfigValues('PageContents/Section[@name="General"]/Column', True)

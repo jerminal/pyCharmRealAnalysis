@@ -7,6 +7,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup as bs
 import re
+from datetime import date
 
 class cMatrixScrapper:
     def __init__(self, strConfigFilePath, strConfigSect ):
@@ -178,6 +179,7 @@ class cMatrixScrapper:
         if len(tables) == 0:
             return False
         strPrevElem = ''
+        #scrape the page and put the content in a list
         lstScrapeResults = []
         for td in tables[0].find_all('td'):
             lst = td.find_all('table')
@@ -192,10 +194,53 @@ class cMatrixScrapper:
                     print(strCurElem)
                     strPrevElem = strCurElem
                     lstScrapeResults.append(strCurElem)
+        #now read the sections and columns to scrape and search through the list
+        lstPropSections = self._cfg.getConfigValues("PageContents/Section")
+        #iterate through each section
+        oJResult = {} #the result object to be written to Json
+        for sect in lstPropSections:
+            strSectName = sect['name']
+            strSectTitle = sect['Title']
+            if strSectTitle == '':
+                nStartIdx =0
+            else:
+                nStartIdx = lstScrapeResults.index(strSectTitle)
+            oJResult.update({'SectionName': strSectName})
+            dictColumns = {}
+            lstColumns = self._cfg.getConfigValues('PageContents/Section[@name="{0}"]/Column'.format(strSectName), True)
+            for oColumn in lstColumns:
+                strColumnName = oColumn['name']
+                strDataType = oColumn['DataType']
+                strText = oColumn['Text']
+                nColumnIdx = -1
+                try: # it will throw an exception if text is not found
+                    nColumnIdx = lstScrapeResults[nStartIdx:].index(strText.strip())
+                    strColumnText = lstScrapeResults[nStartIdx:][nColumnIdx+1]
+                except:
+                    continue
+                if strDataType == 'string':
+                    dictColumns.update({strColumnName:strColumnText})
+                elif strDataType == 'currency':
+                    try:
+                        dVal = float(strColumnText.strip().strip('$').replace(',',''))
+                        dictColumns.update({strColumnName:dVal})
+                    except:
+                        print('Failure to convert {0} from currency to float'.format(strColumnText))
+                elif strDataType == 'int':
+                    try:
+                        nVal = int(strColumnText.strip().replace(',',''))
+                        dictColumns.update({strColumnName:nVal})
+                    except:
+                        print('Failure to convert {0} from string to int'.format(strColumnText))
+                elif strDataType == 'date':
+                    try:
+                        dVal = date.strptime(strColumnText, '%m/%d/%H')
+                        dictColumns.update({strColumnName, dVal})
+                    except:
+                        print('Failure to convert {0} from string to date'.format(strColumnText))
+                else:
 
-        #tag = tables[0].find('span', text = 'ML#: ')
-        #strMLS = tag.parent.next_sibling.next_sibling.text
-        #first search for a table with class tag that's the following:
+                dictColumns.update({strColumnName:dVal})
         '''
         Property type       Content
         SFH                 d48m2
