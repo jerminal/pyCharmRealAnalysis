@@ -8,6 +8,7 @@ from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup as bs
 import re
 from datetime import date
+import json
 
 class cMatrixScrapper:
     def __init__(self, strConfigFilePath, strConfigSect ):
@@ -153,6 +154,14 @@ class cMatrixScrapper:
                 urlNextPage = None
         #at the end, compare scrapped results and search results count
         return True
+        '''
+        Property type       Content
+        SFH                 d48m2
+        Rent                d82m2
+        Condo               D76m2
+        Multi - fam         D93m2
+        Lot                 D91m2
+        '''
 
     def ScrapSearchResultPropertyDetail(self, strHtml, strPropType):
         '''
@@ -184,7 +193,7 @@ class cMatrixScrapper:
         for td in tables[0].find_all('td'):
             lst = td.find_all('table')
             if len(lst) ==0:
-                strCurElem =td.text.strip()
+                strCurElem =td.text.strip().replace(u'\xa0', u' ')
                 if len(strCurElem) == 0: # we need to make sure there is no nested table within the td
                     if strPrevElem != '' and strPrevElem[-1] == ':':
                         print(strCurElem)
@@ -197,15 +206,20 @@ class cMatrixScrapper:
         #now read the sections and columns to scrape and search through the list
         lstPropSections = self._cfg.getConfigValues("PageContents/Section")
         #iterate through each section
-        oJResult = {} #the result object to be written to Json
+        oJResult = [] #the result object to be written to Json
         for sect in lstPropSections:
+            oSectionResult = {}
             strSectName = sect['name']
             strSectTitle = sect['Title']
             if strSectTitle == '':
                 nStartIdx =0
             else:
-                nStartIdx = lstScrapeResults.index(strSectTitle)
-            oJResult.update({'SectionName': strSectName})
+                try:
+                    nStartIdx = lstScrapeResults.index(strSectTitle)
+                except:
+                    print("Section {0} not found!".format(strSectTitle))
+                    continue
+            oSectionResult.update({'SectionName': strSectName})
             dictColumns = {}
             lstColumns = self._cfg.getConfigValues('PageContents/Section[@name="{0}"]/Column'.format(strSectName), True)
             for oColumn in lstColumns:
@@ -217,6 +231,8 @@ class cMatrixScrapper:
                     nColumnIdx = lstScrapeResults[nStartIdx:].index(strText.strip())
                     strColumnText = lstScrapeResults[nStartIdx:][nColumnIdx+1]
                 except:
+                    print("Unable to find the value corresponding to field: {0}".format(strText))
+                    dictColumns.update({strText:None})
                     continue
                 if strDataType == 'string':
                     dictColumns.update({strColumnName:strColumnText})
@@ -235,23 +251,18 @@ class cMatrixScrapper:
                 elif strDataType == 'date':
                     try:
                         dVal = date.strptime(strColumnText, '%m/%d/%H')
-                        dictColumns.update({strColumnName, dVal})
+                        dictColumns.update({strColumnName: dVal})
                     except:
                         print('Failure to convert {0} from string to date'.format(strColumnText))
                 else:
+                    pass
+            oSectionResult.update({"Details":dictColumns})
+            oJResult.append(oSectionResult)
 
-                dictColumns.update({strColumnName:dVal})
-        '''
-        Property type       Content
-        SFH                 d48m2
-        Rent                d82m2
-        Condo               D76m2
-        Multi - fam         D93m2
-        Lot                 D91m2
-        '''
-        #
+        with open('..\\testData\\Result\\result.json', 'w') as outfile:
+            json.dump(oJResult, outfile)
 
-        return True
+        return oJResult
 
 if __name__ == "__main__":
     print("Start scrapping")
