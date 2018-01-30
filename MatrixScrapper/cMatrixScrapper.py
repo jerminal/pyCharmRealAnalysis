@@ -242,18 +242,24 @@ class cMatrixScrapper:
                         dictColumns.update({strColumnName:dVal})
                     except:
                         print('Failure to convert {0} from currency to float'.format(strColumnText))
+                        dictColumns.update({strColumnName:-1})
                 elif strDataType == 'int':
                     try:
                         nVal = int(strColumnText.strip().replace(',',''))
                         dictColumns.update({strColumnName:nVal})
                     except:
-                        print('Failure to convert {0} from string to int'.format(strColumnText))
+                        if strColumnText.strip().replace(',','') == '':
+                            dictColumns.update({strColumnName: None})
+                        else:
+                            print('Failure to convert {0} from string to int'.format(strColumnText))
+                            dictColumns.update({strColumnName: -1})
                 elif strDataType == 'date':
                     try:
                         dVal = date.strptime(strColumnText, '%m/%d/%H')
                         dictColumns.update({strColumnName: dVal})
                     except:
                         print('Failure to convert {0} from string to date'.format(strColumnText))
+                        dictColumns.update({strColumnName: None})
                 else:
                     pass
             oSectionResult.update({"Details":dictColumns})
