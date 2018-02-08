@@ -154,6 +154,15 @@ class cMatrixScrapper:
                 urlNextPage = None
         #at the end, compare scrapped results and search results count
         return True
+'''
+strip the value out of the source text based on wild cards
+'''
+    def StripWildCards(self, strSourceText, strDataType, lstWildCards):
+        if len(strSourceText) == 0:
+            return None
+        for wc in lstWildCards:
+            if re.search(wc, strSourceText):
+                
         '''
         Property type       Content
         SFH                 d48m2
@@ -226,6 +235,14 @@ class cMatrixScrapper:
                 strColumnName = oColumn['name']
                 strDataType = oColumn['DataType']
                 strText = oColumn['Text']
+                try:
+                    strTextFormatStrings = oColumn['Format']
+                    patt = re.compile(strTextFormatStrings)
+                    val = re.match(patt, oColumn['Text']).group()
+                except:
+                    #if the format string doesn't exist, set the list to []
+                    val = strText
+
                 nColumnIdx = -1
                 try: # it will throw an exception if text is not found
                     nColumnIdx = lstScrapeResults[nStartIdx:].index(strText.strip())
@@ -245,6 +262,8 @@ class cMatrixScrapper:
                         dictColumns.update({strColumnName:-1})
                 elif strDataType == 'int':
                     try:
+                        
+
                         nVal = int(strColumnText.strip().replace(',',''))
                         dictColumns.update({strColumnName:nVal})
                     except:
