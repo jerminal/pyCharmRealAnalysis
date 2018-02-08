@@ -154,23 +154,54 @@ class cMatrixScrapper:
                 urlNextPage = None
         #at the end, compare scrapped results and search results count
         return True
-'''
-strip the value out of the source text based on wild cards
-'''
-    def StripWildCards(self, strSourceText, strDataType, lstWildCards):
+
+    '''
+    strip the value out of the source text based on wild cards
+    '''
+    def StripWildCards(self, strSourceText, strDataType, strTextFormatStrings):
         if len(strSourceText) == 0:
             return None
-        for wc in lstWildCards:
-            if re.search(wc, strSourceText):
-                
-        '''
+        try:
+            patts = strTextFormatStrings.split('|')
+            val = None
+            for patt in patts:
+                try:
+                    print(re.match(patt, strSourceText).groups())
+                    val = re.match(patt, strSourceText).groups(1)[0]
+                    if val is None:
+                        return None
+                    else:
+                        break
+                except:
+                    continue
+            #patt = re.compile(strTextFormatStrings)
+            #print(re.match(patt, strSourceText).groups())
+            #val = re.match(patt, strSourceText).group(1)
+            if strDataType == 'int':
+                val = val.replace(',','')
+                return int(val)
+            elif strDataType == 'string':
+                return val
+            elif strDataType == 'currency':
+                if val[0] == '$':
+                    val = val[1:]
+                val=val.replace(',','')
+                return int(val)
+            else:
+                print("The data type: {0} is unknown, unable to parse {1}".format(strDataType, strSourceText))
+                return None
+        except:
+            print("Error when trying to parse {0}".format(strSourceText))
+            return None
+
+    '''
         Property type       Content
         SFH                 d48m2
         Rent                d82m2
         Condo               D76m2
         Multi - fam         D93m2
         Lot                 D91m2
-        '''
+    '''
 
     def ScrapSearchResultPropertyDetail(self, strHtml, strPropType):
         '''
@@ -236,23 +267,23 @@ strip the value out of the source text based on wild cards
                 strDataType = oColumn['DataType']
                 strText = oColumn['Text']
                 try:
-                    strTextFormatStrings = oColumn['Format']
-                    patt = re.compile(strTextFormatStrings)
-                    val = re.match(patt, oColumn['Text']).group()
+                    strFormatString = oColumn['Format']
                 except:
-                    #if the format string doesn't exist, set the list to []
-                    val = strText
-
+                    strFormatString = ''
                 nColumnIdx = -1
                 try: # it will throw an exception if text is not found
                     nColumnIdx = lstScrapeResults[nStartIdx:].index(strText.strip())
                     strColumnText = lstScrapeResults[nStartIdx:][nColumnIdx+1]
                 except:
                     print("Unable to find the value corresponding to field: {0}".format(strText))
-                    dictColumns.update({strText:None})
+                    dictColumns.update({strColumnName:None})
                     continue
                 if strDataType == 'string':
-                    dictColumns.update({strColumnName:strColumnText})
+                    if strFormatString == '':
+                        dictColumns.update({strColumnName:strColumnText})
+                    else:
+                        temp = self.StripWildCards(strColumnText, strFormatString,strFormatString)
+                        dictColumns.update({strColumnName:temp})
                 elif strDataType == 'currency':
                     try:
                         dVal = float(strColumnText.strip().strip('$').replace(',',''))
@@ -261,17 +292,19 @@ strip the value out of the source text based on wild cards
                         print('Failure to convert {0} from currency to float'.format(strColumnText))
                         dictColumns.update({strColumnName:-1})
                 elif strDataType == 'int':
-                    try:
-                        
-
-                        nVal = int(strColumnText.strip().replace(',',''))
+                    if strFormatString == '':
+                        try:
+                            nVal = int(strColumnText.strip().replace(',', ''))
+                            dictColumns.update({strColumnName: nVal})
+                        except:
+                            if strColumnText.strip().replace(',', '') == '':
+                                dictColumns.update({strColumnName: None})
+                            else:
+                                print('Failure to convert {0} from string to int'.format(strColumnText))
+                                dictColumns.update({strColumnName: -1})
+                    else:
+                        nVal = self.StripWildCards(strColumnText, strDataType, strFormatString)
                         dictColumns.update({strColumnName:nVal})
-                    except:
-                        if strColumnText.strip().replace(',','') == '':
-                            dictColumns.update({strColumnName: None})
-                        else:
-                            print('Failure to convert {0} from string to int'.format(strColumnText))
-                            dictColumns.update({strColumnName: -1})
                 elif strDataType == 'date':
                     try:
                         dVal = date.strptime(strColumnText, '%m/%d/%H')
@@ -296,3 +329,14 @@ if __name__ == "__main__":
     with open(file, 'r') as s:
         sHtml = s.read()
     o.ScrapSearchResultPropertyDetail(sHtml, 'sfh')
+
+    file = '..\\testData\\rnt.html'
+    with open(file, 'r') as s:
+        sHtml = s.read()
+    o.ScrapSearchResultPropertyDetail(sHtml, 'rnt')
+
+    file = '..\\testData\\lot.html'
+    with open(file, 'r') as s:
+        sHtml = s.read()
+    o.ScrapSearchResultPropertyDetail(sHtml, 'lot')
+
