@@ -230,17 +230,18 @@ class cMatrixScrapper:
         strPrevElem = ''
         #scrape the page and put the content in a list
         lstScrapeResults = []
+        strMLS = ''
         for td in tables[0].find_all('td'):
             lst = td.find_all('table')
             if len(lst) ==0:
                 strCurElem =td.text.strip().replace(u'\xa0', u' ')
                 if len(strCurElem) == 0: # we need to make sure there is no nested table within the td
                     if strPrevElem != '' and strPrevElem[-1] == ':':
-                        print(strCurElem)
+                        #print(strCurElem)
                         lstScrapeResults.append(strCurElem)
                         strPrevElem = strCurElem
                 else:
-                    print(strCurElem)
+                    #print(strCurElem)
                     strPrevElem = strCurElem
                     lstScrapeResults.append(strCurElem)
         #now read the sections and columns to scrape and search through the list
@@ -293,27 +294,39 @@ class cMatrixScrapper:
                         dictColumns.update({strColumnName:-1})
                 elif strDataType == 'int':
                     if strFormatString == '':
-                        try:
-                            nVal = int(strColumnText.strip().replace(',', ''))
-                            dictColumns.update({strColumnName: nVal})
-                        except:
-                            if strColumnText.strip().replace(',', '') == '':
-                                dictColumns.update({strColumnName: None})
-                            else:
-                                print('Failure to convert {0} from string to int'.format(strColumnText))
-                                dictColumns.update({strColumnName: -1})
+                        if len(strColumnText) == 0:
+                            dictColumns.update({strColumnName:None})
+                        else:
+                            try:
+                                nVal = int(strColumnText.strip().replace(',', ''))
+                                dictColumns.update({strColumnName: nVal})
+                            except:
+                                if strColumnText.strip().replace(',', '') == '':
+                                    dictColumns.update({strColumnName: None})
+                                else:
+                                    print('Failure to convert {0} from string to int'.format(strColumnText))
+                                    dictColumns.update({strColumnName: -1})
                     else:
                         nVal = self.StripWildCards(strColumnText, strDataType, strFormatString)
                         dictColumns.update({strColumnName:nVal})
                 elif strDataType == 'date':
-                    try:
-                        dVal = date.strptime(strColumnText, '%m/%d/%H')
-                        dictColumns.update({strColumnName: dVal})
-                    except:
-                        print('Failure to convert {0} from string to date'.format(strColumnText))
+                    if len(strColumnText) == 0:
                         dictColumns.update({strColumnName: None})
+                    else:
+                        try:
+                            dVal = date.strptime(strColumnText, '%m/%d/%H')
+                            dictColumns.update({strColumnName: dVal})
+                        except:
+                            print('Failure to convert {0} from string to date'.format(strColumnText))
+                            dictColumns.update({strColumnName: None})
                 else:
                     pass
+            #now get mls number, if exists
+            try:
+                strMLS = dictColumns["MLSNum"]
+            except:
+                pass
+            dictColumns.update({"MLSNum":strMLS})
             oSectionResult.update({"Details":dictColumns})
             oJResult.append(oSectionResult)
 
