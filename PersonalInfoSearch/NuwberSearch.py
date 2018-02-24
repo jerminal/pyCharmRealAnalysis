@@ -18,7 +18,7 @@ class NuwberSearch:
         self._dictRslt = {}
         self.readDictFile()
 
-    def searchNameAndAddress(self, firstN, lastN, addr):
+    def searchNameAndAddress(self, lastN, firstN, addr):
         if (firstN, lastN, addr ) not in self._dictRslt:
             # driver = webdriver.Firefox(firefox_binary=binary)
             print("load {0} and start google search".format("http://www.google.com"))
@@ -52,7 +52,7 @@ class NuwberSearch:
             self.writeResultToFile()
         else:
             print('{0} {1} on {2} exists in dictionary. Skip'.format(firstN, lastN, addr))
-    def writeResultToFile(self):
+    def  writeResultToFile(self):
         path = 'result.txt'
         with open(path, 'a') as f:
             #json.dump(self._dictRslt, f)

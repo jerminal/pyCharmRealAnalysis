@@ -113,13 +113,16 @@ class cMatrixScrapper:
         while bResult == False:
             bResult = self.ScrapeAllPropPage()
 
-
-    def ScrapeAllPropPage(self, lstSearchCriteria):
         '''
              sccrape all property page based on input
              oSearchCriteria: [(by, ByType, ControlType, Value, Description)]
              example('ID', 'idab379', 'checkbox', True, 'checkbox for blah blah')
         '''
+    def ScrapeAllPropPage(self, lstSearchCriteria):
+        """
+
+        :rtype: object
+        """
         # load the page
         strPageLink = "http://matrix.harmls.com/Matrix/Search/AllProperties/Classic"
         self._driver.get(strPageLink)
