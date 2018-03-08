@@ -115,10 +115,13 @@ class cMatrixScrapper:
 
         '''
              sccrape all property page based on input
-             oSearchCriteria: [(by, ByType, ControlType, Value, Description)]
-             example('ID', 'idab379', 'checkbox', True, 'checkbox for blah blah')
+             oStatus: [(text, value(true, false),date_range_as_string)]; example('Active', False, '7/31/2003-9/1/2003')
+            lstPropType: ['Single-Family', 'Townhouse/Condo','Lots','Multi-Family','Rental']
+            ZipCode: 
+            City
+            
         '''
-    def ScrapeAllPropPage(self, lstSearchCriteria):
+    def RunAllPropPage(self, lstStatus, lstPropType, ZipCode,City):
         """
 
         :rtype: object
@@ -129,13 +132,8 @@ class cMatrixScrapper:
         #verify the page load completes by checking existance of the first search creteria
 
         # Load searh criteria, if an element is not found, it returns with False and with a string explanation of the error
-        for criteria in lstSearchCriteria:
-            if criteria[2] == 'checkbox':
-                pass
-            elif criteria[2] == 'textbox':
-                pass
-
-
+        for oStatus in lstStatus:
+            
         # Run search
 
         ##get the result link and result count
@@ -341,6 +339,12 @@ class cMatrixScrapper:
 if __name__ == "__main__":
     print("Start scrapping")
     o = cMatrixScrapper("AllPropScrapper", "DEV")
+    o.SignIntoMatrix()
+    oSearchCriteria = [(),()]
+    '''
+    the following part tests the html search results 
+    '''
+    '''
     file = '..\\testData\\sfh.html'
     with open(file, 'r') as s:
         sHtml = s.read()
@@ -355,4 +359,5 @@ if __name__ == "__main__":
     with open(file, 'r') as s:
         sHtml = s.read()
     o.ScrapSearchResultPropertyDetail(sHtml, 'lot')
+    '''
 
