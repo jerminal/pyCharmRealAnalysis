@@ -19,8 +19,8 @@ class cMatrixScrapper:
         strBrowser = self._cfg.getConfigValue("Browser")
         print("Opening {0} browser".format(strBrowser))
 
-        #if strBrowser == "Chrome":
-        #    self._driver = webdriver.Chrome()
+        if strBrowser == "Chrome":
+            self._driver = webdriver.Chrome()
         #self.SignIntoMatrix()
         return
 
@@ -117,11 +117,10 @@ class cMatrixScrapper:
              sccrape all property page based on input
              oStatus: [(text, value(true, false),date_range_as_string)]; example('Active', False, '7/31/2003-9/1/2003')
             lstPropType: ['Single-Family', 'Townhouse/Condo','Lots','Multi-Family','Rental']
-            ZipCode: 
-            City
+            ZipCode:
             
         '''
-    def RunAllPropPage(self, lstStatus, lstPropType, ZipCode,City):
+    def RunAllPropSearchPage(self, lstStatus, lstPropType, ZipCode):
         """
 
         :rtype: object
@@ -132,15 +131,15 @@ class cMatrixScrapper:
         #verify the page load completes by checking existance of the first search creteria
 
         # Load searh criteria, if an element is not found, it returns with False and with a string explanation of the error
-        dictStatus = {'Active':("/html[@class='gr__matrix_harmls_com']/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content'][1]/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[2]/td[1]/div/input[@class='checkbox']", "/html[@class='gr__matrix_harmls_com']/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content'][1]/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[2]/td[2]/input[@id='FmFm1_Ctrl16_20915_Ctrl16_TB']"),
-                      'Option pending':("/html[@class='gr__matrix_harmls_com']/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content'][1]/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[3]/td[1]/div/input[@class='checkbox']","/html[@class='gr__matrix_harmls_com']/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content'][1]/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[3]/td[2]/input[@id='FmFm1_Ctrl16_20918_Ctrl16_TB']"),
-                      'Pend Cont to Show':("/html[@class='gr__matrix_harmls_com']/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content'][1]/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[4]/td[1]/div/input[@class='checkbox']","/html[@class='gr__matrix_harmls_com']/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content'][1]/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[4]/td[2]/input[@id='FmFm1_Ctrl16_20920_Ctrl16_TB']"),
-                      'Pending':("/html[@class='gr__matrix_harmls_com']/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content'][1]/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[5]/td[1]/div/input[@class='checkbox']","/html[@class='gr__matrix_harmls_com']/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content'][1]/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[5]/td[2]/input[@id='FmFm1_Ctrl16_20919_Ctrl16_TB']"),
-                      'Sold':("/html[@class='gr__matrix_harmls_com']/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content'][1]/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[6]/td[1]/div/input[@class='checkbox']","/html[@class='gr__matrix_harmls_com']/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content'][1]/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[6]/td[2]/input[@id='FmFm1_Ctrl16_20916_Ctrl16_TB']"),
-                      'Withdrawn': ("/html[@class='gr__matrix_harmls_com']/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content'][1]/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[7]/td[1]/div/input[@class='checkbox']", "/html[@class='gr__matrix_harmls_com']/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content'][1]/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[7]/td[2]/input[@id='FmFm1_Ctrl16_20922_Ctrl16_TB']"),
-                      'Expired': ("/html[@class='gr__matrix_harmls_com']/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content'][1]/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[8]/td[1]/div/input[@class='checkbox']", "/html[@class='gr__matrix_harmls_com']/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content'][1]/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[8]/td[2]/input[@id='FmFm1_Ctrl16_20917_Ctrl16_TB']"),
-                      'Terminated': ("/html[@class='gr__matrix_harmls_com']/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content'][1]/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[9]/td[1]/div/input[@class='checkbox']", "/html[@class='gr__matrix_harmls_com']/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content'][1]/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[9]/td[2]/input[@id='FmFm1_Ctrl16_20921_Ctrl16_TB']"),
-                      'Incomplete': ("/html[@class='gr__matrix_harmls_com']/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content'][1]/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[10]/td[1]/div/input[@class='checkbox']", "/html[@class='gr__matrix_harmls_com']/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content'][1]/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[2]/td/table/tbody/tr[4]/td[2]/table/tbody/tr/td[2]/table[@class='S_MultiStatus']/tbody/tr[10]/td[2]/input[@id='FmFm1_Ctrl16_23706_Ctrl16_TB']")
+        dictStatus = {'Active':(".//*[@name='Fm1_Ctrl16_LB' and @value='20915']", ".//*[@id='FmFm1_Ctrl16_20915_Ctrl16_TB']"),
+                      'Option Pending':(".//*[@name='Fm1_Ctrl16_LB' and @value='20918']",".//*[@id='FmFm1_Ctrl16_20918_Ctrl16_TB']"),
+                      'Pend Cont to Show':(".//*[@name='Fm1_Ctrl16_LB' and @value='20920']",".//*[@id='FmFm1_Ctrl16_20920_Ctrl16_TB']"),
+                      'Pending':(".//*[@name='Fm1_Ctrl16_LB' and @value='20919']",".//*[@id='FmFm1_Ctrl16_20919_Ctrl16_TB']"),
+                      'Sold':(".//*[@name='Fm1_Ctrl16_LB' and @value='20916']",".//*[@id='FmFm1_Ctrl16_20916_Ctrl16_TB']"),
+                      'Withdrawn': (".//*[@name='Fm1_Ctrl16_LB' and @value='20922']",".//*[@id='FmFm1_Ctrl16_20922_Ctrl16_TB']"),
+                      'Expired': (".//*[@name='Fm1_Ctrl16_LB' and @value='20917']",".//*[@id='FmFm1_Ctrl16_20917_Ctrl16_TB']"),
+                      'Terminated': (".//*[@name='Fm1_Ctrl16_LB' and @value='20921']",".//*[@id='FmFm1_Ctrl16_20921_Ctrl16_TB']"),
+                      'Incomplete': (".//*[@name='Fm1_Ctrl16_LB' and @value='23706']",".//*[@id='FmFm1_Ctrl16_23706_Ctrl16_TB']")
                       }
         for oStatus in lstStatus:
             #get the xpaths
@@ -153,20 +152,27 @@ class cMatrixScrapper:
                 elemChk.click()
             if elemChk.is_selected(): #when it's selected, populate the date range
                 elemTxt = self._driver.find_element_by_xpath(xpTxt)
+                elemTxt.clear()
                 elemTxt.send_keys(oStatus[2])
 
-        dictPropType = {
-            'Single-Family':"/html[@class='gr__matrix_harmls_com']/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content'][1]/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[5]/td/table/tbody/tr[2]/td[2]/table/tbody/tr[1]/td[2]/select[@id='Fm1_Ctrl129_LB']/option[1]",
-            'Townhouse/Condo':"/html[@class='gr__matrix_harmls_com']/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content'][1]/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[5]/td/table/tbody/tr[2]/td[2]/table/tbody/tr[1]/td[2]/select[@id='Fm1_Ctrl129_LB']/option[2]",
-            'Lots': "/html[@class='gr__matrix_harmls_com']/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content'][1]/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[5]/td/table/tbody/tr[2]/td[2]/table/tbody/tr[1]/td[2]/select[@id='Fm1_Ctrl129_LB']/option[3]",
-            'Multi-Family': "/html[@class='gr__matrix_harmls_com']/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content'][1]/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[5]/td/table/tbody/tr[2]/td[2]/table/tbody/tr[1]/td[2]/select[@id='Fm1_Ctrl129_LB']/option[4]",
-            'Rental': "/html[@class='gr__matrix_harmls_com']/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content'][1]/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[5]/td/table/tbody/tr[2]/td[2]/table/tbody/tr[1]/td[2]/select[@id='Fm1_Ctrl129_LB']/option[7]",
-            'Mid/Hi-Rise Condo': "/html[@class='gr__matrix_harmls_com']/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content'][1]/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[5]/td/table/tbody/tr[2]/td[2]/table/tbody/tr[1]/td[2]/select[@id='Fm1_Ctrl129_LB']/option[6]",
-            'Country Homes/Acreage': "/html[@class='gr__matrix_harmls_com']/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@class='css_container']/div[@id='m_upSearch']/div[@id='m_pnlSearchTab']/div[@id='m_pnlSearch']/div[@class='css_content'][1]/div[@id='m_sfcSearch']/div[@class='searchForm']/table/tbody/tr/td/table/tbody/tr[2]/td[1]/table/tbody/tr[5]/td/table/tbody/tr[2]/td[2]/table/tbody/tr[1]/td[2]/select[@id='Fm1_Ctrl129_LB']/option[5]"
-        }
-        for oPropType in lstPropType:
-            
+        xpSelect = ".//*[@id='Fm1_Ctrl129_LB']"  #this is the xpath to find the select element
+        elemSelect = self._driver.find_element_by_xpath(xpSelect)
+        for option in elemSelect.find_elements_by_tag_name('option'):
+            for strPropType in lstPropType:
+                if strPropType == option.text:
+                    option.click()
+
+
+        xPath = ".//*[@id='Fm1_Ctrl19_TextBox']"
+        elemZip = self._driver.find_element_by_xpath(xPath)
+        elemZip.send_keys(strZip)
+
         ##get the result link and result count
+        xpResultLnk = ".//*[@id='m_ucSearchButtons_m_clblCount']"
+        elemResultLnk = self._driver.find_element_by_xpath(xpResultLnk)
+        elemResultLnk.click()
+        time.sleep(2)
+
         ##click the result search
 
         #Load the result page
@@ -370,7 +376,12 @@ if __name__ == "__main__":
     print("Start scrapping")
     o = cMatrixScrapper("AllPropScrapper", "DEV")
     o.SignIntoMatrix()
-    oSearchCriteria = [(),()]
+    lstStatus = [('Active', False, None),('Option Pending', False, None),('Pend Cont to Show',False, None),('Pending', False, None),
+               ('Sold',True, '7/31/2017-8/31/2017')]
+    lstPropType = ['Single-Family','Lots']
+    strZip = '77096'
+    o.RunAllPropSearchPage(lstStatus, lstPropType,strZip)
+
     '''
     the following part tests the html search results 
     '''
