@@ -166,12 +166,25 @@ class cMatrixScrapper:
         xPath = ".//*[@id='Fm1_Ctrl19_TextBox']"
         elemZip = self._driver.find_element_by_xpath(xPath)
         elemZip.send_keys(strZip)
-
+        time.sleep(2)
         ##get the result link and result count
-        xpResultLnk = ".//*[@id='m_ucSearchButtons_m_clblCount']"
+        xpResultCntLnk = ".//*[@id='m_ucSearchButtons_m_clblCount']"
+        xpResultLnk = ".//*[@id='m_ucSearchButtons_m_lbSearch']"
+        elemResulCnttLnk = self._driver.find_element_by_xpath(xpResultCntLnk)
+
+        nResultCount = re.findall(r'\d+', elemResulCnttLnk.text)[0]
+
         elemResultLnk = self._driver.find_element_by_xpath(xpResultLnk)
         elemResultLnk.click()
         time.sleep(2)
+
+        #now click the first in search result:
+        xpMLSs = ".//td[@class='d1m5']/span[@class='d1m1']"
+        elemMLSs = self._driver.find_elements_by_xpath(xpMLSs)
+        elemMLSs[0].click()
+        #wait = driver.WebDriverWait(driver,10).until(EC.presence_of_element_located(By.CLASS_NAME,'x'))
+        self._driver.WebDriverWait(self._driver,10).until(EC.presence_of_all_elements_located(By.XPATH, ".//a[@id='m_DisplayCore_dpy3']"))
+            #(By.XPATH, ".//a[@id='m_DisplayCore_dpy3']"))
 
         ##click the result search
 
@@ -191,6 +204,18 @@ class cMatrixScrapper:
                 urlNextPage = None
         #at the end, compare scrapped results and search results count
         return True
+
+    def DoSearchResultListPage(self):
+        i = 0
+
+        xpNextLnk = ".//*[@id='m_DisplayCore_dpy2']"
+        elemNextLnk = self._driver.find_element_by_xpath(xpNextLnk)
+
+        xpMLSs = ".//td[@class='d1m5']/span[@class='d1m1']"
+        elemMLSs = self._driver.find_elements_by_xpath(xpMLSs)
+        for elem in elemMLSs:
+            elem.click()
+            time.sleep(1)
 
     '''
     strip the value out of the source text based on wild cards
