@@ -120,7 +120,7 @@ class cMatrixScrapper:
             ZipCode:
             
         '''
-    def RunAllPropSearchPage(self, lstStatus, lstPropType, ZipCode):
+    def RunAllPropSearchPage(self, lstStatus, strPropType, ZipCode):
         """
 
         :rtype: object
@@ -158,9 +158,8 @@ class cMatrixScrapper:
         xpSelect = ".//*[@id='Fm1_Ctrl129_LB']"  #this is the xpath to find the select element
         elemSelect = self._driver.find_element_by_xpath(xpSelect)
         for option in elemSelect.find_elements_by_tag_name('option'):
-            for strPropType in lstPropType:
-                if strPropType == option.text:
-                    option.click()
+            if strPropType == option.text:
+                option.click()
 
 
         xPath = ".//*[@id='Fm1_Ctrl19_TextBox']"
@@ -182,30 +181,31 @@ class cMatrixScrapper:
         xpMLSs = ".//td[@class='d1m5']/span[@class='d1m1']"
         elemMLSs = self._driver.find_elements_by_xpath(xpMLSs)
         elemMLSs[0].click()
-        #wait = driver.WebDriverWait(driver,10).until(EC.presence_of_element_located(By.CLASS_NAME,'x'))
-        self._driver.WebDriverWait(self._driver,10).until(EC.presence_of_all_elements_located(By.XPATH, ".//a[@id='m_DisplayCore_dpy3']"))
-            #(By.XPATH, ".//a[@id='m_DisplayCore_dpy3']"))
-
+        #self._driver.WebDriverWait(self._driver,10).until(EC.presence_of_element_located(By.XPATH,".//a[@id='m_DisplayCore_dpy3']"))
+        time.sleep(2)
         ##click the result search
-
-        #Load the result page
-
-        #Iterate through all results
-        ##Look for the "Next" link on the bottom right of the page, if found set variable to True
-        urlNextPage = "something"
-        while urlNextPage is not None:
-            ##first iterathrough each MLS Link
-            ### Look for the next MLS Link, if found, scrape Property result page
-            ##Increase the result scrapped counter
-            ### else, look for the next page link:
-            if True:
-                urlNextPage = "something"
+        while True:
+            elemNext = self.ScrapSearchResultsPropertyDetailPage(strPropType)
+            if elemNext is None:
+                break
             else:
-                urlNextPage = None
-        #at the end, compare scrapped results and search results count
+                elemNext.click()
+                time.sleep(1)
         return True
+    '''
+    return value: the next element for the calling page to click, if there is no next element, return None
+    '''
+    def ScrapSearchResultsPropertyDetailPage(self, strPropType):
+        xpNext = ".//a[@id='m_DisplayCore_dpy3']"
+        try:
+            elemNext = self._driver.find_element_by_xpath(xpNext)
+        except:
+            elemNext = None
+        strHtml = self._driver.page_source
+        self.ScrapSearchResultPropertyHtml(strHtml, strPropType)
+        return elemNext
 
-    def DoSearchResultListPage(self):
+    def depricated_DoSearchResultListPage(self):
         i = 0
 
         xpNextLnk = ".//*[@id='m_DisplayCore_dpy2']"
@@ -265,23 +265,23 @@ class cMatrixScrapper:
         Lot                 D91m2
     '''
 
-    def ScrapSearchResultPropertyDetail(self, strHtml, strPropType):
+    def ScrapSearchResultPropertyHtml(self, strHtml, strPropType):
         '''
         scrapes the contents of the property search results page
         strHtml: the html content as a string.
         '''
         soup = bs(strHtml, 'lxml')
-        # extract all tables' contents
-        if strPropType == 'sfh':
+        # extract all tables' contents 'Single-Family', 'Townhouse/Condo','Lots','Multi-Family','Rental'
+        if strPropType == 'Single-Family':
             nCode = 48
 
-        elif strPropType == 'rnt':
+        elif strPropType == 'Rental':
             nCode = 82
-        elif strPropType == 'lot':
+        elif strPropType == 'Lots':
             nCode = 91
-        elif strPropType == 'th':
+        elif strPropType == 'Townhouse/condo':
             nCode = 76
-        elif strPropType == 'mlt':
+        elif strPropType == 'Multi-Family':
             nCode = 93
         else:
             return False
@@ -392,7 +392,7 @@ class cMatrixScrapper:
             oSectionResult.update({"Details":dictColumns})
             oJResult.append(oSectionResult)
 
-        with open('..\\testData\\Result\\result.json', 'w') as outfile:
+        with open('..\\testData\\Result\\{0}.json'.format(strMLS), 'w') as outfile:
             json.dump(oJResult, outfile)
 
         return oJResult
@@ -405,7 +405,7 @@ if __name__ == "__main__":
                ('Sold',True, '7/31/2017-8/31/2017')]
     lstPropType = ['Single-Family','Lots']
     strZip = '77096'
-    o.RunAllPropSearchPage(lstStatus, lstPropType,strZip)
+    o.RunAllPropSearchPage(lstStatus, lstPropType[0],strZip)
 
     '''
     the following part tests the html search results 
