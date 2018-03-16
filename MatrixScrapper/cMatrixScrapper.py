@@ -185,6 +185,19 @@ class cMatrixScrapper:
         time.sleep(2)
         ##click the result search
         while True:
+            #get the lat/lon
+            xpMap = ".//a[@title='View Map']"
+            elemMap = self._driver.find_element_by_xpath(xpMap)
+            if elemMap is not None:
+                window_before = self._driver.window_handles[0]
+                elemMap.click()
+                time.sleep(1)
+                self.wait_for_new_window(self._driver)
+                window_after = self._driver.window_handles[1]
+                self._driver.switch_to.window(window_after)
+                xpLatLon = ".//a[contains(@href, 'https://maps.google.com/maps?ll=']"
+                self._driver.close()
+                self._driver.switch_to.windo(window_before)
             elemNext = self.ScrapSearchResultsPropertyDetailPage(strPropType)
             if elemNext is None:
                 break
@@ -402,7 +415,7 @@ if __name__ == "__main__":
     o = cMatrixScrapper("AllPropScrapper", "DEV")
     o.SignIntoMatrix()
     lstStatus = [('Active', False, None),('Option Pending', False, None),('Pend Cont to Show',False, None),('Pending', False, None),
-               ('Sold',True, '7/31/2017-8/31/2017')]
+               ('Sold',True, '7/31/2017-3/15/2018')]
     lstPropType = ['Single-Family','Lots']
     strZip = '77096'
     o.RunAllPropSearchPage(lstStatus, lstPropType[0],strZip)
