@@ -111,8 +111,8 @@ class cMatrixScrapper:
         # Scrape all Property Matrix Classic
         bResult = False
         while bResult == False:
-            bResult = self.ScrapeAllPropPage()
-
+            #bResult = self.ScrapeAllPropPage()
+            pass
         '''
              sccrape all property page based on input
              oStatus: [(text, value(true, false),date_range_as_string)]; example('Active', False, '7/31/2003-9/1/2003')
@@ -192,13 +192,17 @@ class cMatrixScrapper:
                 window_before = self._driver.window_handles[0]
                 elemMap.click()
                 time.sleep(1)
-                self.wait_for_new_window(self._driver)
+                #self.wait_for_new_window(self._driver)
                 window_after = self._driver.window_handles[1]
                 self._driver.switch_to.window(window_after)
-                xpLatLon = ".//a[contains(@href, 'https://maps.google.com/maps?ll=']"
+                xpLatLon = ".//input[@id='m_ucStreetViewService_m_hfParams']"
+                elemLatLon = self._driver.find_element_by_xpath(xpLatLon)
+                strLatLon = elemLatLon.get_attribute('value')
+                latlon = re.findall(r'[-+]?\d+\.\d+', strLatLon)[:2]
+
                 self._driver.close()
-                self._driver.switch_to.windo(window_before)
-            elemNext = self.ScrapSearchResultsPropertyDetailPage(strPropType)
+                self._driver.switch_to.window(window_before)
+            elemNext = self.ScrapSearchResultsPropertyDetailPage(strPropType, latlon)
             if elemNext is None:
                 break
             else:
@@ -208,14 +212,14 @@ class cMatrixScrapper:
     '''
     return value: the next element for the calling page to click, if there is no next element, return None
     '''
-    def ScrapSearchResultsPropertyDetailPage(self, strPropType):
+    def ScrapSearchResultsPropertyDetailPage(self, strPropType, latlon):
         xpNext = ".//a[@id='m_DisplayCore_dpy3']"
         try:
             elemNext = self._driver.find_element_by_xpath(xpNext)
         except:
             elemNext = None
         strHtml = self._driver.page_source
-        self.ScrapSearchResultPropertyHtml(strHtml, strPropType)
+        self.ScrapSearchResultPropertyHtml(strHtml, strPropType, latlon)
         return elemNext
 
     def depricated_DoSearchResultListPage(self):
@@ -278,7 +282,7 @@ class cMatrixScrapper:
         Lot                 D91m2
     '''
 
-    def ScrapSearchResultPropertyHtml(self, strHtml, strPropType):
+    def ScrapSearchResultPropertyHtml(self, strHtml, strPropType, latlon):
         '''
         scrapes the contents of the property search results page
         strHtml: the html content as a string.
@@ -402,6 +406,10 @@ class cMatrixScrapper:
             except:
                 pass
             dictColumns.update({"MLSNum":strMLS})
+            if strSectTitle == '':
+                #if section title = '', add lat lon information
+                dictColumns.update({'lat':float(latlon[0])})
+                dictColumns.update({'lon': float(latlon[1])})
             oSectionResult.update({"Details":dictColumns})
             oJResult.append(oSectionResult)
 
@@ -418,7 +426,7 @@ if __name__ == "__main__":
                ('Sold',True, '7/31/2017-3/15/2018')]
     lstPropType = ['Single-Family','Lots']
     strZip = '77096'
-    o.RunAllPropSearchPage(lstStatus, lstPropType[0],strZip)
+    o.RunAllPropSearchPage(lstStatus, lstPropType[1],strZip)
 
     '''
     the following part tests the html search results 
