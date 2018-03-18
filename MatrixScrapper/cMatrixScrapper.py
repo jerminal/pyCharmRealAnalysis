@@ -174,6 +174,7 @@ class cMatrixScrapper:
         nResultCount = int(re.findall(r'\d+', elemResulCnttLnk.text)[0])
         if nResultCount> 0:
             elemResultLnk = self._driver.find_element_by_xpath(xpResultLnk)
+            nTryCount = 0
             while True:
                 elemResultLnk.click()
                 #time.sleep(2)
@@ -182,18 +183,28 @@ class cMatrixScrapper:
                     elemMLSHeader = WebDriverWait(self._driver, 10).until(EC.presence_of_element_located((By.XPATH, xpMLSHeader)))
                     break
                 except:
-                    self._driver.back()
+                    nTryCount+=1
+                    if nTryCount <10:
+                        self._driver.back()
+                    else:
+                        return False
                 #now click the first in search result:
             xpMLSs = ".//td[@class='d1m5']/span[@class='d1m1']"
             elemMLSs = self._driver.find_elements_by_xpath(xpMLSs)
             xpTester = ".//div[@class='tabSelected']"
+            nTryCount = 0
             while True:
+
                 elemMLSs[0].click()
                 try:
                     elemTest = WebDriverWait(self._driver,10).until(EC.presence_of_element_located((By.XPATH, xpTester)))
                     break
                 except:
-                    self._driver.back()
+                    nTryCount +=1
+                    if nTryCount <10:
+                        self._driver.back()
+                    else:
+                        return False
             #self._driver.WebDriverWait(self._driver,10).until(EC.presence_of_element_located(By.XPATH,".//a[@id='m_DisplayCore_dpy3']"))
             #time.sleep(2)
             ##click the result search
