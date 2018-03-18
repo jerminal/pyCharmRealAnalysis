@@ -171,43 +171,56 @@ class cMatrixScrapper:
         xpResultLnk = ".//*[@id='m_ucSearchButtons_m_lbSearch']"
         elemResulCnttLnk = self._driver.find_element_by_xpath(xpResultCntLnk)
 
-        nResultCount = re.findall(r'\d+', elemResulCnttLnk.text)[0]
+        nResultCount = int(re.findall(r'\d+', elemResulCnttLnk.text)[0])
+        if nResultCount> 0:
+            elemResultLnk = self._driver.find_element_by_xpath(xpResultLnk)
+            while True:
+                elemResultLnk.click()
+                #time.sleep(2)
+                xpMLSHeader = ".//th[@data-mlheader='1\\bMLS #']"
+                try:
+                    elemMLSHeader = WebDriverWait(self._driver, 10).until(EC.presence_of_element_located((By.XPATH, xpMLSHeader)))
+                    break
+                except:
+                    self._driver.back()
+                #now click the first in search result:
+            xpMLSs = ".//td[@class='d1m5']/span[@class='d1m1']"
+            elemMLSs = self._driver.find_elements_by_xpath(xpMLSs)
+            xpTester = ".//div[@class='tabSelected']"
+            while True:
+                elemMLSs[0].click()
+                try:
+                    elemTest = WebDriverWait(self._driver,10).until(EC.presence_of_element_located((By.XPATH, xpTester)))
+                    break
+                except:
+                    self._driver.back()
+            #self._driver.WebDriverWait(self._driver,10).until(EC.presence_of_element_located(By.XPATH,".//a[@id='m_DisplayCore_dpy3']"))
+            #time.sleep(2)
+            ##click the result search
+            while True:
+                #get the lat/lon
+                xpMap = ".//a[@title='View Map']"
+                elemMap = self._driver.find_element_by_xpath(xpMap)
+                if elemMap is not None:
+                    window_before = self._driver.window_handles[0]
+                    elemMap.click()
+                    time.sleep(1)
+                    #self.wait_for_new_window(self._driver)
+                    window_after = self._driver.window_handles[1]
+                    self._driver.switch_to.window(window_after)
+                    xpLatLon = ".//input[@id='m_ucStreetViewService_m_hfParams']"
+                    elemLatLon = self._driver.find_element_by_xpath(xpLatLon)
+                    strLatLon = elemLatLon.get_attribute('value')
+                    latlon = re.findall(r'[-+]?\d+\.\d+', strLatLon)[:2]
 
-        elemResultLnk = self._driver.find_element_by_xpath(xpResultLnk)
-        elemResultLnk.click()
-        time.sleep(2)
-
-        #now click the first in search result:
-        xpMLSs = ".//td[@class='d1m5']/span[@class='d1m1']"
-        elemMLSs = self._driver.find_elements_by_xpath(xpMLSs)
-        elemMLSs[0].click()
-        #self._driver.WebDriverWait(self._driver,10).until(EC.presence_of_element_located(By.XPATH,".//a[@id='m_DisplayCore_dpy3']"))
-        time.sleep(2)
-        ##click the result search
-        while True:
-            #get the lat/lon
-            xpMap = ".//a[@title='View Map']"
-            elemMap = self._driver.find_element_by_xpath(xpMap)
-            if elemMap is not None:
-                window_before = self._driver.window_handles[0]
-                elemMap.click()
-                time.sleep(1)
-                #self.wait_for_new_window(self._driver)
-                window_after = self._driver.window_handles[1]
-                self._driver.switch_to.window(window_after)
-                xpLatLon = ".//input[@id='m_ucStreetViewService_m_hfParams']"
-                elemLatLon = self._driver.find_element_by_xpath(xpLatLon)
-                strLatLon = elemLatLon.get_attribute('value')
-                latlon = re.findall(r'[-+]?\d+\.\d+', strLatLon)[:2]
-
-                self._driver.close()
-                self._driver.switch_to.window(window_before)
-            elemNext = self.ScrapSearchResultsPropertyDetailPage(strPropType, latlon)
-            if elemNext is None:
-                break
-            else:
-                elemNext.click()
-                time.sleep(1)
+                    self._driver.close()
+                    self._driver.switch_to.window(window_before)
+                elemNext = self.ScrapSearchResultsPropertyDetailPage(strPropType, latlon)
+                if elemNext is None:
+                    break
+                else:
+                    elemNext.click()
+                    time.sleep(1)
         return True
     '''
     return value: the next element for the calling page to click, if there is no next element, return None
