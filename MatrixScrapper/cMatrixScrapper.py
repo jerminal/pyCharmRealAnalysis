@@ -446,11 +446,11 @@ if __name__ == "__main__":
     print("Start scrapping")
     o = cMatrixScrapper("AllPropScrapper", "DEV")
     o.SignIntoMatrix()
-    lstStatus = [('Active', False, None),('Option Pending', False, None),('Pend Cont to Show',False, None),('Pending', False, None),
+    lstStatus = [('Active', True, '7/31/2017-3/15/2018'),('Option Pending', False, None),('Pend Cont to Show',False, None),('Pending', False, None),
                ('Sold',True, '7/31/2017-3/15/2018')]
     lstPropType = ['Single-Family','Lots']
-    strZip = '77096'
-    o.RunAllPropSearchPage(lstStatus, lstPropType[1],strZip)
+    strZip = '77007'
+    o.RunAllPropSearchPage(lstStatus, lstPropType[0],strZip)
 
     '''
     the following part tests the html search results 
