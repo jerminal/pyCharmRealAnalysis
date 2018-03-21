@@ -11,11 +11,15 @@ from datetime import date
 import json
 
 class RFScrapper:
-    def __init__(self, ):
+    def __init__(self, strConfigAppName, strConfigSect):
         #load redfind website
-        strBrowser = "Chrome"
+        self._cfg = XmlConfigReader.Config(strConfigAppName, strConfigSect)
+        strBrowser = self._cfg.getConfigValue("Browser")
+        print("Opening {0} browser".format(strBrowser))
+
         if strBrowser == "Chrome":
             self._driver = webdriver.Chrome()
+
         self.SignIntoRF()
 
 
@@ -29,6 +33,33 @@ class RFScrapper:
         #look for the sign in button, if it exists it means user needs to sign in:
         #< button         type = "button"    class ="button Button compact text" tabindex="0" data-rf-test-name="SignInLink" > < span > Sign In < / span > < / button >
         xpSignin = ".//button[@data-rf-test-name='SignInLink']"
+        try:
+            elemSignin = self._driver.find_element_by_xpath(xpSignin)
+            #load the sign page
+            elemSignin.click()
+            time.sleep(2)
+            xpTemp = ".//button[@class='button Button  tertiary emailSignInButton v3']"
+            elemContinuewEmail = self._driver.find_element_by_xpath(xpTemp)
+            elemContinuewEmail.click()
+            time.sleep(1)
+            xpEmail = ".//input[@type='email' and @name='emailInput']"
+            xpPwd =".//input[@type='password' and @name='passwordInput']"
+            xpSignin = ".//button[@type='submit' and @data-rf-test-name='submitButton']"
+            elemEmail = self._driver.find_element_by_xpath(xpEmail)
+            elemPwd = self._driver.find_element_by_xpath(xpPwd)
+            elemSignin  = self._driver.find_element_by_xpath(xpSignin)
+
+            #start sign in
+            strUsr = self._cfg.getConfigValues("UsrName")
+            strPwd = self._cfg.getConfigValues("Password")
+            elemEmail.send_keys(strUsr)
+            elemPwd.send_keys(strPwd)
+            elemPwd.send_keys(Keys.RETURN)
+
+        except:
+            #sign in not exist, which means you are already signed in
+            pass
+
 
         '''
         strUserName = self._cfg.getConfigValue("HARUserName")
@@ -59,4 +90,4 @@ class RFScrapper:
 
 
 if __name__ == "__main__":
-    oRF = RFScrapper()
+    oRF = RFScrapper("RedFin","DEV")
