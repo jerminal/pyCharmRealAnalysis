@@ -50,8 +50,8 @@ class RFScrapper:
             elemSignin  = self._driver.find_element_by_xpath(xpSignin)
 
             #start sign in
-            strUsr = self._cfg.getConfigValues("UsrName")
-            strPwd = self._cfg.getConfigValues("Password")
+            strUsr = self._cfg.getConfigValue("UsrName")
+            strPwd = self._cfg.getConfigValue("Password")
             elemEmail.send_keys(strUsr)
             elemPwd.send_keys(strPwd)
             elemPwd.send_keys(Keys.RETURN)
@@ -60,34 +60,23 @@ class RFScrapper:
             #sign in not exist, which means you are already signed in
             pass
 
-
-        '''
-        strUserName = self._cfg.getConfigValue("HARUserName")
-        strPwd = self._cfg.getConfigValue("HARPassword")
-        strEntryUrl = self._cfg.getConfigValue("EntryUrl")
-
-        # look for user name log in:
-        elemUsr = self._driver.find_element_by_id("member_email")
-        elemUsr.send_keys(strUserName)
-        elemPwd = self._driver.find_element_by_id("member_pass")
-        elemPwd.send_keys(strPwd)
-        elemPwd.send_keys(Keys.RETURN)
-
-        (elemNextLnk, nFailureCnt) = self.find_wait_get_element("link_text", "Enter Matrix MLS")
-        window_before = self._driver.window_handles[0]
-        xpath = "/html[@class='wf-effra-n4-active wf-effra-n7-active wf-effra-n3-active wf-effra-n5-active wf-effra-n9-active wf-active']/body/div[@class='content overlay']/div[@class='container']/div[@class='rightPane']/div[@class='box_simple gray agentbox newhar']/div[@class='box_content grid_view']/a[1]"
-        (elemNextLnk, nFailureCnt) = self.find_wait_get_element("xpath", xpath, True)
-        time.sleep(3)
-
-        self.wait_for_new_window(self._driver)
-        window_after = self._driver.window_handles[1]
-        self._driver.close()
-        self._driver.switch_to.window(window_after)
-        print("signed in")
-        
-        '''
         return True
 
-
+    def SearchZip(self, strZip, datFrom, datTo, strPropType, bForSale, bSold):
+        #first fill in the zip code
+        xpSearchBox = ".//input[@type='search' and @id='search-box-input']"
+        elemSearchBox = self._driver.find_element_by_xpath(xpSearchBox)
+        elemSearchBox.send_keys(strZip)
+        elemSearchBox.send_keys(Keys.RETURN)
+        time.sleep(1)
+        # click "filter" button
+        xpFilter = ".//button[@class='button Button  wideSidepaneFilterButton v3 compact text']"
+        elemFilter = self._driver.find_element_by_xpath(xpFilter)
+        elemFilter.click()
+        xpSfh = ".//button[@class='button Button plain  icon unpadded propertyTypeButton' and @data-rf-test-name='uipt1']"
+        xpCondo = ".//button[@class='button Button plain  icon unpadded propertyTypeButton' and @data-rf-test-name='uipt2']"
+        xpTH = ".//button[@class='button Button plain  icon unpadded propertyTypeButton' and @data-rf-test-name='uipt3']"
+        xpMF = ".//button[@class='button Button plain  icon unpadded propertyTypeButton' and @data-rf-test-name='uipt4']"
+        #select property type
 if __name__ == "__main__":
     oRF = RFScrapper("RedFin","DEV")
