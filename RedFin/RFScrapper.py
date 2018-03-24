@@ -73,10 +73,10 @@ class RFScrapper:
         xpFilter = ".//button[@class='button Button  wideSidepaneFilterButton v3 compact text']"
         elemFilter = self._driver.find_element_by_xpath(xpFilter)
         elemFilter.click()
-        xpSfh = ".//button[@class='button Button plain  icon unpadded propertyTypeButton' and @data-rf-test-name='uipt1']"
-        xpCondo = ".//button[@class='button Button plain  icon unpadded propertyTypeButton' and @data-rf-test-name='uipt2']"
-        xpTH = ".//button[@class='button Button plain  icon unpadded propertyTypeButton' and @data-rf-test-name='uipt3']"
-        xpMF = ".//button[@class='button Button plain  icon unpadded propertyTypeButton' and @data-rf-test-name='uipt4']"
-        #select property type
+        # select property type
+        dictPropType = { 'SFH' : ".//button[@class='button Button plain  icon unpadded propertyTypeButton' and @data-rf-test-name='uipt1']", 'Condo': ".//button[@class='button Button plain  icon unpadded propertyTypeButton' and @data-rf-test-name='uipt2']",'BCD': '".//button[@class='button Button plain  icon unpadded propertyTypeButton' and @data-rf-test-name='uipt3']",'ABC': xpMF = ".//button[@class='button Button plain  icon unpadded propertyTypeButton' and @data-rf-test-name='uipt4']"}
+
+
+
 if __name__ == "__main__":
     oRF = RFScrapper("RedFin","DEV")
