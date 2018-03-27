@@ -34,7 +34,8 @@ class RFScrapper:
         #< button         type = "button"    class ="button Button compact text" tabindex="0" data-rf-test-name="SignInLink" > < span > Sign In < / span > < / button >
         xpSignin = ".//button[@data-rf-test-name='SignInLink']"
         try:
-            elemSignin = self._driver.find_element_by_xpath(xpSignin)
+            #elemSignin = self._driver.find_element_by_xpath(xpSignin)
+            elemSignin = self._driver.find_element_by_link_text('Sign In')
             #load the sign page
             elemSignin.click()
             time.sleep(2)
@@ -74,9 +75,30 @@ class RFScrapper:
         elemFilter = self._driver.find_element_by_xpath(xpFilter)
         elemFilter.click()
         # select property type
-        dictPropType = { 'SFH' : ".//button[@class='button Button plain  icon unpadded propertyTypeButton' and @data-rf-test-name='uipt1']", 'Condo': ".//button[@class='button Button plain  icon unpadded propertyTypeButton' and @data-rf-test-name='uipt2']",'BCD': '".//button[@class='button Button plain  icon unpadded propertyTypeButton' and @data-rf-test-name='uipt3']",'ABC': xpMF = ".//button[@class='button Button plain  icon unpadded propertyTypeButton' and @data-rf-test-name='uipt4']"}
-
-
+        dictPropType = { "House" : ".//button[@class='button Button plain  icon unpadded propertyTypeButton' and @data-rf-test-name='uipt1']",
+                         "Condo" : ".//button[@class='button Button plain  icon unpadded propertyTypeButton' and @data-rf-test-name='uipt2']",
+                         "Townhouse" : ".//button[@class='button Button plain  icon unpadded propertyTypeButton' and @data-rf-test-name='uipt3']",
+                         "Multi-Family" : ".//button[@class='button Button plain  icon unpadded propertyTypeButton' and @data-rf-test-name='uipt4']",
+                         "Land": ".//button[@class='button Button plain  icon unpadded propertyTypeButton' and @data-rf-test-name='uipt5']"
+                         }
+        try:
+            xpPropType = dictPropType[strPropType]
+            elemPropType = self._driver.find_element_by_xpath(xpPropType)
+            elemPropType.click()
+        except:
+            pass
+        xpSale = ".//input[@name='showForSaleToggle']"
+        elemSale = self._driver.find_element_by_xpath(xpSale)
+        if elemSale.get_attribute("value") == 'on':
+            bStatus = True
+        else:
+            bStatus = False
+        if bStatus != bForSale:
+            elemSale.click()
+        xpSold = ".//input[@name='showSoldsToggle']"
+        elemSold = self._driver.find_element_by_xpath(xpSold)
+        
 
 if __name__ == "__main__":
     oRF = RFScrapper("RedFin","DEV")
+    oRF.SearchZip('77007','01/01/2018','03/30/2018','House', False, True)
