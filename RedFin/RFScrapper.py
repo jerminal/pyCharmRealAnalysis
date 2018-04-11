@@ -63,7 +63,7 @@ class RFScrapper:
 
         return True
 
-    def SearchZip(self, strZip, datFrom, datTo, strPropType, bForSale, bSold):
+    def SearchZip(self, strZip, strPastPeriod, lstPropType, bForSale, bSold):
         #first fill in the zip code
         xpSearchBox = ".//input[@type='search' and @id='search-box-input']"
         elemSearchBox = self._driver.find_element_by_xpath(xpSearchBox)
@@ -81,24 +81,57 @@ class RFScrapper:
                          "Multi-Family" : ".//button[@class='button Button plain  icon unpadded propertyTypeButton' and @data-rf-test-name='uipt4']",
                          "Land": ".//button[@class='button Button plain  icon unpadded propertyTypeButton' and @data-rf-test-name='uipt5']"
                          }
-        try:
-            xpPropType = dictPropType[strPropType]
-            elemPropType = self._driver.find_element_by_xpath(xpPropType)
-            elemPropType.click()
-        except:
-            pass
-        xpSale = ".//input[@name='showForSaleToggle']"
+
+        for prop in lstPropType:
+            try:
+                xpPropType = dictPropType[prop]
+                elemPropType = self._driver.find_element_by_xpath(xpPropType)
+                elemPropType.click()
+            except:
+                print("Error locating element:{0}".format(prop))
+
+
+        #xpSale = ".//input[@name='showForSaleToggle' and @type='checkbox']"
+        xpSale = ".//span[@data-rf-test-name='Toggle' and @class='field Toggle styled v97']"
         elemSale = self._driver.find_element_by_xpath(xpSale)
+        elemSale.click()
+        '''
         if elemSale.get_attribute("value") == 'on':
             bStatus = True
         else:
             bStatus = False
         if bStatus != bForSale:
             elemSale.click()
-        xpSold = ".//input[@name='showSoldsToggle']"
+        '''
+        time.sleep(0.5)
+        xpBeforeSoldPeriod = ".//span [@class='mounted field select Select clickable solds' and @data-rf-test-name='Select']"
+        elemBeforeSoldPeriod = self._driver.find_element_by_xpath(xpBeforeSoldPeriod)
+        elemBeforeSoldPeriod.click() #this makes the options visible
+        xpSoldPeriod = ".//select[@name='solds'  and @class='select']"
+        elemSelectPeriod = self._driver.find_element_by_xpath(xpSoldPeriod)
+        for option in elemSelectPeriod.find_elements_by_tag_name('option'):
+            if option.get_attribute('value') == strPastPeriod:
+                option.click()
+
+
+
+        xpSold = ".//input[@name='showSoldsToggle' and @type='checkbox']"
         elemSold = self._driver.find_element_by_xpath(xpSold)
+        if elemSold.get_attribute("value") == 'on':
+            bStatus = True
+        else:
+            bStatus = False
+        if bStatus != bSold:
+            elemSold.click()
+        time.sleep(0.5)
+
+        xpSoldDateRange = ".//span[@class='mounted field select Select clickable Focused dijitFocused solds']"
+        elemSoldDateRange = self._driver.find_element_by_xpath(xpSoldDateRange)
+
         
 
 if __name__ == "__main__":
     oRF = RFScrapper("RedFin","DEV")
-    oRF.SearchZip('77007','01/01/2018','03/30/2018','House', False, True)
+    lstPropType = ['House', 'Condo','Townhouse','Multi-Family','Land']
+    dictSoldDateRange = {'Last 1 month':'30', 'Last 1 week':'7', 'Last 3 months':'90', 'Last 6 months':'180', 'Last 1 year':'365', 'Last 2 years':'730', 'Last 3 years':'1095', 'All':'36500'}
+    oRF.SearchZip('77007',dictSoldDateRange['Last 1 month'],lstPropType, False, True)
