@@ -32,10 +32,10 @@ class RFScrapper:
 
         #look for the sign in button, if it exists it means user needs to sign in:
         #< button         type = "button"    class ="button Button compact text" tabindex="0" data-rf-test-name="SignInLink" > < span > Sign In < / span > < / button >
-        xpSignin = ".//button[@data-rf-test-name='SignInLink']"
+        xpSignin = ".//button[@type='button' and @data-rf-test-name='SignInLink']"
         try:
             #elemSignin = self._driver.find_element_by_xpath(xpSignin)
-            elemSignin = self._driver.find_element_by_link_text('Sign In')
+            elemSignin = self._driver.find_element_by_xpath(xpSignin)
             #load the sign page
             elemSignin.click()
             time.sleep(2)
@@ -59,9 +59,21 @@ class RFScrapper:
 
         except:
             #sign in not exist, which means you are already signed in
+
             pass
 
         return True
+
+    def Easy_SearchZip(self, strZip, strPastPeriod, lstPropType, bForSale, bSold):
+        strProp = '+'.join(lstPropType)
+        strProp = re.sub('-','',strProp.lower())
+        url = "https://www.redfin.com/zipcode/{0}/filter/{1},include=sold-1mo".format(strZip, strProp)
+        self._driver.get(url)
+        time.sleep(2)
+        xpDownload =".//a[@id='download-and-save' and @class='downloadLink']"
+        elemDownload= self._driver.find_element_by_xpath(xpDownload)
+        elemDownload.click()
+
 
     def SearchZip(self, strZip, strPastPeriod, lstPropType, bForSale, bSold):
         #first fill in the zip code
@@ -134,4 +146,4 @@ if __name__ == "__main__":
     oRF = RFScrapper("RedFin","DEV")
     lstPropType = ['House', 'Condo','Townhouse','Multi-Family','Land']
     dictSoldDateRange = {'Last 1 month':'30', 'Last 1 week':'7', 'Last 3 months':'90', 'Last 6 months':'180', 'Last 1 year':'365', 'Last 2 years':'730', 'Last 3 years':'1095', 'All':'36500'}
-    oRF.SearchZip('77007',dictSoldDateRange['Last 1 month'],lstPropType, False, True)
+    oRF.Easy_SearchZip('77007',dictSoldDateRange['Last 1 month'],lstPropType, False, True)
