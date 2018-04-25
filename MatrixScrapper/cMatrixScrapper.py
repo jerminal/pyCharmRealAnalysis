@@ -7,8 +7,10 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup as bs
 import re
+import traceback
 from datetime import date
 import json
+import glob
 
 class cMatrixScrapper:
     def __init__(self, strConfigFilePath, strConfigSect ):
@@ -94,6 +96,14 @@ class cMatrixScrapper:
                 self._driver.refresh()
         return (None, nFailureCount)
 
+
+    '''
+    list the dir of all json files
+    '''
+    def GetExistingJsons(self):
+        return
+
+
     '''
         get a list of inputs and run the scrapper item by item in the list
     '''
@@ -173,6 +183,10 @@ class cMatrixScrapper:
 
         nResultCount = int(re.findall(r'\d+', elemResulCnttLnk.text)[0])
         if nResultCount> 0:
+            #first get the list of files that exists in the results folder, get the MLS numbers in a list
+            jsonPath = self._cfg.getConfigValue("JsonPath")
+            lstMLS = [ s.lstrip(jsonPath + "\\").rstrip(".json") for s in glob.glob("{0}\\*.json".format(jsonPath))]
+
             elemResultLnk = self._driver.find_element_by_xpath(xpResultLnk)
             nTryCount = 0
             while True:
@@ -212,20 +226,7 @@ class cMatrixScrapper:
                 #get the lat/lon
                 xpMap = ".//a[@title='View Map']"
                 elemMap = self._driver.find_element_by_xpath(xpMap)
-                if elemMap is not None:
-                    window_before = self._driver.window_handles[0]
-                    elemMap.click()
-                    time.sleep(1)
-                    #self.wait_for_new_window(self._driver)
-                    window_after = self._driver.window_handles[1]
-                    self._driver.switch_to.window(window_after)
-                    xpLatLon = ".//input[@id='m_ucStreetViewService_m_hfParams']"
-                    elemLatLon = self._driver.find_element_by_xpath(xpLatLon)
-                    strLatLon = elemLatLon.get_attribute('value')
-                    latlon = re.findall(r'[-+]?\d+\.\d+', strLatLon)[:2]
-
-                    self._driver.close()
-                    self._driver.switch_to.window(window_before)
+                latlon = self.GetLatLong(elemMap)
                 elemNext = self.ScrapSearchResultsPropertyDetailPage(strPropType, latlon)
                 if elemNext is None:
                     break
@@ -233,6 +234,29 @@ class cMatrixScrapper:
                     elemNext.click()
                     time.sleep(1)
         return True
+
+    '''get the lat lon information'''
+    def GetLatLong(self, elemMap):
+        if elemMap is not None:
+            window_before = self._driver.window_handles[0]
+            try:
+                elemMap.click()
+            except:
+                traceback.print_exc()
+                # if it throw exception, returns (None, None) as lat lon
+                return [None, None]
+            time.sleep(1)
+            # self.wait_for_new_window(self._driver)
+            window_after = self._driver.window_handles[1]
+            self._driver.switch_to.window(window_after)
+            xpLatLon = ".//input[@id='m_ucStreetViewService_m_hfParams']"
+            elemLatLon = self._driver.find_element_by_xpath(xpLatLon)
+            strLatLon = elemLatLon.get_attribute('value')
+            latlon = re.findall(r'[-+]?\d+\.\d+', strLatLon)[:2]
+            self._driver.close()
+            self._driver.switch_to.window(window_before)
+            return latlon
+
     '''
     return value: the next element for the calling page to click, if there is no next element, return None
     '''
@@ -382,6 +406,10 @@ class cMatrixScrapper:
                     print("Unable to find the value corresponding to field: {0}".format(strText))
                     dictColumns.update({strColumnName:None})
                     continue
+
+                #update 4/23/2018: here we will not check the data type, and treats everyone as string
+                dictColumns.update({strColumnName: strColumnText})
+                '''
                 if strDataType == 'string':
                     if strFormatString == '':
                         dictColumns.update({strColumnName:strColumnText})
@@ -424,6 +452,7 @@ class cMatrixScrapper:
                             dictColumns.update({strColumnName: None})
                 else:
                     pass
+                '''
             #now get mls number, if exists
             try:
                 strMLS = dictColumns["MLSNum"]
@@ -432,12 +461,14 @@ class cMatrixScrapper:
             dictColumns.update({"MLSNum":strMLS})
             if strSectTitle == '':
                 #if section title = '', add lat lon information
-                dictColumns.update({'lat':float(latlon[0])})
-                dictColumns.update({'lon': float(latlon[1])})
+                #dictColumns.update({'lat':float(latlon[0])})
+                #dictColumns.update({'lon': float(latlon[1])})
+                dictColumns.update({'lat':latlon[0]})
+                dictColumns.update({'lon': latlon[1]})
             oSectionResult.update({"Details":dictColumns})
             oJResult.append(oSectionResult)
-
-        with open('..\\testData\\Result\\{0}.json'.format(strMLS), 'w') as outfile:
+        jsonPath = self._cfg.getConfigValue("JsonPath")
+        with open('{0}\\{1}.json'.format(jsonPath,strMLS), 'w') as outfile:
             json.dump(oJResult, outfile)
 
         return oJResult
@@ -446,10 +477,10 @@ if __name__ == "__main__":
     print("Start scrapping")
     o = cMatrixScrapper("AllPropScrapper", "DEV")
     o.SignIntoMatrix()
-    lstStatus = [('Active', True, '7/31/2017-3/15/2018'),('Option Pending', False, None),('Pend Cont to Show',False, None),('Pending', False, None),
-               ('Sold',True, '7/31/2017-3/15/2018')]
+    lstStatus = [('Active', False, '7/31/2017-3/15/2018'),('Option Pending', False, None),('Pend Cont to Show',False, None),('Pending', False, None),
+               ('Sold',True, '7/31/2017-4/15/2018')]
     lstPropType = ['Single-Family','Lots']
-    strZip = '77007'
+    strZip = '77096'
     o.RunAllPropSearchPage(lstStatus, lstPropType[0],strZip)
 
     '''
