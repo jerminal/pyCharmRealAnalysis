@@ -207,22 +207,38 @@ class cMatrixScrapper:
             elemMLSs = self._driver.find_elements_by_xpath(xpMLSs)
             xpTester = ".//div[@class='tabSelected']"
             nTryCount = 0
+            bSearchStarted = False #it's a flag that tells if a new search has started
             while True:
+                #find the first mls link that hasn't be searched
+                for item in elemMLSs:
+                    strMLS = item.text
+                    if strMLS not in lstMLS:
+                        #if the mls is not in the existing list, go ahead and start normal scraping
+                        elemMLSs[0].click()
+                        bSearchStarted = True
+                        try:
+                            elemTest = WebDriverWait(self._driver,10).until(EC.presence_of_element_located((By.XPATH, xpTester)))
+                            break
+                        except:
+                            nTryCount +=1
+                            if nTryCount <10:
+                                self._driver.back()
+                            else:
+                                return False
+                if not bSearchStarted: #if it still hasn't found a unprocessed mls, try to flip to next page
+                    #look for the "next" tag to click
+                    xpNextOrPrev = ".//a[contains(@href, 'javascript:__doPostBack('m_DisplayCore','Redisplay|,,']"
+                    elems = self._driver.find_elements_by_xpath(xpNextOrPrev)
+                    for elem in elems:
+                        if elem.text == 'Next':
+                            #click the next link
+                            elem.click()
+                            time.sleep(2)
 
-                elemMLSs[0].click()
-                try:
-                    elemTest = WebDriverWait(self._driver,10).until(EC.presence_of_element_located((By.XPATH, xpTester)))
-                    break
-                except:
-                    nTryCount +=1
-                    if nTryCount <10:
-                        self._driver.back()
-                    else:
-                        return False
-            #self._driver.WebDriverWait(self._driver,10).until(EC.presence_of_element_located(By.XPATH,".//a[@id='m_DisplayCore_dpy3']"))
-            #time.sleep(2)
+
             ##click the result search
             while True:
+
                 #get the lat/lon
                 xpMap = ".//a[@title='View Map']"
                 elemMap = self._driver.find_element_by_xpath(xpMap)
@@ -266,6 +282,7 @@ class cMatrixScrapper:
             elemNext = self._driver.find_element_by_xpath(xpNext)
         except:
             elemNext = None
+
         strHtml = self._driver.page_source
         self.ScrapSearchResultPropertyHtml(strHtml, strPropType, latlon)
         return elemNext
