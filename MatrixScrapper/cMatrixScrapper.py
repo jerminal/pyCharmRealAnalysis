@@ -179,12 +179,12 @@ class cMatrixScrapper:
         elemCheckAll.click()
         time.sleep(1)
         # Click the export button and save the csv file
-        xpExportButton = "/html[@class='gr__matrix_harmls_com']/body/form[@id='Form1']/div[@class='stickywrapper']/div[@class='tier3']/table/tbody/tr/td/div[@id='m_upDisplayButtons']/div[1]/div[@id='m_pnlDisplayButtons']/div[@class='resultsMenu tabbedMenu']/div[@id='m_tblActionMenu']/table[@class='buttonBar']/tbody/tr/td[@id='m_tdExport']/a[@id='m_lbExport']/span[@class='linkIcon icon_export']"
+        xpExportButton = "//a[@id='m_lbExport']"
         elemExportBtn = self._driver.find_element_by_xpath(xpExportButton)
         elemExportBtn.click()
 
         #now it will bring up another webpage, we need to click the final export button
-        xpFileSave = "/html[@class='gr__matrix_harmls_com']/body/form[@id='Export']/div[@class='stickywrapper']/div[@class='tier3']/table[1]/tbody/tr/td/div[@class='css_container']/div[@class='css_content']/table/tbody/tr/td[2]/table[@class='buttonBar']/tbody/tr/td[@id='m_tdExport']/a[@id='m_btnExport']"
+        xpFileSave = "//a[@id='m_btnExport']"
         elemFileSave = self._driver.find_element_by_xpath(xpFileSave)
         elemFileSave.click()
 
