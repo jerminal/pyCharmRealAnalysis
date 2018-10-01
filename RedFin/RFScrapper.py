@@ -116,7 +116,7 @@ class RFScrapper:
             elemSale.click()
         '''
         time.sleep(0.5)
-        xpBeforeSoldPeriod = ".//span [@class='mounted field select Select clickable solds' and @data-rf-test-name='Select']"
+        xpBeforeSoldPeriod = ".//span[@class='mounted field select Select clickable solds' and @data-rf-test-name='Select']"
         elemBeforeSoldPeriod = self._driver.find_element_by_xpath(xpBeforeSoldPeriod)
         elemBeforeSoldPeriod.click() #this makes the options visible
         xpSoldPeriod = ".//select[@name='solds'  and @class='select']"
