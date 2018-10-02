@@ -170,25 +170,35 @@ class cMatrixScrapper:
 
             '''
 
-    def GetSearchResults(self):
+    def DownloadSearchResultsCSV(self, nRecCount):
         # Search for the master check box, and check it
         #"//*[@id="m_pnlDisplay"]/table/thead/tr/th[1]/span/input"
+        try:
+            xpCheckAll = "//input[@title='Check/Uncheck All on Page' and @type='checkbox']"
+            elemCheckAll = self._driver.find_element_by_xpath(xpCheckAll)
+            elemCheckAll.click()
+            time.sleep(1)
+            # Click the export button and save the csv file
+            xpExportButton = "//a[@id='m_lbExport']"
+            elemExportBtn = self._driver.find_element_by_xpath(xpExportButton)
+            elemExportBtn.click()
+            time.sleep(1)
+            #now it will bring up another webpage, we need to click the final export button
+            xpFileSave = "//a[@id='m_btnExport']"
+            elemFileSave = self._driver.find_element_by_xpath(xpFileSave)
+            elemFileSave.click()
+            return nRecCount
+        except:
+            print("exception happened while trying to download csv")
+            traceback.print_exc()
+            return 0
 
-        xpCheckAll = "//input[@title='Check/Uncheck All on Page' and @type='checkbox']"
-        elemCheckAll = self._driver.find_element_by_xpath(xpCheckAll)
-        elemCheckAll.click()
-        time.sleep(1)
-        # Click the export button and save the csv file
-        xpExportButton = "//a[@id='m_lbExport']"
-        elemExportBtn = self._driver.find_element_by_xpath(xpExportButton)
-        elemExportBtn.click()
-
-        #now it will bring up another webpage, we need to click the final export button
-        xpFileSave = "//a[@id='m_btnExport']"
-        elemFileSave = self._driver.find_element_by_xpath(xpFileSave)
-        elemFileSave.click()
-
-
+    '''
+    return value:
+    0: logic failure
+    >5000: too many records
+    between 1-5000: success
+    '''
     def RunAllPropSearchPage(self, lstStatus, strPropType, strZipCode):
         # load the page
         strPageLink = "http://matrix.harmls.com/Matrix/Search/AllProperties/Classic"
@@ -227,7 +237,8 @@ class cMatrixScrapper:
             if elemChk.is_selected():  # when it's selected, populate the date range
                 elemTxt = self._driver.find_element_by_xpath(xpTxt)
                 elemTxt.clear()
-                elemTxt.send_keys(oStatus[2])
+                if oStatus[2] is None or len(oStatus[2]) > 0:
+                    elemTxt.send_keys(oStatus[2])
 
         '''the following section selects the property type'''
         if len(strPropType) > 0:
@@ -265,7 +276,11 @@ class cMatrixScrapper:
                         self._driver.back()
                     else:
                         return -1
-            self.GetSearchResults()
+            nReturn =  self.DownloadSearchResultsCSV(nResultCount)
+            xpBackButton = "//a[@id='m_btnBack']"
+            elemBackButton = self._driver.find_element_by_xpath(xpBackButton)
+            elemBackButton.click()
+
         else:
             return nResultCount
         '''    
@@ -658,10 +673,45 @@ if __name__ == "__main__":
     o = cMatrixScrapper("AllPropScrapper", "DEV")
     o.SignIntoMatrix()
     lstStatus = [('Active', False, '7/31/2017-3/15/2018'),('Option Pending', False, None),('Pend Cont to Show',False, None),('Pending', False, None),
-               ('Sold',True, '11/01/2017-4/15/2018')]
+               ('Sold',True, '11/01/2017-10/01/2018')]
     #lstPropType = ['Single-Family','Lots']
     strZip = '77007'
     o.RunAllPropSearchPage(lstStatus, '',strZip)
+    time.sleep(3)
+    lstStatus[4] = ('Sold', True, '01/01/2017-10/31/2018')
+    o.RunAllPropSearchPage(lstStatus, '', strZip)
+
+    time.sleep(3)
+    lstStatus[4] = ('Sold', True, '01/01/2016-12/31/2016')
+    o.RunAllPropSearchPage(lstStatus, '', '')
+    time.sleep(3)
+    lstStatus[4] = ('Sold', True, '01/01/2015-12/31/2015')
+    o.RunAllPropSearchPage(lstStatus, '', strZip)
+    time.sleep(3)
+    lstStatus[4] = ('Sold', True, '01/01/2014-12/31/2014')
+    o.RunAllPropSearchPage(lstStatus, '', strZip)
+    time.sleep(3)
+    lstStatus[4] = ('Sold', True, '01/01/2013-12/31/2013')
+    o.RunAllPropSearchPage(lstStatus, '', strZip)
+    time.sleep(3)
+    lstStatus[4] = ('Sold', True, '01/01/2012-12/31/2012')
+    o.RunAllPropSearchPage(lstStatus, '', strZip)
+    time.sleep(3)
+    lstStatus[4] = ('Sold', True, '01/01/2011-12/31/2011')
+    o.RunAllPropSearchPage(lstStatus, '', strZip)
+    time.sleep(3)
+    lstStatus[4] = ('Sold', True, '01/01/2010-12/31/2010')
+    o.RunAllPropSearchPage(lstStatus, '', strZip)
+    time.sleep(3)
+    lstStatus[4] = ('Sold', True, '01/01/2009-12/31/2009')
+    o.RunAllPropSearchPage(lstStatus, '', strZip)
+    time.sleep(3)
+    lstStatus[4] = ('Sold', True, '01/01/2008-12/31/2008')
+    o.RunAllPropSearchPage(lstStatus, '', strZip)
+    time.sleep(3)
+
+
+
 
     '''
     the following part tests the html search results 
