@@ -281,6 +281,29 @@ class cMatrixScrapper:
             elemBackButton = self._driver.find_element_by_xpath(xpBackButton)
             elemBackButton.click()
 
+            #now save each property details as htmls:
+            xpViewList = "//select[@id='m_ucDisplayPicker_m_ddlDisplayFormats']"
+            elemViewList = self._driver.find_element_by_id('m_ucDisplayPicker_m_ddlDisplayFormats')
+            for option in elemViewList.find_elements_by_tag_name('option'):
+                if option.text == 'Agent Full':
+                    option.click()
+                    break
+            #now save page source for each search results
+            xpNextButton = "//a[@id='m_DisplayCore_dpy3']"
+            elemNextButton  = self._driver.find_element_by_xpath(xpNextButton)
+            while True:
+                i=0
+                outputFile = open(str(i)+".html","w")
+                outputFile.write(self._driver.page_source)
+                outputFile.close()
+                i+=1
+                attrHref = elemNextButton.get_attribute('href')
+                if attrHref is None:
+                    break
+                else:
+                    elemNextButton.click()
+
+            return nReturn
         else:
             return nResultCount
         '''    
@@ -677,6 +700,7 @@ if __name__ == "__main__":
     #lstPropType = ['Single-Family','Lots']
     strZip = '77007'
     o.RunAllPropSearchPage(lstStatus, '',strZip)
+    '''
     time.sleep(3)
     lstStatus[4] = ('Sold', True, '01/01/2017-10/31/2018')
     o.RunAllPropSearchPage(lstStatus, '', strZip)
@@ -710,7 +734,7 @@ if __name__ == "__main__":
     o.RunAllPropSearchPage(lstStatus, '', strZip)
     time.sleep(3)
 
-
+    '''
 
 
     '''
