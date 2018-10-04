@@ -169,7 +169,9 @@ class cMatrixScrapper:
                 ZipCode:
 
             '''
-
+    '''
+    On the Results download page, click to download CSV file
+    '''
     def DownloadSearchResultsCSV(self, nRecCount):
         # Search for the master check box, and check it
         #"//*[@id="m_pnlDisplay"]/table/thead/tr/th[1]/span/input"
@@ -277,25 +279,41 @@ class cMatrixScrapper:
                     else:
                         return -1
             nReturn =  self.DownloadSearchResultsCSV(nResultCount)
+            #click the back button to go back to the results list page
             xpBackButton = "//a[@id='m_btnBack']"
             elemBackButton = self._driver.find_element_by_xpath(xpBackButton)
             elemBackButton.click()
 
             #now save each property details as htmls:
             xpViewList = "//select[@id='m_ucDisplayPicker_m_ddlDisplayFormats']"
-            elemViewList = self._driver.find_element_by_id('m_ucDisplayPicker_m_ddlDisplayFormats')
+            elemViewList = WebDriverWait(self._driver, 30).until(EC.presence_of_element_located((By.XPATH, xpViewList)))
+            #elemViewList = self._driver.find_element_by_id('m_ucDisplayPicker_m_ddlDisplayFormats')
+            pathHtml = self._cfg.getConfigValue("JsonPath")
             for option in elemViewList.find_elements_by_tag_name('option'):
                 if option.text == 'Agent Full':
                     option.click()
                     break
-            #now save page source for each search results
-            xpNextButton = "//a[@id='m_DisplayCore_dpy3']"
-            elemNextButton  = self._driver.find_element_by_xpath(xpNextButton)
+            i = 0
             while True:
-                i=0
-                outputFile = open(str(i)+".html","w")
+                # now save page source for each search results
+                xpNextButton = "//a[@id='m_DisplayCore_dpy3']"
+                elemNextButton = WebDriverWait(self._driver, 30).until(
+                    EC.presence_of_element_located((By.XPATH, xpNextButton)))
+                # elemNextButton  = self._driver.find_element_by_xpath(xpNextButton)
+
+                outputFile = open(pathHtml + "\\" + str(i)+".html","w")
                 outputFile.write(self._driver.page_source)
                 outputFile.close()
+                #Now need to get the latlon page
+                xpViewMap = "//a[@title='View Map']"
+                elemViewMap = self._driver.find_element_by_xpath(xpViewMap)
+                if elemViewMap.get_attribute('href') is not None:
+                    latlon = self.GetLatLong(elemViewMap)
+                    outputFile = open(pathHtml + "\\latlon_" + str(i) + ".json", "w")
+                    #outputFile.write(latlon)
+                    #outputFile.close()
+                    json.dump(latlon, outputFile)
+                    outputFile.close()
                 i+=1
                 attrHref = elemNextButton.get_attribute('href')
                 if attrHref is None:
@@ -563,6 +581,9 @@ class cMatrixScrapper:
         elif strPropType == 'Lots':
             nCode = 91
         elif strPropType == 'Townhouse/condo':
+            outputFile = open(pathHtml + "\\" + str(i)+".html","w")
+            outputFile.write(self._driver.page_source)
+            outputFile.close()
             nCode = 76
         elif strPropType == 'Multi-Family':
             nCode = 93
