@@ -176,8 +176,8 @@ class cMatrixScrapper:
         # Search for the master check box, and check it
         #"//*[@id="m_pnlDisplay"]/table/thead/tr/th[1]/span/input"
         try:
-            xpCheckAll = "//input[@title='Check/Uncheck All on Page' and @type='checkbox']"
-            elemCheckAll = self._driver.find_element_by_xpath(xpCheckAll)
+            xpAllLink = "//a[@id='m_lnkCheckAllLink']"
+            elemCheckAll = self._driver.find_element_by_xpath(xpAllLink)
             elemCheckAll.click()
             time.sleep(1)
             # Click the export button and save the csv file
@@ -243,12 +243,11 @@ class cMatrixScrapper:
                     elemTxt.send_keys(oStatus[2])
 
         '''the following section selects the property type'''
-        if len(strPropType) > 0:
-            xpSelect = ".//*[@id='Fm1_Ctrl129_LB']"  # this is the xpath to find the select element
-            elemSelect = self._driver.find_element_by_xpath(xpSelect)
-            for option in elemSelect.find_elements_by_tag_name('option'):
-                if strPropType == option.text:
-                    option.click()
+        xpSelect = ".//*[@id='Fm1_Ctrl129_LB']"  # this is the xpath to find the select element
+        elemSelect = self._driver.find_element_by_xpath(xpSelect)
+        for option in elemSelect.find_elements_by_tag_name('option'):
+            if strPropType == option.text or len(strPropType) == 0:
+                option.click()
 
         '''Now fill in the zip code, if marked'''
         if len(strZipCode)> 0 :
@@ -315,6 +314,9 @@ class cMatrixScrapper:
                     json.dump(latlon, outputFile)
                     outputFile.close()
                 i+=1
+                time.sleep(1)
+                elemNextButton = WebDriverWait(self._driver, 30).until(
+                    EC.presence_of_element_located((By.XPATH, xpNextButton)))
                 attrHref = elemNextButton.get_attribute('href')
                 if attrHref is None:
                     break
@@ -461,7 +463,6 @@ class cMatrixScrapper:
 
             ##click the result search
             while True:
-
                 #get the lat/lon
                 xpMap = ".//a[@title='View Map']"
                 elemMap = self._driver.find_element_by_xpath(xpMap)
@@ -717,7 +718,7 @@ if __name__ == "__main__":
     o = cMatrixScrapper("AllPropScrapper", "DEV")
     o.SignIntoMatrix()
     lstStatus = [('Active', False, '7/31/2017-3/15/2018'),('Option Pending', False, None),('Pend Cont to Show',False, None),('Pending', False, None),
-               ('Sold',True, '11/01/2017-10/01/2018')]
+               ('Sold',True, '01/01/2017-01/01/2018')]
     #lstPropType = ['Single-Family','Lots']
     strZip = '77007'
     o.RunAllPropSearchPage(lstStatus, '',strZip)
