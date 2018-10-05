@@ -1,4 +1,7 @@
 import XmlConfigReader
+import csv
+import os
+import pymysql
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import time
@@ -63,6 +66,44 @@ class RFScrapper:
             pass
 
         return True
+
+    '''load the csv file downloaded from redfin to mysql db'''
+    def LoadCSVToMySqlDB(self, strPath):
+        host = self._cfg.getConfigValue(r'MySQL/host')
+        port = int(self._cfg.getConfigValue(r"MySQL/port"))
+        user = self._cfg.getConfigValue(r"MySQL/user")
+        passwd = self._cfg.getConfigValue(r"MySQL/password")
+        db = self._cfg.getConfigValue(r"MySQL/DB")
+        cnn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
+        print('database connected')
+        cur = cnn.cursor()
+        sqlInsert = "INSERT INTO Redfin_History (`SALE TYPE`,`SOLD DATE`,'PROPERTY TYPE`,`ADDRESS`,`CITY`,`STATE`,`ZIP`,`PRICE`,`BEDS`,`BATHS`,`LOCATION`,`SQUARE FEET`,`LOT SIZE`,`YEAR BUILT`,`DAYS ON MARKET`,`$/SQUARE FEET`,`HOA/MONTH`,`STATUS`,`NEXT OPEN HOUSE START TIME`,`NEXT OPEN HOUSE END TIME`,`URL`,`SOURCE`,`MLS#`,`FAVORITE`,`INTERESTED`,`LATITUDE`,`LONGITUDE`) " \
+                    "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+        sqlUpdate = "UPDATE Redfin_History set `SALE TYPE`=%s,`SOLD DATE`=%s,'PROPERTY TYPE`=%s,`ADDRESS`=%s,`CITY`=%s,`STATE`=%s,`ZIP`=%s,`PRICE`=%s,`BEDS`=%s,`BATHS`=%s,`LOCATION`=%s,`SQUARE FEET`=%s,`LOT SIZE`=%s,`YEAR BUILT`=%s," \
+                    "`DAYS ON MARKET`=%s,`$/SQUARE FEET`=%s,`HOA/MONTH`=%s,`STATUS`=%s,`NEXT OPEN HOUSE START TIME`=%s,`NEXT OPEN HOUSE END TIME`=%s,`URL`=%s,`SOURCE`=%s,`FAVORITE`=%s,`INTERESTED`=%s,`LATITUDE`=%s,`LONGITUDE`=%s WHERE ,`MLS#`=%s"
+
+        lstFiles = [f for f in os.listdir(strPath) if f[:6] == 'redfin']
+        for f in lstFiles:
+            csvData = csv.reader(file(f))
+            for row in csvData:
+                cur.execute(sqlInsert, row)
+
+
+        return
+
+
+    def GetDownloadPath(self):
+        """Returns the default downloads path for linux or windows"""
+        if os.name == 'nt':
+            import winreg
+            sub_key = r'SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders'
+            downloads_guid = '{374DE290-123F-4565-9164-39C4925E467B}'
+            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, sub_key) as key:
+                location = winreg.QueryValueEx(key, downloads_guid)[0]
+            return location
+        else:
+            return os.path.join(os.path.expanduser('~'), 'downloads')
+
 
     def Easy_SearchZip(self, strZip, strPastPeriod, lstPropType, bForSale, bSold):
         strProp = '+'.join(lstPropType)
@@ -144,6 +185,7 @@ class RFScrapper:
 
 if __name__ == "__main__":
     oRF = RFScrapper("RedFin","DEV")
+
     lstPropType = ['House', 'Condo','Townhouse','Multi-Family','Land']
     dictSoldDateRange = {'Last 1 month':'30', 'Last 1 week':'7', 'Last 3 months':'90', 'Last 6 months':'180', 'Last 1 year':'365', 'Last 2 years':'730', 'Last 3 years':'1095', 'All':'36500'}
     oRF.Easy_SearchZip('77007',dictSoldDateRange['Last 1 month'],lstPropType, False, True)

@@ -123,6 +123,231 @@ class cMatrixScrapper:
         while bResult == False:
             #bResult = self.ScrapeAllPropPage()
             pass
+    '''
+    Run the search results page, it goes through the MLS in the list one by one, 
+    compare against the scrapped list, it will scrap the details if it finds a mls link that's not in the list
+    nResultCount: The number of search results
+    '''
+    def RunSearchResultsPage(self, nResultCount, strPropType):
+        jsonPath = self._cfg.getConfigValue("JsonPath")
+        lstMLS = [s.lstrip(jsonPath + "\\").rstrip(".json") for s in glob.glob("{0}\\*.json".format(jsonPath))]
+        xpMLSs = ".//td[@class='d1m5']/span[@class='d1m1']" #this is the elements containing mls results
+
+        while True:
+            elemMLSs = self._driver.find_elements_by_xpath(xpMLSs)
+            xpTester = ".//div[@class='tabSelected']"
+            for elemMLS in elemMLSs:
+                elemChild = elemMLS.find_element_by_xpath(".//a[starts-with(@href,'javascript:__doPostBack')]")
+                if elemChild.text not in lstMLS:
+                    #if the mls is not in the list of already scrapped MLS, scrap the details:
+                    elemMLS.click()
+                    elemChild.click()
+                    #switch window handle and scrap results
+                    #get the result, if result is unsuccessful, log it and try again
+                    nCount = self.ScrapResultPageDetails(strPropType)
+                    self._driver.navigate().back()
+
+            #when it's through, check if there is an active "Next" element
+            # look for the "next" tag to click
+            xpNextOrPrev = ".//a[contains(@href, 'javascript:__doPostBack('m_DisplayCore','Redisplay|,,']"
+            elems = self._driver.find_elements_by_xpath(xpNextOrPrev)
+            bNextElementClickable = False
+            for elem in elems:
+                if elem.text == 'Next':
+                    # click the next link
+                    bNextElementClickable = True
+                    elem.click()
+                    time.sleep(2)
+            if bNextElementClickable == False:
+                #there is no clickable next alement anymore, break out
+                break
+
+            '''
+                 sccrape all property page based on input
+                 oStatus: [(text, value(true, false),date_range_as_string)]; example('Active', False, '7/31/2003-9/1/2003')
+                lstPropType: ['Single-Family', 'Townhouse/Condo','Lots','Multi-Family','Rental']
+                ZipCode:
+
+            '''
+    '''
+    On the Results download page, click to download CSV file
+    '''
+    def DownloadSearchResultsCSV(self, nRecCount):
+        # Search for the master check box, and check it
+        #"//*[@id="m_pnlDisplay"]/table/thead/tr/th[1]/span/input"
+        try:
+            xpAllLink = "//a[@id='m_lnkCheckAllLink']"
+            elemCheckAll = self._driver.find_element_by_xpath(xpAllLink)
+            elemCheckAll.click()
+            time.sleep(1)
+            # Click the export button and save the csv file
+            xpExportButton = "//a[@id='m_lbExport']"
+            elemExportBtn = self._driver.find_element_by_xpath(xpExportButton)
+            elemExportBtn.click()
+            time.sleep(1)
+            #now it will bring up another webpage, we need to click the final export button
+            xpFileSave = "//a[@id='m_btnExport']"
+            elemFileSave = self._driver.find_element_by_xpath(xpFileSave)
+            elemFileSave.click()
+            return nRecCount
+        except:
+            print("exception happened while trying to download csv")
+            traceback.print_exc()
+            return 0
+
+    '''
+    return value:
+    0: logic failure
+    >5000: too many records
+    between 1-5000: success
+    '''
+    def RunAllPropSearchPage(self, lstStatus, strPropType, strZipCode):
+        # load the page
+        strPageLink = "http://matrix.harmls.com/Matrix/Search/AllProperties/Classic"
+        self._driver.get(strPageLink)
+        # verify the page load completes by checking existance of the first search creteria
+
+        # Load searh criteria, if an element is not found, it returns with False and with a string explanation of the error
+        dictStatus = {'Active': (
+        ".//*[@name='Fm1_Ctrl16_LB' and @value='20915']", ".//*[@id='FmFm1_Ctrl16_20915_Ctrl16_TB']"),
+                      'Option Pending': (
+                      ".//*[@name='Fm1_Ctrl16_LB' and @value='20918']", ".//*[@id='FmFm1_Ctrl16_20918_Ctrl16_TB']"),
+                      'Pend Cont to Show': (
+                      ".//*[@name='Fm1_Ctrl16_LB' and @value='20920']", ".//*[@id='FmFm1_Ctrl16_20920_Ctrl16_TB']"),
+                      'Pending': (
+                      ".//*[@name='Fm1_Ctrl16_LB' and @value='20919']", ".//*[@id='FmFm1_Ctrl16_20919_Ctrl16_TB']"),
+                      'Sold': (
+                      ".//*[@name='Fm1_Ctrl16_LB' and @value='20916']", ".//*[@id='FmFm1_Ctrl16_20916_Ctrl16_TB']"),
+                      'Withdrawn': (
+                      ".//*[@name='Fm1_Ctrl16_LB' and @value='20922']", ".//*[@id='FmFm1_Ctrl16_20922_Ctrl16_TB']"),
+                      'Expired': (
+                      ".//*[@name='Fm1_Ctrl16_LB' and @value='20917']", ".//*[@id='FmFm1_Ctrl16_20917_Ctrl16_TB']"),
+                      'Terminated': (
+                      ".//*[@name='Fm1_Ctrl16_LB' and @value='20921']", ".//*[@id='FmFm1_Ctrl16_20921_Ctrl16_TB']"),
+                      'Incomplete': (
+                      ".//*[@name='Fm1_Ctrl16_LB' and @value='23706']", ".//*[@id='FmFm1_Ctrl16_23706_Ctrl16_TB']")
+                      }
+        for oStatus in lstStatus:
+            # get the xpaths
+            xPaths = dictStatus[oStatus[0]]
+            xpChk = xPaths[0]  # get the xpath to the check box
+            xpTxt = xPaths[1]  # get the xpath to the textbox
+            elemChk = self._driver.find_element_by_xpath(xpChk)
+            # now check/uncheck as needed
+            if elemChk.is_selected() != oStatus[1]:
+                elemChk.click()
+            if elemChk.is_selected():  # when it's selected, populate the date range
+                elemTxt = self._driver.find_element_by_xpath(xpTxt)
+                elemTxt.clear()
+                if oStatus[2] is None or len(oStatus[2]) > 0:
+                    elemTxt.send_keys(oStatus[2])
+
+        '''the following section selects the property type'''
+        xpSelect = ".//*[@id='Fm1_Ctrl129_LB']"  # this is the xpath to find the select element
+        elemSelect = self._driver.find_element_by_xpath(xpSelect)
+        for option in elemSelect.find_elements_by_tag_name('option'):
+            if strPropType == option.text or len(strPropType) == 0:
+                option.click()
+
+        '''Now fill in the zip code, if marked'''
+        if len(strZipCode)> 0 :
+            xPath = ".//*[@id='Fm1_Ctrl19_TextBox']"
+            elemZip = self._driver.find_element_by_xpath(xPath)
+            elemZip.send_keys(strZipCode)
+        time.sleep(2)
+        ##get the result link and result count
+        xpResultCntLnk = ".//*[@id='m_ucSearchButtons_m_clblCount']"
+        xpResultLnk = ".//*[@id='m_ucSearchButtons_m_lbSearch']"
+        elemResulCnttLnk = self._driver.find_element_by_xpath(xpResultCntLnk)
+
+        nResultCount = int(re.findall(r'\d+', elemResulCnttLnk.text)[0])
+        if nResultCount> 0 and nResultCount < 5000:
+            elemResultLnk = self._driver.find_element_by_xpath(xpResultLnk)
+            nTryCount = 0
+            while True:
+                elemResultLnk.click()
+                xpMLSHeader = ".//th[@data-mlheader='1\\bMLS #']"
+                try:
+                    elemMLSHeader = WebDriverWait(self._driver, 10).until(
+                        EC.presence_of_element_located((By.XPATH, xpMLSHeader)))
+                    break
+                except:
+                    nTryCount += 1
+                    if nTryCount < 10:
+                        self._driver.back()
+                    else:
+                        return -1
+            nReturn =  self.DownloadSearchResultsCSV(nResultCount)
+            #click the back button to go back to the results list page
+            xpBackButton = "//a[@id='m_btnBack']"
+            elemBackButton = self._driver.find_element_by_xpath(xpBackButton)
+            elemBackButton.click()
+
+            #now save each property details as htmls:
+            xpViewList = "//select[@id='m_ucDisplayPicker_m_ddlDisplayFormats']"
+            elemViewList = WebDriverWait(self._driver, 30).until(EC.presence_of_element_located((By.XPATH, xpViewList)))
+            #elemViewList = self._driver.find_element_by_id('m_ucDisplayPicker_m_ddlDisplayFormats')
+            pathHtml = self._cfg.getConfigValue("JsonPath")
+            for option in elemViewList.find_elements_by_tag_name('option'):
+                if option.text == 'Agent Full':
+                    option.click()
+                    break
+            i = 0
+            while True:
+                # now save page source for each search results
+                xpNextButton = "//a[@id='m_DisplayCore_dpy3']"
+                elemNextButton = WebDriverWait(self._driver, 30).until(
+                    EC.presence_of_element_located((By.XPATH, xpNextButton)))
+                # elemNextButton  = self._driver.find_element_by_xpath(xpNextButton)
+
+                outputFile = open(pathHtml + "\\" + str(i)+".html","w")
+                outputFile.write(self._driver.page_source)
+                outputFile.close()
+                #Now need to get the latlon page
+                xpViewMap = "//a[@title='View Map']"
+                elemViewMap = self._driver.find_element_by_xpath(xpViewMap)
+                if elemViewMap.get_attribute('href') is not None:
+                    latlon = self.GetLatLong(elemViewMap)
+                    outputFile = open(pathHtml + "\\latlon_" + str(i) + ".json", "w")
+                    #outputFile.write(latlon)
+                    #outputFile.close()
+                    json.dump(latlon, outputFile)
+                    outputFile.close()
+                i+=1
+                time.sleep(1)
+                elemNextButton = WebDriverWait(self._driver, 30).until(
+                    EC.presence_of_element_located((By.XPATH, xpNextButton)))
+                attrHref = elemNextButton.get_attribute('href')
+                if attrHref is None:
+                    break
+                else:
+                    elemNextButton.click()
+
+            return nReturn
+        else:
+            return nResultCount
+        '''    
+        if nResultCount > 0:
+
+            elemResultLnk = self._driver.find_element_by_xpath(xpResultLnk)
+            nTryCount = 0
+            while True:
+                elemResultLnk.click()
+                # time.sleep(2)
+                xpMLSHeader = ".//th[@data-mlheader='1\\bMLS #']"
+                try:
+                    elemMLSHeader = WebDriverWait(self._driver, 10).until(
+                        EC.presence_of_element_located((By.XPATH, xpMLSHeader)))
+                    break
+                except:
+                    nTryCount += 1
+                    if nTryCount < 10:
+                        self._driver.back()
+                    else:
+                        return False
+        #Here will scrap the results list page
+        self.RunSearchResultsPage(nResultCount, strPropType)
+        '''
         '''
              sccrape all property page based on input
              oStatus: [(text, value(true, false),date_range_as_string)]; example('Active', False, '7/31/2003-9/1/2003')
@@ -130,7 +355,7 @@ class cMatrixScrapper:
             ZipCode:
             
         '''
-    def RunAllPropSearchPage(self, lstStatus, strPropType, ZipCode):
+    def depricated_RunAllPropSearchPage(self, lstStatus, strPropType, ZipCode):
         """
 
         :rtype: object
@@ -238,7 +463,6 @@ class cMatrixScrapper:
 
             ##click the result search
             while True:
-
                 #get the lat/lon
                 xpMap = ".//a[@title='View Map']"
                 elemMap = self._driver.find_element_by_xpath(xpMap)
@@ -286,18 +510,14 @@ class cMatrixScrapper:
         strHtml = self._driver.page_source
         self.ScrapSearchResultPropertyHtml(strHtml, strPropType, latlon)
         return elemNext
+    '''
+        hWindow is the handle of the window
+    '''
+    def ScrapResultPageDetails(self):
+        strHtml = self._driver.page_source
+        self.ScrapSearchResultPropertyHtml(strHtml, strPropType)
 
-    def depricated_DoSearchResultListPage(self):
-        i = 0
 
-        xpNextLnk = ".//*[@id='m_DisplayCore_dpy2']"
-        elemNextLnk = self._driver.find_element_by_xpath(xpNextLnk)
-
-        xpMLSs = ".//td[@class='d1m5']/span[@class='d1m1']"
-        elemMLSs = self._driver.find_elements_by_xpath(xpMLSs)
-        for elem in elemMLSs:
-            elem.click()
-            time.sleep(1)
 
     '''
     strip the value out of the source text based on wild cards
@@ -362,6 +582,9 @@ class cMatrixScrapper:
         elif strPropType == 'Lots':
             nCode = 91
         elif strPropType == 'Townhouse/condo':
+            outputFile = open(pathHtml + "\\" + str(i)+".html","w")
+            outputFile.write(self._driver.page_source)
+            outputFile.close()
             nCode = 76
         elif strPropType == 'Multi-Family':
             nCode = 93
@@ -495,10 +718,46 @@ if __name__ == "__main__":
     o = cMatrixScrapper("AllPropScrapper", "DEV")
     o.SignIntoMatrix()
     lstStatus = [('Active', False, '7/31/2017-3/15/2018'),('Option Pending', False, None),('Pend Cont to Show',False, None),('Pending', False, None),
-               ('Sold',True, '7/31/2017-4/15/2018')]
-    lstPropType = ['Single-Family','Lots']
-    strZip = '77096'
-    o.RunAllPropSearchPage(lstStatus, lstPropType[0],strZip)
+               ('Sold',True, '01/01/2017-01/01/2018')]
+    #lstPropType = ['Single-Family','Lots']
+    strZip = '77007'
+    o.RunAllPropSearchPage(lstStatus, '',strZip)
+    '''
+    time.sleep(3)
+    lstStatus[4] = ('Sold', True, '01/01/2017-10/31/2018')
+    o.RunAllPropSearchPage(lstStatus, '', strZip)
+
+    time.sleep(3)
+    lstStatus[4] = ('Sold', True, '01/01/2016-12/31/2016')
+    o.RunAllPropSearchPage(lstStatus, '', '')
+    time.sleep(3)
+    lstStatus[4] = ('Sold', True, '01/01/2015-12/31/2015')
+    o.RunAllPropSearchPage(lstStatus, '', strZip)
+    time.sleep(3)
+    lstStatus[4] = ('Sold', True, '01/01/2014-12/31/2014')
+    o.RunAllPropSearchPage(lstStatus, '', strZip)
+    time.sleep(3)
+    lstStatus[4] = ('Sold', True, '01/01/2013-12/31/2013')
+    o.RunAllPropSearchPage(lstStatus, '', strZip)
+    time.sleep(3)
+    lstStatus[4] = ('Sold', True, '01/01/2012-12/31/2012')
+    o.RunAllPropSearchPage(lstStatus, '', strZip)
+    time.sleep(3)
+    lstStatus[4] = ('Sold', True, '01/01/2011-12/31/2011')
+    o.RunAllPropSearchPage(lstStatus, '', strZip)
+    time.sleep(3)
+    lstStatus[4] = ('Sold', True, '01/01/2010-12/31/2010')
+    o.RunAllPropSearchPage(lstStatus, '', strZip)
+    time.sleep(3)
+    lstStatus[4] = ('Sold', True, '01/01/2009-12/31/2009')
+    o.RunAllPropSearchPage(lstStatus, '', strZip)
+    time.sleep(3)
+    lstStatus[4] = ('Sold', True, '01/01/2008-12/31/2008')
+    o.RunAllPropSearchPage(lstStatus, '', strZip)
+    time.sleep(3)
+
+    '''
+
 
     '''
     the following part tests the html search results 
