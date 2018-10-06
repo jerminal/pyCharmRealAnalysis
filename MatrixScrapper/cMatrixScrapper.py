@@ -721,7 +721,42 @@ if __name__ == "__main__":
                ('Sold',True, '01/01/2017-01/01/2018')]
     #lstPropType = ['Single-Family','Lots']
     strZip = '77007'
+    strMLS = ''
     o.RunAllPropSearchPage(lstStatus, '',strZip)
+
+
+    '''
+    Web control data structure:
+    (My name, Tag name, webcontrol type, 'xPath', value to put in)
+    for example ('My Name', 'input', checkbox , '//input[@blah=blah]', 'Jach Reacher')
+    [
+        ('MLS#', 'input','text','//input[@id="Fm1_Ctrl12_TextBox"]', '0123456789'),
+        ('Active Check', 'input', 'checkbox', '//input[@value="20915" and @name="Fm1_Ctrl16_LB"], False),
+        ('ActiveText', 'input', 'text', ".//*[@id='FmFm1_Ctrl16_20915_Ctrl16_TB']", '01/01/2018-03/01/2018'),
+        ('Option Pending Check', 'input', 'checkbox', ".//*[@name='Fm1_Ctrl16_LB' and @value='20918']", False),
+        ('Option Pending Text', 'input', 'text', ".//*[@id='FmFm1_Ctrl16_20918_Ctrl16_TB']", '01/01/2018-03/01/2018'),
+        ('Pend Cont to Show Check', 'input', 'checkbox', ".//*[@name='Fm1_Ctrl16_LB' and @value='20920']", False),
+        ('Pend Cont to Show Text', 'input', 'text', ".//*[@id='FmFm1_Ctrl16_20920_Ctrl16_TB']", '01/01/2018-03/01/2018'),
+        ('Pending Check', 'input', 'checkbox', ".//*[@name='Fm1_Ctrl16_LB' and @value='20919']", False)
+        ('Pending Text', 'input' 'text' ,".//*[@id='FmFm1_Ctrl16_20919_Ctrl16_TB']", '01/01/2018-03/01/2018'),
+        ('Sold Check', 'input', 'checkbox', ".//*[@name='Fm1_Ctrl16_LB' and @value='20916']", True),
+        ('Sold Text', 'input', 'text', ".//*[@id='FmFm1_Ctrl16_20916_Ctrl16_TB']", '01/01/2018-03/01/2018'),
+        ('Withdrawn Check', 'input', 'checkbox', ".//*[@name='Fm1_Ctrl16_LB' and @value='20922']", False),
+        ('Widthdrawn Text', 'input', 'text',".//*[@id='FmFm1_Ctrl16_20922_Ctrl16_TB']", '01/01/2018-03/01/2018'),
+        ('Single-Family Select', 'select', 'option-text', './/select[@id="Fm1_Ctrl129_LB"]', 'Single-Family'),
+        ('Townhouse Select', 'select', 'option-value', './/select[@id="Fm1_Ctrl129_LB"]', '23708'),
+        ('Lots Select', 'select', 'option-title', './/select[@id="Fm1_Ctrl129_LB"]', 'Lots'),
+        ('Multi-Family Select', 'select', 'option-text', './/select[@id="Fm1_Ctrl129_LB"]', 'Multi-Family'),
+        ('Country Homes Select', 'select', 'option-value', './/select[@id="Fm1_Ctrl129_LB"]', '20923'),  
+        ('Mid/Hi-Rise Select', 'select', 'option-value', './/select[@id="Fm1_Ctrl129_LB"]', '23709'),
+        ('Rent Select', 'select', 'option-text', './/select[@id="Fm1_Ctrl129_LB"]', 'Rental'),
+        
+              
+                      'Expired': (".//*[@name='Fm1_Ctrl16_LB' and @value='20917']",".//*[@id='FmFm1_Ctrl16_20917_Ctrl16_TB']"),
+                      'Terminated': (".//*[@name='Fm1_Ctrl16_LB' and @value='20921']",".//*[@id='FmFm1_Ctrl16_20921_Ctrl16_TB']"),
+                      'Incomplete': (".//*[@name='Fm1_Ctrl16_LB' and @value='23706']",".//*[@id='FmFm1_Ctrl16_23706_Ctrl16_TB']")
+    ]
+    '''
     '''
     time.sleep(3)
     lstStatus[4] = ('Sold', True, '01/01/2017-10/31/2018')
