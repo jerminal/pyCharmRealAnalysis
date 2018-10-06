@@ -58,7 +58,6 @@ class cMatrixScrapper:
         print("signed in")
         return True
 
-
     def wait_for_new_window(self, timeout=10):
         handles_before = self._driver.window_handles
         yield
@@ -107,7 +106,8 @@ class cMatrixScrapper:
     '''
         get a list of inputs and run the scrapper item by item in the list
     '''
-    def RunJob(self):
+    def RunJobDownLoadCSV(self):
+        #o.RunAllPropSearchPage(lstStatus, '', strZip)
         # get the last date scrapper worked
 
         # calculate date range, chop into pieces if necessary
@@ -196,12 +196,17 @@ class cMatrixScrapper:
             return 0
 
     '''
+    Input parameters:
+            lstStatus: a list that looks like: [('Active', False, '7/31/2017-3/15/2018'),('Option Pending', False, None),('Pend Cont to Show',False, None),('Pending', False, None),('Sold',True, '01/01/2017-12/31/2017')]
+            strPropType: Type of property to download, for example, 'Single-Family' etc. An empty string means it will download every property type
+            strZipCode: Zipcode to download
+            bDownloadHtml: boolean value that if it should download each individual htmls
     return value:
     0: logic failure
     >5000: too many records
     between 1-5000: success
     '''
-    def RunAllPropSearchPage(self, lstStatus, strPropType, strZipCode):
+    def RunAllPropSearchPage(self, lstStatus, strPropType, strZipCode, bSaveCSV=True, bDownloadHtml=False):
         # load the page
         strPageLink = "http://matrix.harmls.com/Matrix/Search/AllProperties/Classic"
         self._driver.get(strPageLink)
@@ -277,16 +282,29 @@ class cMatrixScrapper:
                         self._driver.back()
                     else:
                         return -1
-            nReturn =  self.DownloadSearchResultsCSV(nResultCount)
-            #click the back button to go back to the results list page
+            nReturn = self.RunAllPropSearchReultPage(nResultCount, bSaveCSV, bDownloadHtml)
+            return nReturn
+        else:
+            return nResultCount
+
+    '''
+    do processings of the matrix search results page, it will either download search results into CSV, and/or (not) download property details one by one 
+    into html files as well as lat lon info
+    '''
+    def RunPropSearchResultPage(self, nResultCount, bSaveCSV=True, bDownloadHtml=False):
+        if bSaveCSV:
+            nReturn = self.DownloadSearchResultsCSV(nResultCount)
+
+        if bDownloadHtml:
+            # click the back button to go back to the results list page
             xpBackButton = "//a[@id='m_btnBack']"
             elemBackButton = self._driver.find_element_by_xpath(xpBackButton)
             elemBackButton.click()
 
-            #now save each property details as htmls:
+            # now save each property details as htmls:
             xpViewList = "//select[@id='m_ucDisplayPicker_m_ddlDisplayFormats']"
             elemViewList = WebDriverWait(self._driver, 30).until(EC.presence_of_element_located((By.XPATH, xpViewList)))
-            #elemViewList = self._driver.find_element_by_id('m_ucDisplayPicker_m_ddlDisplayFormats')
+            # elemViewList = self._driver.find_element_by_id('m_ucDisplayPicker_m_ddlDisplayFormats')
             pathHtml = self._cfg.getConfigValue("JsonPath")
             for option in elemViewList.find_elements_by_tag_name('option'):
                 if option.text == 'Agent Full':
@@ -300,20 +318,20 @@ class cMatrixScrapper:
                     EC.presence_of_element_located((By.XPATH, xpNextButton)))
                 # elemNextButton  = self._driver.find_element_by_xpath(xpNextButton)
 
-                outputFile = open(pathHtml + "\\" + str(i)+".html","w")
+                outputFile = open(pathHtml + "\\" + str(i) + ".html", "w")
                 outputFile.write(self._driver.page_source)
                 outputFile.close()
-                #Now need to get the latlon page
+                # Now need to get the latlon page
                 xpViewMap = "//a[@title='View Map']"
                 elemViewMap = self._driver.find_element_by_xpath(xpViewMap)
                 if elemViewMap.get_attribute('href') is not None:
                     latlon = self.GetLatLong(elemViewMap)
                     outputFile = open(pathHtml + "\\latlon_" + str(i) + ".json", "w")
-                    #outputFile.write(latlon)
-                    #outputFile.close()
+                    # outputFile.write(latlon)
+                    # outputFile.close()
                     json.dump(latlon, outputFile)
                     outputFile.close()
-                i+=1
+                i += 1
                 time.sleep(1)
                 elemNextButton = WebDriverWait(self._driver, 30).until(
                     EC.presence_of_element_located((By.XPATH, xpNextButton)))
@@ -322,158 +340,9 @@ class cMatrixScrapper:
                     break
                 else:
                     elemNextButton.click()
-
-            return nReturn
-        else:
-            return nResultCount
-        '''    
-        if nResultCount > 0:
-
-            elemResultLnk = self._driver.find_element_by_xpath(xpResultLnk)
-            nTryCount = 0
-            while True:
-                elemResultLnk.click()
-                # time.sleep(2)
-                xpMLSHeader = ".//th[@data-mlheader='1\\bMLS #']"
-                try:
-                    elemMLSHeader = WebDriverWait(self._driver, 10).until(
-                        EC.presence_of_element_located((By.XPATH, xpMLSHeader)))
-                    break
-                except:
-                    nTryCount += 1
-                    if nTryCount < 10:
-                        self._driver.back()
-                    else:
-                        return False
-        #Here will scrap the results list page
-        self.RunSearchResultsPage(nResultCount, strPropType)
-        '''
-        '''
-             sccrape all property page based on input
-             oStatus: [(text, value(true, false),date_range_as_string)]; example('Active', False, '7/31/2003-9/1/2003')
-            lstPropType: ['Single-Family', 'Townhouse/Condo','Lots','Multi-Family','Rental']
-            ZipCode:
-            
-        '''
-    def depricated_RunAllPropSearchPage(self, lstStatus, strPropType, ZipCode):
-        """
-
-        :rtype: object
-        """
-        # load the page
-        strPageLink = "http://matrix.harmls.com/Matrix/Search/AllProperties/Classic"
-        self._driver.get(strPageLink)
-        #verify the page load completes by checking existance of the first search creteria
-
-        # Load searh criteria, if an element is not found, it returns with False and with a string explanation of the error
-        dictStatus = {'Active':(".//*[@name='Fm1_Ctrl16_LB' and @value='20915']", ".//*[@id='FmFm1_Ctrl16_20915_Ctrl16_TB']"),
-                      'Option Pending':(".//*[@name='Fm1_Ctrl16_LB' and @value='20918']",".//*[@id='FmFm1_Ctrl16_20918_Ctrl16_TB']"),
-                      'Pend Cont to Show':(".//*[@name='Fm1_Ctrl16_LB' and @value='20920']",".//*[@id='FmFm1_Ctrl16_20920_Ctrl16_TB']"),
-                      'Pending':(".//*[@name='Fm1_Ctrl16_LB' and @value='20919']",".//*[@id='FmFm1_Ctrl16_20919_Ctrl16_TB']"),
-                      'Sold':(".//*[@name='Fm1_Ctrl16_LB' and @value='20916']",".//*[@id='FmFm1_Ctrl16_20916_Ctrl16_TB']"),
-                      'Withdrawn': (".//*[@name='Fm1_Ctrl16_LB' and @value='20922']",".//*[@id='FmFm1_Ctrl16_20922_Ctrl16_TB']"),
-                      'Expired': (".//*[@name='Fm1_Ctrl16_LB' and @value='20917']",".//*[@id='FmFm1_Ctrl16_20917_Ctrl16_TB']"),
-                      'Terminated': (".//*[@name='Fm1_Ctrl16_LB' and @value='20921']",".//*[@id='FmFm1_Ctrl16_20921_Ctrl16_TB']"),
-                      'Incomplete': (".//*[@name='Fm1_Ctrl16_LB' and @value='23706']",".//*[@id='FmFm1_Ctrl16_23706_Ctrl16_TB']")
-                      }
-        for oStatus in lstStatus:
-            #get the xpaths
-            xPaths = dictStatus[oStatus[0]]
-            xpChk = xPaths[0] #get the xpath to the check box
-            xpTxt = xPaths[1] #get the xpath to the textbox
-            elemChk = self._driver.find_element_by_xpath(xpChk)
-            #now check/uncheck as needed
-            if elemChk.is_selected() != oStatus[1]:
-                elemChk.click()
-            if elemChk.is_selected(): #when it's selected, populate the date range
-                elemTxt = self._driver.find_element_by_xpath(xpTxt)
-                elemTxt.clear()
-                elemTxt.send_keys(oStatus[2])
-
-        xpSelect = ".//*[@id='Fm1_Ctrl129_LB']"  #this is the xpath to find the select element
-        elemSelect = self._driver.find_element_by_xpath(xpSelect)
-        for option in elemSelect.find_elements_by_tag_name('option'):
-            if strPropType == option.text:
-                option.click()
+        return nReturn
 
 
-        xPath = ".//*[@id='Fm1_Ctrl19_TextBox']"
-        elemZip = self._driver.find_element_by_xpath(xPath)
-        elemZip.send_keys(strZip)
-        time.sleep(2)
-        ##get the result link and result count
-        xpResultCntLnk = ".//*[@id='m_ucSearchButtons_m_clblCount']"
-        xpResultLnk = ".//*[@id='m_ucSearchButtons_m_lbSearch']"
-        elemResulCnttLnk = self._driver.find_element_by_xpath(xpResultCntLnk)
-
-        nResultCount = int(re.findall(r'\d+', elemResulCnttLnk.text)[0])
-        if nResultCount> 0:
-            #first get the list of files that exists in the results folder, get the MLS numbers in a list
-            jsonPath = self._cfg.getConfigValue("JsonPath")
-            lstMLS = [ s.lstrip(jsonPath + "\\").rstrip(".json") for s in glob.glob("{0}\\*.json".format(jsonPath))]
-
-            elemResultLnk = self._driver.find_element_by_xpath(xpResultLnk)
-            nTryCount = 0
-            while True:
-                elemResultLnk.click()
-                #time.sleep(2)
-                xpMLSHeader = ".//th[@data-mlheader='1\\bMLS #']"
-                try:
-                    elemMLSHeader = WebDriverWait(self._driver, 10).until(EC.presence_of_element_located((By.XPATH, xpMLSHeader)))
-                    break
-                except:
-                    nTryCount+=1
-                    if nTryCount <10:
-                        self._driver.back()
-                    else:
-                        return False
-                #now click the first in search result:
-            xpMLSs = ".//td[@class='d1m5']/span[@class='d1m1']"
-            elemMLSs = self._driver.find_elements_by_xpath(xpMLSs)
-            xpTester = ".//div[@class='tabSelected']"
-            nTryCount = 0
-            bSearchStarted = False #it's a flag that tells if a new search has started
-            while True:
-                #find the first mls link that hasn't be searched
-                for item in elemMLSs:
-                    strMLS = item.text
-                    if strMLS not in lstMLS:
-                        #if the mls is not in the existing list, go ahead and start normal scraping
-                        elemMLSs[0].click()
-                        bSearchStarted = True
-                        try:
-                            elemTest = WebDriverWait(self._driver,10).until(EC.presence_of_element_located((By.XPATH, xpTester)))
-                            break
-                        except:
-                            nTryCount +=1
-                            if nTryCount <10:
-                                self._driver.back()
-                            else:
-                                return False
-                if not bSearchStarted: #if it still hasn't found a unprocessed mls, try to flip to next page
-                    #look for the "next" tag to click
-                    xpNextOrPrev = ".//a[contains(@href, 'javascript:__doPostBack('m_DisplayCore','Redisplay|,,']"
-                    elems = self._driver.find_elements_by_xpath(xpNextOrPrev)
-                    for elem in elems:
-                        if elem.text == 'Next':
-                            #click the next link
-                            elem.click()
-                            time.sleep(2)
-
-
-            ##click the result search
-            while True:
-                #get the lat/lon
-                xpMap = ".//a[@title='View Map']"
-                elemMap = self._driver.find_element_by_xpath(xpMap)
-                latlon = self.GetLatLong(elemMap)
-                elemNext = self.ScrapSearchResultsPropertyDetailPage(strPropType, latlon)
-                if elemNext is None:
-                    break
-                else:
-                    elemNext.click()
-                    time.sleep(1)
-        return True
 
     '''get the lat lon information'''
     def GetLatLong(self, elemMap):
@@ -718,10 +587,11 @@ if __name__ == "__main__":
     o = cMatrixScrapper("AllPropScrapper", "DEV")
     o.SignIntoMatrix()
     lstStatus = [('Active', False, '7/31/2017-3/15/2018'),('Option Pending', False, None),('Pend Cont to Show',False, None),('Pending', False, None),
-               ('Sold',True, '01/01/2017-01/01/2018')]
+               ('Sold',True, '01/01/2017-12/31/2017')]
     #lstPropType = ['Single-Family','Lots']
     strZip = '77007'
     o.RunAllPropSearchPage(lstStatus, '',strZip)
+
     '''
     time.sleep(3)
     lstStatus[4] = ('Sold', True, '01/01/2017-10/31/2018')
