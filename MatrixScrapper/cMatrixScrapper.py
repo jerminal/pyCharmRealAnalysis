@@ -226,7 +226,7 @@ class cMatrixScrapper:
     >5000: too many records
     between 1-5000: success
     '''
-    def depricate_RunAllPropSearchPage(self, lstCriteria):
+    def RunAllPropSearchPage(self, lstCriteria):
         # load the page
         strPageLink = "http://matrix.harmls.com/Matrix/Search/AllProperties/Classic"
         self._driver.get(strPageLink)
@@ -248,23 +248,28 @@ class cMatrixScrapper:
                 elif type == 'checkbox':
                     if elem.is_selected() != val:
                         elem.click()
-                elif type.split('-')[0] == 'option':
+                    #else:
+                    #    print('Unknow tag type enountered: {0]'.format(item))
+            elif tag == 'select':
+                if type.split('-')[0] == 'option':
                     if len(val) > 0:
                         for option in elem.find_elements_by_tag_name('option'):
                             if type.split('-')[1] == 'text':
                                 if option.text == val:
                                     option.click()
+                                    continue
                             elif type.split('-')[1] == 'value':
                                 if option.get_attribute('value') == val:
                                     option.click()
+                                    continue
                             elif type.split('-')[1] == 'title':
                                 if option.get_attribute('title') == val:
                                     option.click()
+                                    continue
                             else:
                                 print('Unkown option select criteria')
-                    else:
-                    print('Unknow tag type enountered: {0]'.format(item))
-            elif tag == 'select':
+                else:
+                    print('Unkown option ')
             else:
                 print('unknown tag encountered:')
 
@@ -799,7 +804,30 @@ if __name__ == "__main__":
     #lstPropType = ['Single-Family','Lots']
     strZip = '77007'
     strMLS = ''
-    o.RunAllPropSearchPage(lstStatus, '',strZip)
+    lstCriteria = [
+        ('Active Check', 'input', 'checkbox', '//input[@value="20915" and @name="Fm1_Ctrl16_LB"]', False),
+        #('ActiveText', 'input', 'text', ".//*[@id='FmFm1_Ctrl16_20915_Ctrl16_TB']", '01/01/2018-03/01/2018'),
+        ('Option Pending Check', 'input', 'checkbox', ".//*[@name='Fm1_Ctrl16_LB' and @value='20918']", False),
+        #('Option Pending Text', 'input', 'text', ".//*[@id='FmFm1_Ctrl16_20918_Ctrl16_TB']", '01/01/2018-03/01/2018'),
+        # ('Pend Cont to Show Check', 'input', 'checkbox', ".//*[@name='Fm1_Ctrl16_LB' and @value='20920']", False),
+        # ('Pend Cont to Show Text', 'input', 'text', ".//*[@id='FmFm1_Ctrl16_20920_Ctrl16_TB']",
+        #  '01/01/2018-03/01/2018'),
+        #('Pending Check', 'input', 'checkbox', ".//*[@name='Fm1_Ctrl16_LB' and @value='20919']", False)
+        # ('Pending Text', 'input' 'text', ".//*[@id='FmFm1_Ctrl16_20919_Ctrl16_TB']", '01/01/2018-03/01/2018'),
+         ('Sold Check', 'input', 'checkbox', ".//*[@name='Fm1_Ctrl16_LB' and @value='20916']", True),
+         ('Sold Text', 'input', 'text', ".//*[@id='FmFm1_Ctrl16_20916_Ctrl16_TB']", '01/01/2018-03/01/2018'),
+        # ('Withdrawn Check', 'input', 'checkbox', ".//*[@name='Fm1_Ctrl16_LB' and @value='20922']", False),
+        # ('Widthdrawn Text', 'input', 'text', ".//*[@id='FmFm1_Ctrl16_20922_Ctrl16_TB']", '01/01/2018-03/01/2018'),
+         ('Single-Family Select', 'select', 'option-text', './/select[@id="Fm1_Ctrl129_LB"]', 'Single-Family'),
+        # ('Townhouse Select', 'select', 'option-value', './/select[@id="Fm1_Ctrl129_LB"]', '23708'),
+        # ('Lots Select', 'select', 'option-title', './/select[@id="Fm1_Ctrl129_LB"]', 'Lots'),
+        # ('Multi-Family Select', 'select', 'option-text', './/select[@id="Fm1_Ctrl129_LB"]', 'Multi-Family'),
+        # ('Country Homes Select', 'select', 'option-value', './/select[@id="Fm1_Ctrl129_LB"]', '20923'),
+        # ('Mid/Hi-Rise Select', 'select', 'option-value', './/select[@id="Fm1_Ctrl129_LB"]', '23709'),
+        # ('Rent Select', 'select', 'option-text', './/select[@id="Fm1_Ctrl129_LB"]', 'Rental'),
+         ('ZipCode Text', 'input', 'text', './/input[@id="Fm1_Ctrl19_TextBox"]', '77007')
+         ]
+    o.RunAllPropSearchPage(lstCriteria)
 
 
     '''
