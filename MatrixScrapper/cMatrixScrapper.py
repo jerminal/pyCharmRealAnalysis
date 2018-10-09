@@ -58,6 +58,53 @@ class cMatrixScrapper:
         print("signed in")
         return True
 
+    '''
+    Input parameters:
+    desc: a general description of what the tag is/does
+    tag: tag: a, input, select, etc.
+    type: tag type: input, checkbox, option, etc.
+    xp: xpath to the tag on the webpage
+    val: tag value, it can be True/False, string, etc.
+    
+    '''
+    def set_tag_value(self, desc, tag, type, xp, val):
+        try:
+            elem = self._driver.find_element_by_xpath(xp)
+        except:
+            print ('Error! tag with xpath: {0} not found! '.format(xp))
+            return False
+
+        if tag == 'input':
+            if type == 'text':
+                elem.clear()
+                elem.send_keys(val)
+            elif type == 'checkbox':
+                if elem.is_selected() != val:
+                    elem.click()
+                #else:
+                #    print('Unknow tag type enountered: {0]'.format(item))
+        elif tag == 'select':
+            if type.split('-')[0] == 'option':
+                if len(val) > 0:
+                    for option in elem.find_elements_by_tag_name('option'):
+                        if type.split('-')[1] == 'text':
+                            if option.text == val:
+                                option.click()
+                                continue
+                        elif type.split('-')[1] == 'value':
+                            if option.get_attribute('value') == val:
+                                option.click()
+                                continue
+                        elif type.split('-')[1] == 'title':
+                            if option.get_attribute('title') == val:
+                                option.click()
+                                continue
+                        else:
+                            print('Unkown option select criteria')
+            else:
+                print('Unkown option ')
+        else:
+            print('unknown tag encountered:')
 
     def wait_for_new_window(self, timeout=10):
         handles_before = self._driver.window_handles
@@ -233,46 +280,13 @@ class cMatrixScrapper:
         # verify the page load completes by checking existance of the first search creteria
         xpResults = './/a[@id="m_ucSearchButtons_m_lbSearch"]'
         elemResults = WebDriverWait(self._driver, 30).until(EC.presence_of_element_located((By.XPATH, xpResults)))
-
-        for item in lstCriteria:
-            xp = item[3]
-            val = item[4]
-            tag = item[1]
-            type = item[2]
-            desc = item[0]
-            elem = self._driver.find_element_by_xpath(xp)
-            if tag == 'input':
-                if type == 'text':
-                    elem.clear()
-                    elem.send_keys(val)
-                elif type == 'checkbox':
-                    if elem.is_selected() != val:
-                        elem.click()
-                    #else:
-                    #    print('Unknow tag type enountered: {0]'.format(item))
-            elif tag == 'select':
-                if type.split('-')[0] == 'option':
-                    if len(val) > 0:
-                        for option in elem.find_elements_by_tag_name('option'):
-                            if type.split('-')[1] == 'text':
-                                if option.text == val:
-                                    option.click()
-                                    continue
-                            elif type.split('-')[1] == 'value':
-                                if option.get_attribute('value') == val:
-                                    option.click()
-                                    continue
-                            elif type.split('-')[1] == 'title':
-                                if option.get_attribute('title') == val:
-                                    option.click()
-                                    continue
-                            else:
-                                print('Unkown option select criteria')
-                else:
-                    print('Unkown option ')
-            else:
-                print('unknown tag encountered:')
-
+        for criteria in lstCriteria:
+            xp = criteria[3]
+            val = criteria[4]
+            tag = criteria[1]
+            type = criteria[2]
+            desc = criteria[0]
+            result = self.set_tag_value(desc, tag, type, xp, val)
         return 0
 
 
