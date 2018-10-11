@@ -71,18 +71,21 @@ class cMatrixScrapper:
         try:
             elem = self._driver.find_element_by_xpath(xp)
         except:
-            print ('Error! tag with xpath: {0} not found! '.format(xp))
+            print ('Error! Tag Not found!  xpath: {0}'.format(xp))
             return False
 
         if tag == 'input':
             if type == 'text':
                 elem.clear()
                 elem.send_keys(val)
+                return True
             elif type == 'checkbox':
                 if elem.is_selected() != val:
                     elem.click()
-                #else:
-                #    print('Unknow tag type enountered: {0]'.format(item))
+                return True
+            else:
+                print('Unknown tag type enountered for tag: {0}. Tag type: {1} is unknown.'.format(tag, type))
+                return False
         elif tag == 'select':
             if type.split('-')[0] == 'option':
                 if len(val) > 0:
@@ -102,9 +105,10 @@ class cMatrixScrapper:
                         else:
                             print('Unkown option select criteria')
             else:
-                print('Unkown option ')
+                print('Unkown tag type encountered for tag {0}. Tag type: {1} is unknown.'.format(tag, type))
+                return False
         else:
-            print('unknown tag encountered:')
+            print('Unknown tag encountered: Tag {0} is unknown.'.format(tag))
 
     def wait_for_new_window(self, timeout=10):
         handles_before = self._driver.window_handles
