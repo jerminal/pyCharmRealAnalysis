@@ -93,22 +93,38 @@ class cMatrixScrapper:
                         if type.split('-')[1] == 'text':
                             if option.text == val:
                                 option.click()
-                                continue
+                                return True
                         elif type.split('-')[1] == 'value':
                             if option.get_attribute('value') == val:
                                 option.click()
-                                continue
+                                return True
                         elif type.split('-')[1] == 'title':
                             if option.get_attribute('title') == val:
                                 option.click()
-                                continue
+                                return True
                         else:
                             print('Unkown option select criteria')
+                            return False
             else:
                 print('Unkown tag type encountered for tag {0}. Tag type: {1} is unknown.'.format(tag, type))
                 return False
         else:
             print('Unknown tag encountered: Tag {0} is unknown.'.format(tag))
+            return False
+
+    def click_element(self, xpath):
+        try:
+            elem = elemNextLnk = WebDriverWait(self._driver, 30).until(
+                EC.presence_of_element_located((By.XPATH, xpath)))
+        except:
+            print('Web element not found! Element xpath: {0}'.format(xpath))
+            return False
+        try:
+            elem.click()
+            return True
+        except:
+            print('Web element not clickable! Element xpath: {0}'.format(xpath))
+            return False
 
     def wait_for_new_window(self, timeout=10):
         handles_before = self._driver.window_handles
@@ -119,33 +135,31 @@ class cMatrixScrapper:
     '''
     find, wait and get element, if not successful, it will keep on trying for 10 times before quit the program
     '''
-    def find_wait_get_element(self,elementType, val, bClick=False):
-        nFailureCount = 0
-        while nFailureCount < 5:
-            try:
-                if elementType == "link_text":
-                    elem = elemNextLnk = WebDriverWait(self._driver, 10).until(
-                        EC.presence_of_element_located((By.LINK_TEXT, val)))
-                elif elementType == "xpath":
-                    elem = elemNextLnk = WebDriverWait(self._driver, 10).until(
-                        EC.presence_of_element_located((By.XPATH, val)))
-                elif elementType == "id":
-                    elem = elemNextLnk = WebDriverWait(self._driver, 10).until(EC.presence_of_element_located((By.ID, val)))
-                elif elementType == "partial_link_text":
-                    elem = elemNextLnk = WebDriverWait(self._driver, 10).until(
-                        EC.presence_of_element_located((By.PARTIAL_LINK_TEXT, val)))
-                elif elementType == "name":
-                    elem = elemNextLnk = WebDriverWait(self._driver, 10).until(EC.presence_of_element_located((By.NAME, val)))
-                else:
-                    elem = elemNextLnk = WebDriverWait(self._driver, 10).until(
-                        EC.presence_of_element_located((By.TAG_NAME, val)))
-                if bClick:
-                    elem.click()
-                return (elem, nFailureCount)
-            except:
-                nFailureCount += 1
-                self._driver.refresh()
-        return (None, nFailureCount)
+    def find_wait_get_element(self,elementType, val, waitSeconds, bClick=False):
+        try:
+            if elementType == "link_text":
+                elem = elemNextLnk = WebDriverWait(self._driver, waitSeconds).until(
+                    EC.presence_of_element_located((By.LINK_TEXT, val)))
+            elif elementType == "xpath":
+                elem = elemNextLnk = WebDriverWait(self._driver, waitSeconds).until(
+                    EC.presence_of_element_located((By.XPATH, val)))
+            elif elementType == "id":
+                elem = elemNextLnk = WebDriverWait(self._driver, waitSeconds).until(EC.presence_of_element_located((By.ID, val)))
+            elif elementType == "partial_link_text":
+                elem = elemNextLnk = WebDriverWait(self._driver, waitSeconds).until(
+                    EC.presence_of_element_located((By.PARTIAL_LINK_TEXT, val)))
+            elif elementType == "name":
+                elem = elemNextLnk = WebDriverWait(self._driver, waitSeconds).until(EC.presence_of_element_located((By.NAME, val)))
+            else:
+                elem = elemNextLnk = WebDriverWait(self._driver, waitSeconds).until(
+                    EC.presence_of_element_located((By.TAG_NAME, val)))
+            if bClick:
+                elem.click()
+            return elem
+        except:
+            raise Exception('Error! Cannot find element. Type: {0}, value: {1}'.format(elementType, val))
+        finally:
+            return None
 
 
     '''
@@ -228,18 +242,18 @@ class cMatrixScrapper:
         #"//*[@id="m_pnlDisplay"]/table/thead/tr/th[1]/span/input"
         try:
             xpAllLink = "//a[@id='m_lnkCheckAllLink']"
-            elemCheckAll = self._driver.find_element_by_xpath(xpAllLink)
-            elemCheckAll.click()
+            if not self.click_element(xpAllLink):
+                raise Exception('Error occured while trying to click the Check All link')
             time.sleep(1)
             # Click the export button and save the csv file
             xpExportButton = "//a[@id='m_lbExport']"
-            elemExportBtn = self._driver.find_element_by_xpath(xpExportButton)
-            elemExportBtn.click()
+            if not self.click_element(xpExportButton):
+                raise Exception('Error occured while trying to click the Export link')
             time.sleep(1)
             #now it will bring up another webpage, we need to click the final export button
             xpFileSave = "//a[@id='m_btnExport']"
-            elemFileSave = self._driver.find_element_by_xpath(xpFileSave)
-            elemFileSave.click()
+            if not self.click_element(xpFileSave):
+                raise Exception('Error occured while trying to click Export button')
             return nRecCount
         except:
             print("exception happened while trying to download csv")
@@ -283,7 +297,9 @@ class cMatrixScrapper:
         self._driver.get(strPageLink)
         # verify the page load completes by checking existance of the first search creteria
         xpResults = './/a[@id="m_ucSearchButtons_m_lbSearch"]'
-        elemResults = WebDriverWait(self._driver, 30).until(EC.presence_of_element_located((By.XPATH, xpResults)))
+        elemResults = self.find_wait_get_element('xpath', xpResults, 30,False)
+        if elemResults is None:
+            return -1
         for criteria in lstCriteria:
             xp = criteria[3]
             val = criteria[4]
@@ -291,10 +307,12 @@ class cMatrixScrapper:
             type = criteria[2]
             desc = criteria[0]
             result = self.set_tag_value(desc, tag, type, xp, val)
-        return 0
-
-
-
+        ##get the result link and result count
+        xpResultCntLnk = ".//*[@id='m_ucSearchButtons_m_clblCount']"
+        elemResultCntLnk = self.find_wait_get_element('xpath', xpResultCntLnk, 30, False)
+        nResultCount = int(re.findall(r'\d+', elemResultCntLnk.text)[0])
+        return nResultCount
+        
     '''
     return value:
     0: logic failure
