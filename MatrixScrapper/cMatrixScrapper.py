@@ -321,7 +321,7 @@ class cMatrixScrapper:
             ('MLS#', 'input', 'text', '//input[@id="Fm1_Ctrl12_TextBox"]', strMLS)
         ]
         nRecCount = self.RunAllPropSearchPage(lstCriteria)
-        
+
         return nRecCount
     def SearchSoldPropertiesByZip(self, datFrom, datTo, strZip, lstPropType=None):
         '''
