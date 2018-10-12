@@ -349,7 +349,7 @@ class cMatrixScrapper:
                 else:
                     print('Property type not recongnized. Property type: {0}'.format(propType))
         nRecCount = self.RunAllPropSearchPage(lstCriteria)
-        
+        return nRecCount
     '''
     return value:
     0: logic failure
