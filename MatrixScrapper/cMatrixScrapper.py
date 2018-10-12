@@ -312,6 +312,43 @@ class cMatrixScrapper:
         elemResultCntLnk = self.find_wait_get_element('xpath', xpResultCntLnk, 30, False)
         nResultCount = int(re.findall(r'\d+', elemResultCntLnk.text)[0])
         return nResultCount
+
+    '''
+        lstPropType: a list of property types, if will cover all properties if None
+    '''
+    def SearchSoldPropertiesByZip(self, datFrom, datTo, strZip, lstPropType=None):
+        strDateRange = datFrom.strftime('%m/%d/%Y') + '-' + datTo.strftime('%m/%d/%Y')
+        lstCriteria = [
+            ('Active Check', 'input', 'checkbox', '//input[@value="20915" and @name="Fm1_Ctrl16_LB"]', False),
+             ('Sold Check', 'input', 'checkbox', ".//*[@name='Fm1_Ctrl16_LB' and @value='20916']", True),
+             ('Sold Text', 'input', 'text', ".//*[@id='FmFm1_Ctrl16_20916_Ctrl16_TB']", strDateRange),
+             ('ZipCode Text', 'input', 'text', './/[@id="Fm1_Ctrl19_TextBox"]', strZip)
+             ]
+        if lstPropType is not None:
+            for propType in lstPropType:
+                if propType == 'Single-Family':
+                    lstCriteria.append(('Single-Family Select', 'select', 'option-text', './/select[@id="Fm1_Ctrl129_LB"]', 'Single-Family'))
+                elif propType == 'Townhouse':
+                    lstCriteria.append(('Townhouse Select', 'select', 'option-value', './/select[@id="Fm1_Ctrl129_LB"]', '23708'))
+                elif propType == 'Lots':
+                    lstCriteria.append(
+                        ('Lots Select', 'select', 'option-title', './/select[@id="Fm1_Ctrl129_LB"]', 'Lots'))
+                elif propType == 'Multi-Family':
+                    lstCriteria.append(
+                        ('Multi-Family Select', 'select', 'option-text', './/select[@id="Fm1_Ctrl129_LB"]',
+                         'Multi-Family'))
+                elif propType == 'Country home':
+                    lstCriteria.append(
+                        ('Country Homes Select', 'select', 'option-value', './/select[@id="Fm1_Ctrl129_LB"]', '20923'))
+                elif propType == 'Mid/Hi-Rise':
+                    lstCriteria.append(
+                        ('Mid/Hi-Rise Select', 'select', 'option-value', './/select[@id="Fm1_Ctrl129_LB"]', '23709'))
+                elif propType == 'Rental':
+                    lstCriteria.append(
+                        ('Rent Select', 'select', 'option-text', './/select[@id="Fm1_Ctrl129_LB"]', 'Rental'))
+                else:
+                    print('Property type not recongnized. Property type: {0}'.format(propType))
+        nRecCount = self.RunAllPropSearchPage(lstCriteria)
         
     '''
     return value:
