@@ -45,10 +45,10 @@ class cMatrixScrapper:
         elemPwd.send_keys(strPwd)
         elemPwd.send_keys(Keys.RETURN)
 
-        (elemNextLnk, nFailureCnt) = self.find_wait_get_element("link_text", "Enter Matrix MLS")
+        elemNextLnk  = self.find_wait_get_element("link_text", "Enter Matrix MLS")
         window_before = self._driver.window_handles[0]
         xpath = "/html[@class='wf-effra-n4-active wf-effra-n7-active wf-effra-n3-active wf-effra-n5-active wf-effra-n9-active wf-active']/body/div[@class='content overlay']/div[@class='container']/div[@class='rightPane']/div[@class='box_simple gray agentbox newhar']/div[@class='box_content grid_view']/a[1]"
-        (elemNextLnk, nFailureCnt) = self.find_wait_get_element("xpath", xpath, True)
+        elemNextLnk = self.find_wait_get_element("xpath", xpath, True)
         time.sleep(3)
 
         self.wait_for_new_window(self._driver)
@@ -135,7 +135,7 @@ class cMatrixScrapper:
     '''
     find, wait and get element, if not successful, it will keep on trying for 10 times before quit the program
     '''
-    def find_wait_get_element(self,elementType, val, waitSeconds, bClick=False):
+    def find_wait_get_element(self,elementType, val, waitSeconds = 10, bClick=False):
         try:
             if elementType == "link_text":
                 elem = elemNextLnk = WebDriverWait(self._driver, waitSeconds).until(
@@ -193,7 +193,7 @@ class cMatrixScrapper:
     compare against the scrapped list, it will scrap the details if it finds a mls link that's not in the list
     nResultCount: The number of search results
     '''
-    def RunSearchResultsPage(self, nResultCount, strPropType):
+    def depricated_RunSearchResultsPage(self, nResultCount, strPropType):
         jsonPath = self._cfg.getConfigValue("JsonPath")
         lstMLS = [s.lstrip(jsonPath + "\\").rstrip(".json") for s in glob.glob("{0}\\*.json".format(jsonPath))]
         xpMLSs = ".//td[@class='d1m5']/span[@class='d1m1']" #this is the elements containing mls results
@@ -235,34 +235,50 @@ class cMatrixScrapper:
 
             '''
 
-    def DownloadSearchResultsCSV(self, nRecCount):
+    def ProcessAllPropClassicSearchResultsPage(self, nRecCount, bSaveCSV = True):
         '''
-            On the Results download page, click to download CSV file
+            On the Results page, if bSaveCSV = true, it will click to download CSV file, otherwise it will switch to single page view
         '''
         # Search for the master check box, and check it
         #"//*[@id="m_pnlDisplay"]/table/thead/tr/th[1]/span/input"
-        try:
-            xpAllLink = "//a[@id='m_lnkCheckAllLink']"
-            if not self.click_element(xpAllLink):
-                raise Exception('Error occured while trying to click the Check All link')
-            time.sleep(1)
-            # Click the export button and save the csv file
-            xpExportButton = "//a[@id='m_lbExport']"
-            if not self.click_element(xpExportButton):
-                raise Exception('Error occured while trying to click the Export link')
-            time.sleep(1)
-            #now it will bring up another webpage, we need to click the final export button
-            xpFileSave = "//a[@id='m_btnExport']"
-            if not self.click_element(xpFileSave):
-                raise Exception('Error occured while trying to click Export button')
-            return nRecCount
-        except:
-            print("exception happened while trying to download csv")
-            traceback.print_exc()
-            return 0
+        if bSaveCSV:
+            try:
+                xpAllLink = "//a[@id='m_lnkCheckAllLink']"
+                if not self.click_element(xpAllLink):
+                    raise Exception('Error occured while trying to click the Check All link')
+                time.sleep(1)
+                # Click the export button and save the csv file
+                xpExportButton = "//a[@id='m_lbExport']"
+                if not self.click_element(xpExportButton):
+                    raise Exception('Error occured while trying to click the Export link')
+                time.sleep(1)
+                #now it will bring up another webpage, we need to click the final export button
+                xpFileSave = "//a[@id='m_btnExport']"
+                if not self.click_element(xpFileSave):
+                    raise Exception('Error occured while trying to click Export button')
+                return nRecCount
+            except:
+                print("exception happened while trying to download csv")
+                traceback.print_exc()
+                return 0
+        else:
+            #Search for the first mls link and click it
+            xpMLS = 'td[@class="d1m5"]/span[@class="d1m1"]/a'
+            #get the first MLS link
+            try:
+                elemMLS = self._driver.find_elements_by_xpath(xpMLS)[0]
+            except:
+                print("Error locating the MLS tag. Tag xpath: {0}".format(xpMLS))
+                return 0
+            if elemMLS.get_attribute('href') is not None:
+                elemMLS.click()
+                return nRecCount
+            else:
+                return 0
 
 
-    def RunAllPropSearchPage(self, lstCriteria):
+
+    def FilterAllPropClassicSearchPage(self, lstCriteria):
         '''
         input parameters:
         lstCriteria: example
@@ -315,7 +331,7 @@ class cMatrixScrapper:
         nResultCount = int(re.findall(r'\d+', elemResultCntLnk.text)[0])
         return nResultCount
 
-    def SearchPropertyByMLS(self, strMLS, bSaveHtml=True, bFindLatLon=True):
+    def QueryPropertyByMLS(self, strMLS, bSaveHtml=True, bFindLatLon=True):
         lstCriteria = [
             ('Active Check', 'input', 'checkbox', '//input[@value="20915" and @name="Fm1_Ctrl16_LB"]', False),
             ('MLS#', 'input', 'text', '//input[@id="Fm1_Ctrl12_TextBox"]', strMLS)
@@ -323,7 +339,7 @@ class cMatrixScrapper:
         nRecCount = self.RunAllPropSearchPage(lstCriteria)
 
         return nRecCount
-    def SearchSoldPropertiesByZip(self, datFrom, datTo, strZip, lstPropType=None):
+    def QuerySoldAllPropClassicByZip(self, datFrom, datTo, strZip, lstPropType=None):
         '''
             lstPropType: a list of property types, if will cover all properties if None
         '''
@@ -642,7 +658,7 @@ class cMatrixScrapper:
         return True
 
     '''get the lat lon information'''
-    def GetLatLong(self, elemMap):
+    def GetLatLong(self, elemMap, bSaveJson = False):
         if elemMap is not None:
             window_before = self._driver.window_handles[0]
             try:
@@ -883,124 +899,8 @@ if __name__ == "__main__":
     print("Start scrapping")
     o = cMatrixScrapper("AllPropScrapper", "DEV")
     o.SignIntoMatrix()
-    lstStatus = [('Active', False, '7/31/2017-3/15/2018'),('Option Pending', False, None),('Pend Cont to Show',False, None),('Pending', False, None),
-               ('Sold',True, '01/01/2017-01/01/2018')]
-    #lstPropType = ['Single-Family','Lots']
-    strZip = '77007'
-    strMLS = ''
-    lstCriteria = [
-        ('Active Check', 'input', 'checkbox', '//input[@value="20915" and @name="Fm1_Ctrl16_LB"]', False),
-        #('ActiveText', 'input', 'text', ".//*[@id='FmFm1_Ctrl16_20915_Ctrl16_TB']", '01/01/2018-03/01/2018'),
-        ('Option Pending Check', 'input', 'checkbox', ".//*[@name='Fm1_Ctrl16_LB' and @value='20918']", False),
-        #('Option Pending Text', 'input', 'text', ".//*[@id='FmFm1_Ctrl16_20918_Ctrl16_TB']", '01/01/2018-03/01/2018'),
-        # ('Pend Cont to Show Check', 'input', 'checkbox', ".//*[@name='Fm1_Ctrl16_LB' and @value='20920']", False),
-        # ('Pend Cont to Show Text', 'input', 'text', ".//*[@id='FmFm1_Ctrl16_20920_Ctrl16_TB']",
-        #  '01/01/2018-03/01/2018'),
-        #('Pending Check', 'input', 'checkbox', ".//*[@name='Fm1_Ctrl16_LB' and @value='20919']", False)
-        # ('Pending Text', 'input' 'text', ".//*[@id='FmFm1_Ctrl16_20919_Ctrl16_TB']", '01/01/2018-03/01/2018'),
-         ('Sold Check', 'input', 'checkbox', ".//*[@name='Fm1_Ctrl16_LB' and @value='20916']", True),
-         ('Sold Text', 'input', 'text', ".//*[@id='FmFm1_Ctrl16_20916_Ctrl16_TB']", '01/01/2018-03/01/2018'),
-        # ('Withdrawn Check', 'input', 'checkbox', ".//*[@name='Fm1_Ctrl16_LB' and @value='20922']", False),
-        # ('Widthdrawn Text', 'input', 'text', ".//*[@id='FmFm1_Ctrl16_20922_Ctrl16_TB']", '01/01/2018-03/01/2018'),
-         ('Single-Family Select', 'select', 'option-text', './/select[@id="Fm1_Ctrl129_LB"]', 'Single-Family'),
-        # ('Townhouse Select', 'select', 'option-value', './/select[@id="Fm1_Ctrl129_LB"]', '23708'),
-        # ('Lots Select', 'select', 'option-title', './/select[@id="Fm1_Ctrl129_LB"]', 'Lots'),
-        # ('Multi-Family Select', 'select', 'option-text', './/select[@id="Fm1_Ctrl129_LB"]', 'Multi-Family'),
-        # ('Country Homes Select', 'select', 'option-value', './/select[@id="Fm1_Ctrl129_LB"]', '20923'),
-        # ('Mid/Hi-Rise Select', 'select', 'option-value', './/select[@id="Fm1_Ctrl129_LB"]', '23709'),
-        # ('Rent Select', 'select', 'option-text', './/select[@id="Fm1_Ctrl129_LB"]', 'Rental'),
-         ('ZipCode Text', 'input', 'text', './/input[@id="Fm1_Ctrl19_TextBox"]', '77007')
-         ]
-    o.RunAllPropSearchPage(lstCriteria)
-
-
-    '''
-    Web control data structure:
-    (My name, Tag name, webcontrol type, 'xPath', value to put in)
-    for example ('My Name', 'input', checkbox , '//input[@blah=blah]', 'Jach Reacher')
-    [
-        ('MLS#', 'input','text','//input[@id="Fm1_Ctrl12_TextBox"]', '0123456789'),
-        ('Active Check', 'input', 'checkbox', '//input[@value="20915" and @name="Fm1_Ctrl16_LB"], False),
-        ('ActiveText', 'input', 'text', ".//*[@id='FmFm1_Ctrl16_20915_Ctrl16_TB']", '01/01/2018-03/01/2018'),
-        ('Option Pending Check', 'input', 'checkbox', ".//*[@name='Fm1_Ctrl16_LB' and @value='20918']", False),
-        ('Option Pending Text', 'input', 'text', ".//*[@id='FmFm1_Ctrl16_20918_Ctrl16_TB']", '01/01/2018-03/01/2018'),
-        ('Pend Cont to Show Check', 'input', 'checkbox', ".//*[@name='Fm1_Ctrl16_LB' and @value='20920']", False),
-        ('Pend Cont to Show Text', 'input', 'text', ".//*[@id='FmFm1_Ctrl16_20920_Ctrl16_TB']", '01/01/2018-03/01/2018'),
-        ('Pending Check', 'input', 'checkbox', ".//*[@name='Fm1_Ctrl16_LB' and @value='20919']", False)
-        ('Pending Text', 'input' 'text' ,".//*[@id='FmFm1_Ctrl16_20919_Ctrl16_TB']", '01/01/2018-03/01/2018'),
-        ('Sold Check', 'input', 'checkbox', ".//*[@name='Fm1_Ctrl16_LB' and @value='20916']", True),
-        ('Sold Text', 'input', 'text', ".//*[@id='FmFm1_Ctrl16_20916_Ctrl16_TB']", '01/01/2018-03/01/2018'),
-        ('Withdrawn Check', 'input', 'checkbox', ".//*[@name='Fm1_Ctrl16_LB' and @value='20922']", False),
-        ('Widthdrawn Text', 'input', 'text',".//*[@id='FmFm1_Ctrl16_20922_Ctrl16_TB']", '01/01/2018-03/01/2018'),
-        ('Single-Family Select', 'select', 'option-text', './/select[@id="Fm1_Ctrl129_LB"]', 'Single-Family'),
-        ('Townhouse Select', 'select', 'option-value', './/select[@id="Fm1_Ctrl129_LB"]', '23708'),
-        ('Lots Select', 'select', 'option-title', './/select[@id="Fm1_Ctrl129_LB"]', 'Lots'),
-        ('Multi-Family Select', 'select', 'option-text', './/select[@id="Fm1_Ctrl129_LB"]', 'Multi-Family'),
-        ('Country Homes Select', 'select', 'option-value', './/select[@id="Fm1_Ctrl129_LB"]', '20923'),  
-        ('Mid/Hi-Rise Select', 'select', 'option-value', './/select[@id="Fm1_Ctrl129_LB"]', '23709'),
-        ('Rent Select', 'select', 'option-text', './/select[@id="Fm1_Ctrl129_LB"]', 'Rental'),
-        ('ZipCode Text','input','text', './/[@id="Fm1_Ctrl19_TextBox"]', '77007'),
-        
-              
-                      'Expired': (".//*[@name='Fm1_Ctrl16_LB' and @value='20917']",".//*[@id='FmFm1_Ctrl16_20917_Ctrl16_TB']"),
-                      'Terminated': (".//*[@name='Fm1_Ctrl16_LB' and @value='20921']",".//*[@id='FmFm1_Ctrl16_20921_Ctrl16_TB']"),
-                      'Incomplete': (".//*[@name='Fm1_Ctrl16_LB' and @value='23706']",".//*[@id='FmFm1_Ctrl16_23706_Ctrl16_TB']")
-    ]
-    '''
-    '''
-    time.sleep(3)
-    lstStatus[4] = ('Sold', True, '01/01/2017-10/31/2018')
-    o.RunAllPropSearchPage(lstStatus, '', strZip)
-
-    time.sleep(3)
-    lstStatus[4] = ('Sold', True, '01/01/2016-12/31/2016')
-    o.RunAllPropSearchPage(lstStatus, '', '')
-    time.sleep(3)
-    lstStatus[4] = ('Sold', True, '01/01/2015-12/31/2015')
-    o.RunAllPropSearchPage(lstStatus, '', strZip)
-    time.sleep(3)
-    lstStatus[4] = ('Sold', True, '01/01/2014-12/31/2014')
-    o.RunAllPropSearchPage(lstStatus, '', strZip)
-    time.sleep(3)
-    lstStatus[4] = ('Sold', True, '01/01/2013-12/31/2013')
-    o.RunAllPropSearchPage(lstStatus, '', strZip)
-    time.sleep(3)
-    lstStatus[4] = ('Sold', True, '01/01/2012-12/31/2012')
-    o.RunAllPropSearchPage(lstStatus, '', strZip)
-    time.sleep(3)
-    lstStatus[4] = ('Sold', True, '01/01/2011-12/31/2011')
-    o.RunAllPropSearchPage(lstStatus, '', strZip)
-    time.sleep(3)
-    lstStatus[4] = ('Sold', True, '01/01/2010-12/31/2010')
-    o.RunAllPropSearchPage(lstStatus, '', strZip)
-    time.sleep(3)
-    lstStatus[4] = ('Sold', True, '01/01/2009-12/31/2009')
-    o.RunAllPropSearchPage(lstStatus, '', strZip)
-    time.sleep(3)
-    lstStatus[4] = ('Sold', True, '01/01/2008-12/31/2008')
-    o.RunAllPropSearchPage(lstStatus, '', strZip)
-    time.sleep(3)
-
-    '''
-
-
-    '''
-    the following part tests the html search results 
-    '''
-    '''
-    file = '..\\testData\\sfh.html'
-    with open(file, 'r') as s:
-        sHtml = s.read()
-    o.ScrapSearchResultPropertyDetail(sHtml, 'sfh')
-
-    file = '..\\testData\\rnt.html'
-    with open(file, 'r') as s:
-        sHtml = s.read()
-    o.ScrapSearchResultPropertyDetail(sHtml, 'rnt')
-
-    file = '..\\testData\\lot.html'
-    with open(file, 'r') as s:
-        sHtml = s.read()
-    o.ScrapSearchResultPropertyDetail(sHtml, 'lot')
-    '''
-
+    strZip = '77096'
+    datFrom = date(2018,1,1)
+    datTo =  date(2018,10,1)
+    nRecCount = o.QuerySoldAllPropClassicByZip(datFrom, datTo, strZip)
+    o.ProcessAllPropClassicSearchResultsPage(nRecCount, True)
