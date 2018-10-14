@@ -45,11 +45,12 @@ class cMatrixScrapper:
         elemPwd.send_keys(strPwd)
         elemPwd.send_keys(Keys.RETURN)
 
-        elemNextLnk  = self.find_wait_get_element("link_text", "Enter Matrix MLS")
         window_before = self._driver.window_handles[0]
-        xpath = "/html[@class='wf-effra-n4-active wf-effra-n7-active wf-effra-n3-active wf-effra-n5-active wf-effra-n9-active wf-active']/body/div[@class='content overlay']/div[@class='container']/div[@class='rightPane']/div[@class='box_simple gray agentbox newhar']/div[@class='box_content grid_view']/a[1]"
-        elemNextLnk = self.find_wait_get_element("xpath", xpath, True)
-        time.sleep(3)
+        elemNextLnk  = self.find_wait_get_element("link_text", "Enter Matrix MLS", True)
+
+        #xpath = "/html[@class='wf-effra-n4-active wf-effra-n7-active wf-effra-n3-active wf-effra-n5-active wf-effra-n9-active wf-active']/body/div[@class='content overlay']/div[@class='container']/div[@class='rightPane']/div[@class='box_simple gray agentbox newhar']/div[@class='box_content grid_view']/a[1]"
+        #elemNextLnk = self.find_wait_get_element("xpath", xpath, True)
+        #time.sleep(3)
 
         self.wait_for_new_window(self._driver)
         window_after = self._driver.window_handles[1]
@@ -135,7 +136,7 @@ class cMatrixScrapper:
     '''
     find, wait and get element, if not successful, it will keep on trying for 10 times before quit the program
     '''
-    def find_wait_get_element(self,elementType, val, waitSeconds = 10, bClick=False):
+    def find_wait_get_element(self,elementType, val, bClick=False, waitSeconds = 10):
         try:
             if elementType == "link_text":
                 elem = elemNextLnk = WebDriverWait(self._driver, waitSeconds).until(
@@ -158,8 +159,6 @@ class cMatrixScrapper:
             return elem
         except:
             raise Exception('Error! Cannot find element. Type: {0}, value: {1}'.format(elementType, val))
-        finally:
-            return None
 
 
     '''
@@ -374,7 +373,7 @@ class cMatrixScrapper:
                         ('Rent Select', 'select', 'option-text', './/select[@id="Fm1_Ctrl129_LB"]', 'Rental'))
                 else:
                     print('Property type not recongnized. Property type: {0}'.format(propType))
-        nRecCount = self.RunAllPropSearchPage(lstCriteria)
+        nRecCount = self.FilterAllPropClassicSearchPage(lstCriteria)
         return nRecCount
 
     def depricate_RunAllPropSearchPage(self, lstStatus, strPropType, strZipCode):
