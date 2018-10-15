@@ -262,7 +262,7 @@ class cMatrixScrapper:
                 return 0
         else:
             #Search for the first mls link and click it
-            xpMLS = 'td[@class="d1m5"]/span[@class="d1m1"]/a'
+            xpMLS = '//td[@class="d1m5"]/span[@class="d1m1"]/a'
             #get the first MLS link
             try:
                 elemMLS = self._driver.find_elements_by_xpath(xpMLS)[0]
@@ -314,7 +314,7 @@ class cMatrixScrapper:
         self._driver.get(strPageLink)
         # verify the page load completes by checking existance of the first search creteria
         xpResults = './/a[@id="m_ucSearchButtons_m_lbSearch"]'
-        elemResults = self.find_wait_get_element('xpath', xpResults, 30,False)
+        elemResults = self.find_wait_get_element('xpath', xpResults, False, 30)
         if elemResults is None:
             return -1
         for criteria in lstCriteria:
@@ -323,10 +323,13 @@ class cMatrixScrapper:
             tag = criteria[1]
             type = criteria[2]
             desc = criteria[0]
-            result = self.set_tag_value(desc, tag, type, xp, val)
+            if self.set_tag_value(desc, tag, type, xp, val) == False:
+                return -1
+        time.sleep(3) #pause for 3 seconds for the results to update
         ##get the result link and result count
         xpResultCntLnk = ".//*[@id='m_ucSearchButtons_m_clblCount']"
-        elemResultCntLnk = self.find_wait_get_element('xpath', xpResultCntLnk, 30, False)
+        elemResultCntLnk = self.find_wait_get_element('xpath', xpResultCntLnk, False,30)
+        print(elemResultCntLnk.text)
         nResultCount = int(re.findall(r'\d+', elemResultCntLnk.text)[0])
         return nResultCount
 
@@ -335,9 +338,13 @@ class cMatrixScrapper:
             ('Active Check', 'input', 'checkbox', '//input[@value="20915" and @name="Fm1_Ctrl16_LB"]', False),
             ('MLS#', 'input', 'text', '//input[@id="Fm1_Ctrl12_TextBox"]', strMLS)
         ]
-        nRecCount = self.RunAllPropSearchPage(lstCriteria)
-
+        nRecCount = self.FilterAllPropClassicSearchPage(lstCriteria)
+        if nRecCount ==1:
+            xpResultLnk = './/a[@id="m_ucSearchButtons_m_lbSearch"]'
+            elemResultCntLnk = self.find_wait_get_element('xpath', xpResultLnk, True, 30)
         return nRecCount
+
+
     def QuerySoldAllPropClassicByZip(self, datFrom, datTo, strZip, lstPropType=None):
         '''
             lstPropType: a list of property types, if will cover all properties if None
@@ -347,7 +354,7 @@ class cMatrixScrapper:
             ('Active Check', 'input', 'checkbox', '//input[@value="20915" and @name="Fm1_Ctrl16_LB"]', False),
              ('Sold Check', 'input', 'checkbox', ".//*[@name='Fm1_Ctrl16_LB' and @value='20916']", True),
              ('Sold Text', 'input', 'text', ".//*[@id='FmFm1_Ctrl16_20916_Ctrl16_TB']", strDateRange),
-             ('ZipCode Text', 'input', 'text', './/[@id="Fm1_Ctrl19_TextBox"]', strZip)
+             ('ZipCode Text', 'input', 'text', './/input[@id="Fm1_Ctrl19_TextBox"]', strZip)
              ]
         if lstPropType is not None:
             for propType in lstPropType:
@@ -374,6 +381,9 @@ class cMatrixScrapper:
                 else:
                     print('Property type not recongnized. Property type: {0}'.format(propType))
         nRecCount = self.FilterAllPropClassicSearchPage(lstCriteria)
+        if nRecCount >0 and nRecCount<5000:
+            xpResultLnk = './/a[@id="m_ucSearchButtons_m_lbSearch"]'
+            elemResultCntLnk = self.find_wait_get_element('xpath', xpResultLnk, True, 30)
         return nRecCount
 
     def depricate_RunAllPropSearchPage(self, lstStatus, strPropType, strZipCode):
@@ -656,8 +666,18 @@ class cMatrixScrapper:
                     time.sleep(1)
         return True
 
+    def GetLatLonFromPropDetailPage(self):
+        xpViewMap = "//a[@title='View Map']"
+        elemViewMap = self.find_wait_get_element('xpath',xpViewMap,False,15)
+        if elemViewMap is not None:
+            return self.GetLatLon(elemViewMap, False)
+        else:
+            return (None, None)
+
+
     '''get the lat lon information'''
-    def GetLatLong(self, elemMap, bSaveJson = False):
+    def GetLatLon(self, elemMap, bSaveJson = False):
+
         if elemMap is not None:
             window_before = self._driver.window_handles[0]
             try:
@@ -901,5 +921,10 @@ if __name__ == "__main__":
     strZip = '77096'
     datFrom = date(2018,1,1)
     datTo =  date(2018,10,1)
-    nRecCount = o.QuerySoldAllPropClassicByZip(datFrom, datTo, strZip)
-    o.ProcessAllPropClassicSearchResultsPage(nRecCount, True)
+    strMLS = '72016589'
+    #nRecCount = o.QuerySoldAllPropClassicByZip(datFrom, datTo, strZip)
+    #o.ProcessAllPropClassicSearchResultsPage(nRecCount, True)
+    nRecCount = o.QueryPropertyByMLS(strMLS,False, True)
+    o.ProcessAllPropClassicSearchResultsPage(nRecCount,False)
+    (lat, lon) = o.GetLatLonFromPropDetailPage()
+    print('Lat={0}, Lon={1}'.format(lat, lon))
