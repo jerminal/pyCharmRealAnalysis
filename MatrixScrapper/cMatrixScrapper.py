@@ -336,17 +336,22 @@ class cMatrixScrapper:
         (lat, lon) = o.GetLatLonFromPropDetailPage()
         return (lat, lon)
 
-    def QuerySoldAllPropClassicByZip(self, datFrom, datTo, strZip, lstPropType=None):
+    def QuerySoldAllPropClassicByZip(self, datFrom, datTo, strZip=None, lstPropType=None):
         '''
-            lstPropType: a list of property types, if will cover all properties if None
+        :param datFrom: From Date, Date
+        :param datTo: To Date, Date
+        :param strZip: Zip code. string. It will skip Zipcode if it's None
+        :param lstPropType: list. a list of property types, if will cover all properties if None
+        :return:
         '''
         strDateRange = datFrom.strftime('%m/%d/%Y') + '-' + datTo.strftime('%m/%d/%Y')
         lstCriteria = [
             ('Active Check', 'input', 'checkbox', '//input[@value="20915" and @name="Fm1_Ctrl16_LB"]', False),
              ('Sold Check', 'input', 'checkbox', ".//*[@name='Fm1_Ctrl16_LB' and @value='20916']", True),
              ('Sold Text', 'input', 'text', ".//*[@id='FmFm1_Ctrl16_20916_Ctrl16_TB']", strDateRange),
-             ('ZipCode Text', 'input', 'text', './/input[@id="Fm1_Ctrl19_TextBox"]', strZip)
              ]
+        if strZip is not None:
+            lstCriteria.append((('ZipCode Text', 'input', 'text', './/input[@id="Fm1_Ctrl19_TextBox"]', strZip)))
         if lstPropType is not None:
             for propType in lstPropType:
                 if propType == 'Single-Family':
@@ -915,9 +920,9 @@ if __name__ == "__main__":
     strMLS = '72016589'
 
     nRecCount = o.QuerySoldAllPropClassicByZip(datFrom, datTo, strZip)
-    o.ProcessAllPropClassicSearchResultsPage(nRecCount, True)
+    nRecCount = o.ProcessAllPropClassicSearchResultsPage(nRecCount, True)
 
     nRecCount = o.QueryPropertyByMLS(strMLS,False, True)
-    o.ProcessAllPropClassicSearchResultsPage(nRecCount,False)
+    nRecCount = o.ProcessAllPropClassicSearchResultsPage(nRecCount,False)
     (lat, lon) = o.GetLatLonFromPropDetailPage()
     print('Lat={0}, Lon={1}'.format(lat, lon))
