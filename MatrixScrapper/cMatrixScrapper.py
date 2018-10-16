@@ -162,32 +162,6 @@ class cMatrixScrapper:
 
 
     '''
-    list the dir of all json files
-    '''
-    def GetExistingJsons(self):
-        return
-
-
-    '''
-        get a list of inputs and run the scrapper item by item in the list
-    '''
-    def RunJob(self):
-        # get the last date scrapper worked
-
-        # calculate date range, chop into pieces if necessary
-
-
-        # get the list of zip codes to scrap
-
-        # get the list of property types to scrap
-
-        # Loop and scrape each combination
-        # Scrape all Property Matrix Classic
-        bResult = False
-        while bResult == False:
-            #bResult = self.ScrapeAllPropPage()
-            pass
-    '''
     Run the search results page, it goes through the MLS in the list one by one, 
     compare against the scrapped list, it will scrap the details if it finds a mls link that's not in the list
     nResultCount: The number of search results
@@ -344,6 +318,23 @@ class cMatrixScrapper:
             elemResultCntLnk = self.find_wait_get_element('xpath', xpResultLnk, True, 30)
         return nRecCount
 
+    def DownloadPropHistoryToCSVByZip(self,datFrom, datTo, strZip):
+        '''
+        :param datFrom: date, from date;
+        :param datTo: date, to date
+        :param strZip: string zip code
+        :return: Record count if success (0,5000), 0 or over 5000 if fail
+        '''
+
+        nRecCount = o.QuerySoldAllPropClassicByZip(datFrom, datTo, strZip)
+        nReturn = o.ProcessAllPropClassicSearchResultsPage(nRecCount, True)
+        return nReturn
+
+    def GetLatLonFromMLSNum(self, strMLS):
+        nRecCount = o.QueryPropertyByMLS(strMLS, False, True)
+        o.ProcessAllPropClassicSearchResultsPage(nRecCount, False)
+        (lat, lon) = o.GetLatLonFromPropDetailPage()
+        return (lat, lon)
 
     def QuerySoldAllPropClassicByZip(self, datFrom, datTo, strZip, lstPropType=None):
         '''
@@ -922,8 +913,10 @@ if __name__ == "__main__":
     datFrom = date(2018,1,1)
     datTo =  date(2018,10,1)
     strMLS = '72016589'
-    #nRecCount = o.QuerySoldAllPropClassicByZip(datFrom, datTo, strZip)
-    #o.ProcessAllPropClassicSearchResultsPage(nRecCount, True)
+
+    nRecCount = o.QuerySoldAllPropClassicByZip(datFrom, datTo, strZip)
+    o.ProcessAllPropClassicSearchResultsPage(nRecCount, True)
+
     nRecCount = o.QueryPropertyByMLS(strMLS,False, True)
     o.ProcessAllPropClassicSearchResultsPage(nRecCount,False)
     (lat, lon) = o.GetLatLonFromPropDetailPage()
