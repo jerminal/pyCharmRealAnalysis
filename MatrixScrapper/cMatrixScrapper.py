@@ -11,6 +11,7 @@ import traceback
 from datetime import date
 import json
 import glob
+import datetime
 
 class cMatrixScrapper:
     def __init__(self, strConfigFilePath, strConfigSect ):
@@ -214,6 +215,7 @@ class cMatrixScrapper:
         '''
         # Search for the master check box, and check it
         #"//*[@id="m_pnlDisplay"]/table/thead/tr/th[1]/span/input"
+        time.sleep(4)
         if bSaveCSV:
             try:
                 xpAllLink = "//a[@id='m_lnkCheckAllLink']"
@@ -229,11 +231,12 @@ class cMatrixScrapper:
                 xpFileSave = "//a[@id='m_btnExport']"
                 if not self.click_element(xpFileSave):
                     raise Exception('Error occured while trying to click Export button')
+                time.sleep(4)
                 return nRecCount
             except:
                 print("exception happened while trying to download csv")
                 traceback.print_exc()
-                return 0
+                return -1
         else:
             #Search for the first mls link and click it
             xpMLS = '//td[@class="d1m5"]/span[@class="d1m1"]/a'
@@ -242,12 +245,12 @@ class cMatrixScrapper:
                 elemMLS = self._driver.find_elements_by_xpath(xpMLS)[0]
             except:
                 print("Error locating the MLS tag. Tag xpath: {0}".format(xpMLS))
-                return 0
+                return -1
             if elemMLS.get_attribute('href') is not None:
                 elemMLS.click()
                 return nRecCount
             else:
-                return 0
+                return -1
 
 
 
@@ -304,8 +307,13 @@ class cMatrixScrapper:
         xpResultCntLnk = ".//*[@id='m_ucSearchButtons_m_clblCount']"
         elemResultCntLnk = self.find_wait_get_element('xpath', xpResultCntLnk, False,30)
         print(elemResultCntLnk.text)
-        nResultCount = int(re.findall(r'\d+', elemResultCntLnk.text)[0])
-        return nResultCount
+        try:
+            nResultCount = int(re.findall(r'\d+', elemResultCntLnk.text)[0])
+            return nResultCount
+        except:
+            print('no results found')
+            return 0
+
 
     def QueryPropertyByMLS(self, strMLS, bSaveHtml=True, bFindLatLon=True):
         lstCriteria = [
@@ -915,14 +923,27 @@ if __name__ == "__main__":
     o = cMatrixScrapper("AllPropScrapper", "DEV")
     o.SignIntoMatrix()
     strZip = '77096'
-    datFrom = date(2018,1,1)
-    datTo =  date(2018,10,1)
+    datFrom = date(2014,6,26)
+    datTo =  datFrom + datetime.timedelta(days=6)
     strMLS = '72016589'
+    file = open('c:\\temp\\MatrixLog.txt', 'a')
+    while datTo<date(2018,10,1):
+        #file.write("Processing date between {0} and {1}\n".format(datFrom, datTo))
+        nRecCount = o.QuerySoldAllPropClassicByZip(datFrom, datTo)
+        if nRecCount<1 or nRecCount>=5000:
+            file.write("Error querying date between {0} and {1}, record count: {2}\n".format(datFrom, datTo, nRecCount))
+        else:
+            nRecCount = o.ProcessAllPropClassicSearchResultsPage(nRecCount, True)
+            if nRecCount<1 or nRecCount>=5000:
+                file.write("Error processing date between {0} and {1}, record count:{2}\n".format(datFrom, datTo, nRecCount))
 
-    nRecCount = o.QuerySoldAllPropClassicByZip(datFrom, datTo, strZip)
-    nRecCount = o.ProcessAllPropClassicSearchResultsPage(nRecCount, True)
+            else:
+                file.write("Processed date between {0} and {1}, record count: {2}\n".format(datFrom, datTo, nRecCount))
 
-    nRecCount = o.QueryPropertyByMLS(strMLS,False, True)
-    nRecCount = o.ProcessAllPropClassicSearchResultsPage(nRecCount,False)
-    (lat, lon) = o.GetLatLonFromPropDetailPage()
-    print('Lat={0}, Lon={1}'.format(lat, lon))
+        datFrom =datFrom + datetime.timedelta(days=7)
+        datTo = datTo + datetime.timedelta(days=7)
+    file.close()
+    #nRecCount = o.QueryPropertyByMLS(strMLS,False, True)
+    #nRecCount = o.ProcessAllPropClassicSearchResultsPage(nRecCount,False)
+    #(lat, lon) = o.GetLatLonFromPropDetailPage()
+    #print('Lat={0}, Lon={1}'.format(lat, lon))
