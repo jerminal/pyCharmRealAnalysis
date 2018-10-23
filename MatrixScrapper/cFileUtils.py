@@ -1,4 +1,6 @@
 import os
+import shutil
+import glob
 
 class cFileUtils:
 
@@ -21,8 +23,11 @@ class cFileUtils:
         :param dest_file_name: full path of the destination file name
         :return: True or false
         '''
-        
-        return True
+        try:
+            shutil.move(src_file_name, dest_file_name)
+            return True
+        except:
+            return False
 
     def delete_files(self, strFileNames):
         '''
@@ -30,3 +35,7 @@ class cFileUtils:
         :param strFileNames: file names, it supports wild cards
         :return:
         '''
+        fileList = glob.glob(strFileNames)
+        for file in fileList:
+            os.remove(file)
+

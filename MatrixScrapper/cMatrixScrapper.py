@@ -12,7 +12,7 @@ from datetime import date
 import json
 import glob
 import datetime
-from cFileUtils import cFileUtils
+from .cFileUtils import cFileUtils
 
 
 class cMatrixScrapper:
@@ -930,11 +930,11 @@ if __name__ == "__main__":
     o = cMatrixScrapper("AllPropScrapper", "DEV")
     o.SignIntoMatrix()
     strZip = '77096'
-    datFrom = date(2014,6,26)
+    datFrom = date(2016,9,29)
     datTo =  datFrom + datetime.timedelta(days=6)
     strMLS = '72016589'
     file = open('c:\\temp\\MatrixLog.txt', 'a')
-    while datTo<date(2018,10,1):
+    while datTo<date(2017,12,31):
         #file.write("Processing date between {0} and {1}\n".format(datFrom, datTo))
         nRecCount = o.QuerySoldAllPropClassicByZip(datFrom, datTo)
         if nRecCount<1 or nRecCount>=5000:
