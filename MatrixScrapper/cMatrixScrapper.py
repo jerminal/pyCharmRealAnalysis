@@ -12,6 +12,8 @@ from datetime import date
 import json
 import glob
 import datetime
+from cFileUtils import cFileUtils
+
 
 class cMatrixScrapper:
     def __init__(self, strConfigFilePath, strConfigSect ):
@@ -161,6 +163,11 @@ class cMatrixScrapper:
         except:
             raise Exception('Error! Cannot find element. Type: {0}, value: {1}'.format(elementType, val))
 
+    def remove_csvs(self):
+        '''
+        remove all csv files under default download folder
+        :return:
+        '''
 
     '''
     Run the search results page, it goes through the MLS in the list one by one, 
