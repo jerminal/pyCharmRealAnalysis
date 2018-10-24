@@ -33,6 +33,41 @@ class cMatrixScrapper:
         print("Destroyong Matrix scrapper")
         self._driver.quit()
 
+    def prepare_download_folder(self):
+        '''
+        prepare the download folders by deleting all CSV files or Html files under the configured folder
+        :return:
+        '''
+        strPath = self._cfg.getConfigValue("CSVPath/Sold")
+        cFileUtils.delete_files(strPath + "\\System Default*.csv")
+        strPath = self._cfg.getConfigValue("CSVPath/New")
+        cFileUtils.delete_files(strPath + "\\System Default*.csv")
+
+        strPath = self._cfg.getConfigValue("HtmlPath/Sold")
+        cFileUtils.delete_files(strPath + "\\System Default*.csv")
+        strPath = self._cfg.getConfigValue("HtmlPath/New")
+        cFileUtils.delete_files(strPath + "\\System Default*.csv")
+
+
+    def move_file_to_Dest(self, strPreferredFileName, strDestPath, strFileType='CSV'):
+        '''
+        copy the CSV/html file to destination path
+        :param strPreferredFileName: Preferred file name
+        :param strDestPath: destination path only
+        :param strFileType: File path, CSV or Html
+        :return: True or False
+        '''
+        strDownloadPath = cFileUtils.get_download_path()
+        if strFileType == 'CSV':
+            strFileName = "System Default.csv"
+        elif strFileType == 'Html':
+            pass
+        else:
+            print("Error!")
+            return False
+        cFileUtils.move_file(strDownloadPath + "\\" + strFileName, strDestPath + "\\" + strPreferredFileName + ".csv")
+        return True
+
     def SignIntoMatrix(self):
         # driver = webdriver.Firefox(firefox_binary=binary)
         print("Signing into {0}".format(self._cfg.getConfigValue("EntryUrl")))
@@ -61,6 +96,7 @@ class cMatrixScrapper:
         self._driver.switch_to.window(window_after)
         print("signed in")
         return True
+
 
     '''
     Input parameters:
@@ -163,11 +199,6 @@ class cMatrixScrapper:
         except:
             raise Exception('Error! Cannot find element. Type: {0}, value: {1}'.format(elementType, val))
 
-    def remove_csvs(self):
-        '''
-        remove all csv files under default download folder
-        :return:
-        '''
 
     '''
     Run the search results page, it goes through the MLS in the list one by one, 
@@ -239,6 +270,7 @@ class cMatrixScrapper:
                 if not self.click_element(xpFileSave):
                     raise Exception('Error occured while trying to click Export button')
                 time.sleep(4)
+
                 return nRecCount
             except:
                 print("exception happened while trying to download csv")

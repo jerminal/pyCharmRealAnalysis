@@ -36,6 +36,12 @@ class cFileUtils:
         :return:
         '''
         fileList = glob.glob(strFileNames)
-        for file in fileList:
-            os.remove(file)
-
+        if fileList is not None:
+            for file in fileList:
+                try:
+                    os.remove(file)
+                except:
+                    print("Error! Attempt to delete {0} failed.".format(file))
+            return True
+        else:
+            return False
